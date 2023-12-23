@@ -1,14 +1,8 @@
 'use client'
-import { useTheme } from '@mui/material'
 import Head from 'next/head'
-import { useSettings } from 'src/hooks/useSettings'
 
 export default function Home() {
-  const theme = useTheme()
-  const { settings } = useSettings()
-
-  console.log('themetheme', { theme, settings })
-
+  
   return (
     <>
       <Head>
