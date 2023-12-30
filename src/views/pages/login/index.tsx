@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 // ** React
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 
 // ** Mui
 import {
@@ -35,6 +35,9 @@ import { EMAIL_REG, PASSWORD_REG } from 'src/configs/regex'
 import LoginDark from '/public/images/login-dark.png'
 import LoginLight from '/public/images/login-light.png'
 
+// ** Hooks
+import { useAuth } from 'src/hooks/useAuth'
+
 type TProps = {}
 
 type TDefaultValue = {
@@ -46,6 +49,9 @@ const LoginPage: NextPage<TProps> = () => {
   // State
   const [showPassword, setShowPassword] = useState(false)
   const [isRemember, setIsRemember] = useState(true)
+
+  // ** context
+  const { login } = useAuth()
 
   // ** theme
   const theme = useTheme()
@@ -74,6 +80,9 @@ const LoginPage: NextPage<TProps> = () => {
   })
 
   const onSubmit = (data: { email: string; password: string }) => {
+    if (!Object.keys(errors)?.length) {
+      login({ ...data, rememberMe: isRemember })
+    }
     console.log('data', { data, errors })
   }
 
@@ -208,7 +217,7 @@ const LoginPage: NextPage<TProps> = () => {
               <Typography>{"Don't have an account?"}</Typography>
               <Link
                 style={{
-                  color: theme.palette.mode === 'light' ? theme.palette.common.black : theme.palette.common.white
+                  color: theme.palette.primary.main
                 }}
                 href='/register'
               >
@@ -221,7 +230,7 @@ const LoginPage: NextPage<TProps> = () => {
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   role='img'
-                  font-size='1.375rem'
+                  fontSize='1.375rem'
                   className='iconify iconify--mdi'
                   width='1em'
                   height='1em'
