@@ -1,5 +1,7 @@
 'use client'
 import Head from 'next/head'
+import { ReactNode } from 'react'
+import LayoutNotApp from 'src/views/layouts/LayoutNotApp'
 
 export default function Home() {
   return (
@@ -13,3 +15,6 @@ export default function Home() {
     </>
   )
 }
+
+Home.getLayout = (page: ReactNode) => <LayoutNotApp>{page}</LayoutNotApp>
+
