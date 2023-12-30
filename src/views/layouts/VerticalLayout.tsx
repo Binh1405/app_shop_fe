@@ -7,12 +7,14 @@ import { NextPage } from 'next'
 import { styled } from '@mui/material/styles'
 import MuiDrawer from '@mui/material/Drawer'
 import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 
-// ** Layout
-import { mainListItems, secondaryListItems } from 'src/views/layouts/listItem'
+// ** Layouts
+import ListVerticalLayout from 'src/views/layouts/ListVerticalLayout'
+
+// ** Components
+import IconifyIcon from 'src/components/Icon'
 
 const drawerWidth: number = 240
 
@@ -56,14 +58,12 @@ const VerticalLayout: NextPage<TProps> = ({ open, toggleDrawer }) => {
           px: [1]
         }}
       >
-        <IconButton onClick={toggleDrawer}></IconButton>
+        <IconButton onClick={toggleDrawer}>
+          <IconifyIcon icon='mingcute:left-line' />
+        </IconButton>
       </Toolbar>
       <Divider />
-      <List component='nav'>
-        {mainListItems}
-        <Divider sx={{ my: 1 }} />
-        {secondaryListItems}
-      </List>
+      <ListVerticalLayout />
     </Drawer>
   )
 }
