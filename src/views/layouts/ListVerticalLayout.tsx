@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NextPage } from 'next'
 
 // ** Mui
@@ -10,17 +10,34 @@ import IconifyIcon from 'src/components/Icon'
 // ** Config
 import { VerticalItems } from 'src/configs/layout'
 
-type TProps = {}
+type TProps = {
+  open: boolean
+}
 
-const RecursiveListItems = ({ items, level }: { items: any; level: number }) => {
-  const [openItems, setOpenItems] = useState<{[key: string]: boolean}>({})
+type TListItems = {
+  level: number
+  openItems: {
+    [key: string]: boolean
+  }
+  items: any
+  setOpenItems: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: boolean
+    }>
+  >
+  disabled: boolean
+}
 
+const RecursiveListItems: NextPage<TListItems> = ({ items, level, openItems, setOpenItems, disabled }) => {
   const handleClick = (title: string) => {
-    setOpenItems((prev) => ({
+    if (!disabled) {
+      setOpenItems(prev => ({
         ...prev,
         [title]: !prev[title]
-    }))
+      }))
+    }
   }
+
   return (
     <>
       {items?.map((item: any) => {
@@ -28,7 +45,7 @@ const RecursiveListItems = ({ items, level }: { items: any; level: number }) => 
           <React.Fragment key={item.title}>
             <ListItemButton
               sx={{
-                padding: `8px 10px 8px ${level * 10}px`
+                padding: `8px 10px 8px ${level * (level === 1 ? 28 : 20)}px`
               }}
               onClick={() => {
                 if (item.childrens) {
@@ -39,24 +56,32 @@ const RecursiveListItems = ({ items, level }: { items: any; level: number }) => 
               <ListItemIcon>
                 <IconifyIcon icon={item.icon} />
               </ListItemIcon>
-              <ListItemText primary={item?.title} />
+              {!disabled && <ListItemText primary={item?.title} />}
               {item?.childrens && item.childrens.length > 0 && (
                 <>
-                {openItems[item.title] ? (
-                    <IconifyIcon icon="ic:twotone-expand-less" style={{
-                        transform: "rotate(180deg)"
-                    }} />
-                ) : (
-                    <IconifyIcon icon="ic:twotone-expand-less" />
-
-                )}
+                  {openItems[item.title] ? (
+                    <IconifyIcon
+                      icon='ic:twotone-expand-less'
+                      style={{
+                        transform: 'rotate(180deg)'
+                      }}
+                    />
+                  ) : (
+                    <IconifyIcon icon='ic:twotone-expand-less' />
+                  )}
                 </>
               )}
             </ListItemButton>
             {item.childrens && item.childrens.length > 0 && (
               <>
                 <Collapse in={openItems[item.title]} timeout='auto' unmountOnExit>
-                  <RecursiveListItems items={item.childrens} level={level + 1} />
+                  <RecursiveListItems
+                    items={item.childrens}
+                    level={level + 1}
+                    openItems={openItems}
+                    setOpenItems={setOpenItems}
+                    disabled={disabled}
+                  />
                 </Collapse>
               </>
             )}
@@ -67,14 +92,24 @@ const RecursiveListItems = ({ items, level }: { items: any; level: number }) => 
   )
 }
 
-const ListVerticalLayout: NextPage<TProps> = () => {
+const ListVerticalLayout: NextPage<TProps> = ({ open }) => {
+  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({})
+
+  useEffect(() => {
+    if (!open) {
+      setOpenItems({})
+    }
+  }, [open])
+
   return (
-    <List
-      sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-      component='nav'
-      aria-labelledby='nested-list-subheader'
-    >
-      <RecursiveListItems items={VerticalItems} level={1} />
+    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} component='nav'>
+      <RecursiveListItems
+        disabled={!open}
+        items={VerticalItems}
+        level={1}
+        openItems={openItems}
+        setOpenItems={setOpenItems}
+      />
     </List>
   )
 }
