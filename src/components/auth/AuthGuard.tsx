@@ -12,6 +12,7 @@ import { clearLocalUserData } from 'src/helpers/storage'
 
 // ** Hooks
 import { useAuth } from 'src/hooks/useAuth'
+
 interface AuthGuardProps {
   children: ReactNode
   fallback: ReactElement | null
