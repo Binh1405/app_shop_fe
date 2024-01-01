@@ -80,7 +80,7 @@ export default function App(props: ExtendedAppProps) {
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
   const setConfig = Component.setConfig ?? undefined
-
+  // 
   const authGuard = Component.authGuard ?? true
 
   const guestGuard = Component.guestGuard ?? false
