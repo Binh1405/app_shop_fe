@@ -9,3 +9,9 @@ const Login: NextPage<TProps> = () => {
 }
 
 export default Login
+<<<<<<< Updated upstream
+=======
+
+Login.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
+Login.guestGuard = true
+>>>>>>> Stashed changes
