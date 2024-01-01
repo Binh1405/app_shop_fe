@@ -13,14 +13,12 @@ import authConfig from 'src/configs/auth'
 // ** Types
 import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
 
-<<<<<<< Updated upstream
-=======
 // ** services
-import { loginAuth, logoutAuth } from 'src/services/auth'
+import { loginAuth } from 'src/services/auth'
 import { CONFIG_API } from 'src/configs/api'
 import { clearLocalUserData, setLocalUserData } from 'src/helpers/storage'
+import { logoutAuth } from '../services/auth'
 
->>>>>>> Stashed changes
 // ** Defaults
 const defaultProvider: AuthValuesType = {
   user: null,
@@ -47,39 +45,18 @@ const AuthProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const initAuth = async (): Promise<void> => {
-<<<<<<< Updated upstream
-      const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)!
-      if (storedToken) {
-        setLoading(true)
-        await axios
-          .get(authConfig.meEndpoint, {
-            headers: {
-              Authorization: storedToken
-=======
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName)
-      console.log('storedToken', { storedToken })
+   
       if (storedToken) {
         setLoading(true)
         await axios
           .get(CONFIG_API.AUTH.AUTH_ME, {
             headers: {
               Authorization: `Bearer ${storedToken}`
->>>>>>> Stashed changes
             }
           })
           .then(async response => {
             setLoading(false)
-<<<<<<< Updated upstream
-            setUser({ ...response.data.userData })
-          })
-          .catch(() => {
-            localStorage.removeItem('userData')
-            localStorage.removeItem('refreshToken')
-            localStorage.removeItem('accessToken')
-            setUser(null)
-            setLoading(false)
-            if (authConfig.onTokenExpiration === 'logout' && !router.pathname.includes('login')) {
-=======
             setUser({ ...response.data.data })
           })
           .catch(() => {
@@ -87,7 +64,6 @@ const AuthProvider = ({ children }: Props) => {
             setUser(null)
             setLoading(false)
             if (!router.pathname.includes('login')) {
->>>>>>> Stashed changes
               router.replace('/login')
             }
           })
@@ -97,26 +73,12 @@ const AuthProvider = ({ children }: Props) => {
     }
 
     initAuth()
-<<<<<<< Updated upstream
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-=======
->>>>>>> Stashed changes
   }, [])
 
   const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
-    axios
-      .post(authConfig.loginEndpoint, params)
+    loginAuth({ email: params.email, password: params.password })
       .then(async response => {
         params.rememberMe
-<<<<<<< Updated upstream
-          ? window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.accessToken)
-          : null
-        const returnUrl = router.query.returnUrl
-
-        setUser({ ...response.data.userData })
-        params.rememberMe ? window.localStorage.setItem('userData', JSON.stringify(response.data.userData)) : null
-
-=======
           ? setLocalUserData(
               JSON.stringify(response.data.user),
               response.data.access_token,
@@ -125,7 +87,6 @@ const AuthProvider = ({ children }: Props) => {
           : null
         const returnUrl = router.query.returnUrl
         setUser({ ...response.data.user })
->>>>>>> Stashed changes
         const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
 
         router.replace(redirectURL as string)

@@ -240,7 +240,7 @@ const LoginPage: NextPage<TProps> = () => {
               <Link
                 href='/login'
                 style={{
-                  color: theme.palette.mode === 'light' ? theme.palette.common.black : theme.palette.common.white
+                  color: theme.palette.primary.main
                 }}
               >
                 {'Login'}
@@ -252,7 +252,7 @@ const LoginPage: NextPage<TProps> = () => {
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   role='img'
-                  font-size='1.375rem'
+                  fontSize='1.375rem'
                   className='iconify iconify--mdi'
                   width='1em'
                   height='1em'
