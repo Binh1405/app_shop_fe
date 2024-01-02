@@ -10,11 +10,12 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import Badge from '@mui/material/Badge'
 
 // components
-import IconifyIcon from 'src/components/Icon'
-import UserDropdown from 'src/components/user-dropdown'
+import Icon from 'src/components/Icon'
+import UserDropdown from 'src/views/layouts/components/user-dropdown'
+import ModeToggle from 'src/views/layouts/components/mode-toggle'
+import LanguageDropdown from 'src/views/layouts/components/language-dropdown'
 
 const drawerWidth: number = 240
 
@@ -34,7 +35,7 @@ const AppBar = styled(MuiAppBar, {
   zIndex: theme.zIndex.drawer + 1,
   backgroundColor:
     theme.palette.mode === 'light' ? theme.palette.customColors.lightPaperBg : theme.palette.customColors.darkPaperBg,
-  color: theme.palette.primary.main,
+  color: theme.palette.text.primary,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen
@@ -70,18 +71,15 @@ const HorizontalLayout: NextPage<TProps> = ({ open, toggleDrawer, isHideMenu }) 
               ...(open && { display: 'none' })
             }}
           >
-            <IconifyIcon icon='ic:round-menu' />
+            <Icon icon='ic:round-menu' />
           </IconButton>
         )}
         <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
           Dashboard
         </Typography>
+        <LanguageDropdown />
+        <ModeToggle />
         <UserDropdown />
-        {/* <IconButton color='inherit'>
-          <Badge badgeContent={4} color='primary'>
-            <IconifyIcon icon='iconamoon:notification-light' />
-          </Badge>
-        </IconButton> */}
       </Toolbar>
     </AppBar>
   )
