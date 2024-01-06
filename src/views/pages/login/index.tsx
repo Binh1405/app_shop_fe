@@ -105,7 +105,7 @@ const LoginPage: NextPage<TProps> = () => {
         sx={{
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '20px',
+          borderRadius: theme.shape.borderRadius,
           backgroundColor: theme.palette.customColors.bodyBg,
           height: '100%',
           minWidth: '50vw'

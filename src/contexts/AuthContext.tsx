@@ -11,7 +11,7 @@ import authConfig from 'src/configs/auth'
 import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
 
 // ** services
-import { loginAuth,logoutAuth } from 'src/services/auth'
+import { loginAuth, logoutAuth } from 'src/services/auth'
 
 // ** Config
 import { CONFIG_API } from 'src/configs/api'
@@ -75,8 +75,10 @@ const AuthProvider = ({ children }: Props) => {
   }, [])
 
   const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
+    setLoading(true)
     loginAuth({ email: params.email, password: params.password })
       .then(async response => {
+        setLoading(false)
         params.rememberMe
           ? setLocalUserData(
               JSON.stringify(response.data.user),
@@ -92,6 +94,7 @@ const AuthProvider = ({ children }: Props) => {
       })
 
       .catch(err => {
+        setLoading(false)
         if (errorCallback) errorCallback(err)
       })
   }
