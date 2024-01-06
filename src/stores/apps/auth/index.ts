@@ -4,7 +4,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // ** Axios Imports
 import axios from 'axios'
-import { registerAuthAsync } from 'src/stores/apps/auth/actions'
+import { registerAuthAsync, updateAuthMeAsync } from 'src/stores/apps/auth/actions'
 
 interface DataParams {
   q: string
@@ -23,7 +23,10 @@ const initialState = {
   isSuccess: true,
   isError: false,
   message: '',
-  typeError: ''
+  typeError: '',
+  isSuccessUpdateMe: true,
+  isErrorUpdateMe: false,
+  messageUpdateMe: '',
 }
 
 export const authSlice = createSlice({
@@ -36,9 +39,13 @@ export const authSlice = createSlice({
       state.isError = true
       state.message = ''
       state.typeError = ''
+      state.isSuccessUpdateMe = false
+      state.isErrorUpdateMe = true
+      state.messageUpdateMe = ''
     }
   },
   extraReducers: builder => {
+    // ** register
     builder.addCase(registerAuthAsync.pending, (state, action) => {
       state.isLoading = true
     })
@@ -56,6 +63,26 @@ export const authSlice = createSlice({
       state.isError = true
       state.message = ''
       state.typeError = ''
+    })
+
+    // ** update me
+    builder.addCase(updateAuthMeAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(updateAuthMeAsync.fulfilled, (state, action) => {
+      console.log('action', { action })
+      state.isLoading = false
+      state.isSuccessUpdateMe = !!action.payload?.data?.email
+      state.isErrorUpdateMe = !action.payload?.data?.email
+      state.messageUpdateMe = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
+    builder.addCase(updateAuthMeAsync.rejected, (state, action) => {
+      state.isLoading = false
+      state.typeError = ''
+      state.isSuccessUpdateMe = false
+      state.isErrorUpdateMe = false
+      state.messageUpdateMe = ""
     })
   }
 })
