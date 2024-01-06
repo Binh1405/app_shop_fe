@@ -17,7 +17,7 @@ import Tooltip from '@mui/material/Tooltip'
 import { Badge, Typography, styled } from '@mui/material'
 
 // ** Components
-import IconifyIcon from 'src/components/Icon'
+import Icon from 'src/components/Icon'
 
 // ** Hooks
 import { useAuth } from 'src/hooks/useAuth'
@@ -114,7 +114,7 @@ const UserDropdown = (props: TProps) => {
                     }}
                   />
                 ) : (
-                  <IconifyIcon icon='ph:user-thin' />
+                  <Icon icon='ph:user-thin' />
                 )}
               </Avatar>
             </StyledBadge>
@@ -172,7 +172,7 @@ const UserDropdown = (props: TProps) => {
                   }}
                 />
               ) : (
-                <IconifyIcon icon='ph:user-thin' />
+                <Icon icon='ph:user-thin' />
               )}
             </Avatar>
           </StyledBadge>
@@ -185,10 +185,15 @@ const UserDropdown = (props: TProps) => {
         </Box>
         <Divider />
         <MenuItem onClick={handleNavigateMyProfile}>
-          <Avatar /> {t('my_profile')}
+          <Avatar>
+            <Icon icon='ph:user-thin' />
+          </Avatar>{' '}
+          {t('my_profile')}
         </MenuItem>
         <MenuItem onClick={logout}>
-          <ListItemIcon>{/* <Logout fontSize='small' /> */}</ListItemIcon>
+          <Avatar sx={{backgroundColor: "transparent"}}>
+            <Icon icon='material-symbols-light:logout' />
+          </Avatar>
           Logout
         </MenuItem>
       </Menu>
