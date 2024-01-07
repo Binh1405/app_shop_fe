@@ -87,6 +87,11 @@ const UserDropdown = (props: TProps) => {
     handleClose()
   }
 
+  const handleNavigateChangePassword = () => {
+    router.push(ROUTE_CONFIG.CHANGE_PASSWORD)
+    handleClose()
+  }
+
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -190,11 +195,17 @@ const UserDropdown = (props: TProps) => {
           </Avatar>{' '}
           {t('my_profile')}
         </MenuItem>
+        <MenuItem onClick={handleNavigateChangePassword}>
+          <Avatar sx={{ backgroundColor: 'transparent' }}>
+            <Icon icon='arcticons:password' />
+          </Avatar>
+          {t('Change_password')}
+        </MenuItem>
         <MenuItem onClick={logout}>
-          <Avatar sx={{backgroundColor: "transparent"}}>
+          <Avatar sx={{ backgroundColor: 'transparent' }}>
             <Icon icon='material-symbols-light:logout' />
           </Avatar>
-          Logout
+          {t('Logout')}
         </MenuItem>
       </Menu>
     </React.Fragment>
