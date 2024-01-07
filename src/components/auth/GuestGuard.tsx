@@ -23,7 +23,7 @@ const GuestGuard = (props: GuestGuardProps) => {
 
   // ** auth
   const authContext = useAuth()
-  console.log('authContext', { authContext })
+
   useEffect(() => {
     if (!router.isReady) {
       return
