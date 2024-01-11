@@ -1,6 +1,7 @@
 'use client'
 import Head from 'next/head'
 import { ReactNode } from 'react'
+import CustomPagination from 'src/components/custom-pagination'
 import LayoutNotApp from 'src/views/layouts/LayoutNotApp'
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
+      <CustomPagination page={1} pageSize={5} rowLength={200} pageSizeOptions={[5, 10, 20, 30]} onChangePagination={() => {}} />
     </>
   )
 }
