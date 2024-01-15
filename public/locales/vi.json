@@ -18,5 +18,13 @@
     "Logout": "Đăng xuất",
     "Change_password": "Thay đổi mật khẩu",
     "the_email_or_password_wrong": "Email hoặc mật khẩu không chính xác",
-    "login_success": "Dang nhap thanh cong"
+    "login_success": "Đăng nhập thành công",
+    "manage_system": "Quản trị hệ thống",
+    "Name": "Tên",
+    "Actions": "Thao tác",
+    "Create": "Tạo",
+    "Edit": "Sửa",
+    "Delete": "Xóa",
+    "required_field": "Trường này bắt buộc",
+    "create-role-success": "Tạo nhóm vai trò thành công"
 }
