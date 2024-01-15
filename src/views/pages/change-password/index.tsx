@@ -29,8 +29,8 @@ import RegisterLight from '/public/images/register-light.png'
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { resetInitialState } from 'src/stores/apps/auth'
-import { changePasswordMeAsync } from 'src/stores/apps/auth/actions'
+import { resetInitialState } from 'src/stores/auth'
+import { changePasswordMeAsync } from 'src/stores/auth/actions'
 
 // ** Components
 import FallbackSpinner from 'src/components/fall-back'
@@ -74,15 +74,15 @@ const ChangePasswordPage: NextPage<TProps> = () => {
   const schema = yup.object().shape({
     currentPassword: yup
       .string()
-      .required('The field is required')
+      .required(t('required_field'))
       .matches(PASSWORD_REG, 'The password is contain charactor, special character, number'),
     newPassword: yup
       .string()
-      .required('The field is required')
+      .required(t('required_field'))
       .matches(PASSWORD_REG, 'The password is contain charactor, special character, number'),
     confirmNewPassword: yup
       .string()
-      .required('The field is required')
+      .required(t('required_field'))
       .matches(PASSWORD_REG, 'The password is contain charactor, special character, number')
       .oneOf([yup.ref('newPassword'), ''], 'The confirm is must match with password')
   })

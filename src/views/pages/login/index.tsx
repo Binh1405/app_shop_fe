@@ -62,10 +62,10 @@ const LoginPage: NextPage<TProps> = () => {
   const theme = useTheme()
 
   const schema = yup.object().shape({
-    email: yup.string().required('The field is required').matches(EMAIL_REG, 'The field is must email type'),
+    email: yup.string().required(t('required_field')).matches(EMAIL_REG, 'The field is must email type'),
     password: yup
       .string()
-      .required('The field is required')
+      .required(t('required_field'))
       .matches(PASSWORD_REG, 'The password is contain charactor, special character, number')
   })
 
@@ -141,7 +141,7 @@ const LoginPage: NextPage<TProps> = () => {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' noValidate>
+          API_ENDPOINT onSubmit={handleSubmit(onSubmit)} autoComplete='off' noValidate>
             <Box sx={{ mt: 2, width: '300px' }}>
               <Controller
                 control={control}
