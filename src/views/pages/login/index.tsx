@@ -141,7 +141,7 @@ const LoginPage: NextPage<TProps> = () => {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          API_ENDPOINT onSubmit={handleSubmit(onSubmit)} autoComplete='off' noValidate>
+          <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' noValidate>
             <Box sx={{ mt: 2, width: '300px' }}>
               <Controller
                 control={control}
