@@ -30,6 +30,7 @@ import Spinner from 'src/components/spinner'
 import toast from 'react-hot-toast'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
+import Icon from 'src/components/Icon'
 
 type TProps = {}
 
@@ -116,8 +117,8 @@ const RoleListPage: NextPage<TProps> = () => {
         const { row } = params
 
         return (
-          <Box>
-            {!row?.permissions?.some((per: string) => ['ADMIN.GRANTED', 'BASIC.PUBLIC']?.includes(per)) && (
+          <Box sx={{width: "100%"}}>
+            {!row?.permissions?.some((per: string) => ['ADMIN.GRANTED', 'BASIC.PUBLIC']?.includes(per)) ? (
               <>
                 <GridEdit
                   onClick={() =>
@@ -136,6 +137,8 @@ const RoleListPage: NextPage<TProps> = () => {
                   }
                 />
               </>
+            ) : (
+              <Icon icon="material-symbols-light:lock-outline" fontSize={30} />
             )}
           </Box>
         )
@@ -164,7 +167,7 @@ const RoleListPage: NextPage<TProps> = () => {
       if (openCreateEdit.id) {
         toast.success(t('update-role-success'))
       } else {
-        toast.success(t('create-role-success'))
+        toast.success(t('Create_role_success'))
       }
       handleGetListRoles()
       handleCloseCreateEdit()
@@ -194,8 +197,8 @@ const RoleListPage: NextPage<TProps> = () => {
         handleClose={handleCloseConfirmDeleteRole}
         handleCancel={handleCloseConfirmDeleteRole}
         handleConfirm={handleDeleteRole}
-        title={t('title_delete_role')}
-        description={t('confirm_delete_role')}
+        title={t('Title_delete_role')}
+        description={t('Confirm_delete_role')}
       />
       <CreateEditRole open={openCreateEdit.open} onClose={handleCloseCreateEdit} idRole={openCreateEdit.id} />
       {isLoading && <Spinner />}

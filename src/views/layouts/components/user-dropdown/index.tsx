@@ -83,7 +83,7 @@ const UserDropdown = (props: TProps) => {
   }
 
   const handleNavigateMyProfile = () => {
-    router.push(ROUTE_CONFIG.MY_PROFILE)
+    router.push(ROUTE_CONFIG.My_profile)
     handleClose()
   }
 
@@ -198,13 +198,13 @@ const UserDropdown = (props: TProps) => {
           <Avatar>
             <Icon icon='arcticons:phone-manager' />
           </Avatar>{' '}
-          {t('manage_system')}
+          {t('Manage_system')}
         </MenuItem>
         <MenuItem onClick={handleNavigateMyProfile}>
           <Avatar>
             <Icon icon='ph:user-thin' />
           </Avatar>{' '}
-          {t('my_profile')}
+          {t('My_profile')}
         </MenuItem>
         <MenuItem onClick={handleNavigateChangePassword}>
           <Avatar sx={{ backgroundColor: 'transparent' }}>
