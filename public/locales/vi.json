@@ -63,5 +63,10 @@
     "Edit_role": "Chính sửa nhóm vai trò",
     "Create_role": "Tạo nhóm vai trò",
     "Name_role": "Tên nhóm vai trò",
-    "Enter_name": "Nhập tên"
+    "Enter_name": "Nhập tên",
+    "Update-role-success": "Cập nhật nhóm vai trò thành công",
+    "Data_existed_in_system": "Dữ liệu đã tồn tại trong hệ thống",
+    "Update_role_error": "Cập nhật nhóm vai trò thất bại",
+    "Create_role_error": "Tạo nhóm vai trò thất bại",
+    "Server_is_error": "Hệ thống bị lỗi"
 }
