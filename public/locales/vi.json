@@ -64,9 +64,19 @@
     "Create_role": "Tạo nhóm vai trò",
     "Name_role": "Tên nhóm vai trò",
     "Enter_name": "Nhập tên",
-    "Update-role-success": "Cập nhật nhóm vai trò thành công",
+    "Update_role_success": "Cập nhật nhóm vai trò thành công",
     "Data_existed_in_system": "Dữ liệu đã tồn tại trong hệ thống",
     "Update_role_error": "Cập nhật nhóm vai trò thất bại",
     "Create_role_error": "Tạo nhóm vai trò thất bại",
-    "Server_is_error": "Hệ thống bị lỗi"
+    "Server_is_error": "Hệ thống bị lỗi",
+    "Update_role_succcess": "Cập nhật nhóm vai trò thành công",
+    "Delete_role_error": "Xóa nhóm vai trò thất bại",
+    "Delete_role_success": "Xóa nhóm vai trò thành công",
+    "Manage_order": "Quản trị đơn hàng",
+    "Review": "Đánh giá",
+    "Order": "Đơn hàng",
+    "Delivery_type": "Phương thức giao hàng",
+    "Payment_type": "Phương thức thanh toán",
+    "Product": "Sản phẩm",
+    "Product_type": "Loại sản phẩm"
 }
