@@ -1,5 +1,5 @@
 // ** React
-import React from 'react'
+import React, { useEffect } from 'react'
 
 // ** Next
 import Image from 'next/image'
@@ -30,6 +30,10 @@ import { ROUTE_CONFIG } from 'src/configs/route'
 
 // ** Utils
 import { toFullName } from 'src/utils'
+
+// ** Redux
+import { useSelector } from 'react-redux'
+import { RootState } from 'src/stores'
 
 type TProps = {}
 
@@ -68,7 +72,10 @@ const UserDropdown = (props: TProps) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
-  const { user, logout } = useAuth()
+  const { user, logout,setUser } = useAuth()
+
+  // ** Redux
+  const {userData} = useSelector((state:RootState) => state.auth)
   const permissionUser = user?.role?.permissions ?? []
 
   const open = Boolean(anchorEl)
@@ -97,6 +104,12 @@ const UserDropdown = (props: TProps) => {
     router.push(ROUTE_CONFIG.DASHBOARD)
     handleClose()
   }
+
+  useEffect(() => {
+    if(userData) {
+      setUser({...userData})
+    }
+  }, [userData])
 
   return (
     <React.Fragment>
