@@ -48,8 +48,8 @@ export const roleSlice = createSlice({
     })
     builder.addCase(getAllRolesAsync.fulfilled, (state, action) => {
       state.isLoading = false
-      state.roles.data = action.payload.data.roles
-      state.roles.total = action.payload.data.totalCount
+      state.roles.data = action.payload?.data?.roles
+      state.roles.total = action.payload?.data?.totalCount
     })
     builder.addCase(getAllRolesAsync.rejected, (state, action) => {
       state.isLoading = false

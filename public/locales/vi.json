@@ -91,5 +91,12 @@
     "Title_delete_user": "Xác nhận xóa người dùng",
     "Confirm_delete_user": "Bạn có chắc xóa người dùng này?",
     "Confirm": "Xác nhận",
-    "Cancel": "Hủy bỏ"
+    "Cancel": "Hủy bỏ",
+    "Selected": "Đã chọn",
+    "Delete_multiple_user_success": "Xóa nhiều người dùng thành công",
+    "Delete_multiple_user_error": "Xóa nhiều người dùng thất bại",
+    "Title_delete_multiple_user": "Xác nhận xóa nhiều người dùng",
+    "Confirm_delete_multiple_user": "Bạn có chắc xóa những người dùng này?",
+    "Blocking": "Tạm khóa",
+    "Status": "Trạng thái"
 }

@@ -84,7 +84,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
       ? yup.string().nonNullable()
       : yup.string().required(t('Required_field')).matches(PASSWORD_REG, t('Rules_password')),
     fullName: yup.string().required(t('Required_field')),
-    phoneNumber: yup.string().required(t('Required_field')).min(8, 'The phone number is min 8 number'),
+    phoneNumber: yup.string().required(t('Required_field')).min(9, 'The phone number is min 9 number'),
     role: yup.string().required(t('Required_field')),
     city: yup.string().nonNullable(),
     address: yup.string().nonNullable(),
@@ -120,6 +120,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
 
       if (idUser) {
         // update
+        console.log("data", {data})
         dispatch(
           updateUserAsync({
             firstName,
@@ -131,7 +132,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
             city: data.city,
             address: data?.address,
             avatar: avatar,
-            id: idUser
+            id: idUser,
+            status: data.status ? 1 : 0
           })
         )
       } else {
@@ -204,6 +206,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
       reset({
         ...defaultValues
       })
+      setAvatar('')
+      setShowPassword(false)
     } else if (idUser && open) {
       fetchDetailsUser(idUser)
     }
@@ -338,7 +342,16 @@ const CreateEditUser = (props: TCreateEditUser) => {
                                     : `rgba(${theme.palette.customColors.main}, 0.42)`
                                 }}
                               >
-                                {t('Role')}
+                                {t('Role')}{' '}
+                                <span
+                                  style={{
+                                    color: errors?.role
+                                      ? theme.palette.error.main
+                                      : `rgba(${theme.palette.customColors.main}, 0.42)`
+                                  }}
+                                >
+                                  *
+                                </span>
                               </label>
                               <CustomSelect
                                 fullWidth
@@ -438,6 +451,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                           control={control}
                           render={({ field: { onChange, onBlur, value } }) => (
                             <CustomTextField
+                              required
                               fullWidth
                               label={t('Full_name')}
                               onChange={onChange}
