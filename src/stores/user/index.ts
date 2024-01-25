@@ -2,7 +2,14 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 // ** Actions
-import { createUserAsync, deleteUserAsync, getAllUsersAsync, serviceName, updateUserAsync } from 'src/stores/user/actions'
+import {
+  createUserAsync,
+  deleteMultipleUserAsync,
+  deleteUserAsync,
+  getAllUsersAsync,
+  serviceName,
+  updateUserAsync
+} from 'src/stores/user/actions'
 
 const initialState = {
   isLoading: false,
@@ -12,10 +19,13 @@ const initialState = {
   typeError: '',
   isSuccessCreateEdit: false,
   isErrorCreateEdit: false,
-  messageErrorCreateEdit: "",
+  messageErrorCreateEdit: '',
   isSuccessDelete: false,
   isErrorDelete: false,
-  messageErrorDelete: "",
+  messageErrorDelete: '',
+  isSuccessMultipleDelete: false,
+  isErrorMultipleDelete: false,
+  messageErrorMultipleDelete: '',
   users: {
     data: [],
     total: 0
@@ -38,6 +48,9 @@ export const userSlice = createSlice({
       state.isSuccessDelete = false
       state.isErrorDelete = true
       state.messageErrorDelete = ''
+      state.isSuccessMultipleDelete = false
+      state.isErrorMultipleDelete = true
+      state.messageErrorMultipleDelete = ''
     }
   },
   extraReducers: builder => {
@@ -47,8 +60,8 @@ export const userSlice = createSlice({
     })
     builder.addCase(getAllUsersAsync.fulfilled, (state, action) => {
       state.isLoading = false
-      state.users.data = action.payload.data.users
-      state.users.total = action.payload.data.totalCount
+      state.users.data = action.payload?.data?.users || []
+      state.users.total = action.payload?.data?.totalCount
     })
     builder.addCase(getAllUsersAsync.rejected, (state, action) => {
       state.isLoading = false
@@ -89,6 +102,18 @@ export const userSlice = createSlice({
       state.isSuccessDelete = !!action.payload?.data?._id
       state.isErrorDelete = !action.payload?.data?._id
       state.messageErrorDelete = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
+
+    // ** delete multiple user
+    builder.addCase(deleteMultipleUserAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(deleteMultipleUserAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessMultipleDelete = !!action.payload?.data
+      state.isErrorMultipleDelete = !action.payload?.data
+      state.messageErrorMultipleDelete = action.payload?.message
       state.typeError = action.payload?.typeError
     })
   }
