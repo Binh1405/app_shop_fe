@@ -54,10 +54,10 @@ export const getAllValueOfObject = (obj: any, arrExlude?: string[]) => {
   try {
     const values: any[] = []
     for (const key in obj) {
-      if(typeof obj[key] === "object") {
+      if (typeof obj[key] === 'object') {
         values.push(...getAllValueOfObject(obj[key], arrExlude))
-      }else {
-        if(!arrExlude?.includes(obj[key])) {
+      } else {
+        if (!arrExlude?.includes(obj[key])) {
           values.push(obj[key])
         }
       }
@@ -67,4 +67,13 @@ export const getAllValueOfObject = (obj: any, arrExlude?: string[]) => {
   } catch (error) {
     return []
   }
+}
+
+export const formatDate = (
+  value: Date | string,
+  formatting: Intl.DateTimeFormatOptions = { month: 'numeric', day: 'numeric', year: 'numeric' }
+) => {
+  if (!value) return value
+
+  return Intl.DateTimeFormat('vi-VN', formatting).format(new Date(value))
 }
