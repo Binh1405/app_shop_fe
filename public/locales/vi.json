@@ -98,5 +98,21 @@
     "Title_delete_multiple_user": "Xác nhận xóa nhiều người dùng",
     "Confirm_delete_multiple_user": "Bạn có chắc xóa những người dùng này?",
     "Blocking": "Tạm khóa",
-    "Status": "Trạng thái"
+    "Status": "Trạng thái",
+    "Create_city_success": "Tạo thành phố thành công",
+    "Update_city_success": "Cập nhật thành phố thành công",
+    "Create_city_error": "Tạo thành phố thất bại",
+    "Update_city_error": "Cập nhật thành phố thất bại",
+    "Delete_multiple_city_success": "Xóa nhiều thành phố thành công",
+    "Delete_multiple_city_error": "Xóa nhiều thành phố thất bại",
+    "Delete_city_success": "Xóa thành phố thành công",
+    "Delete_city_error": "Xóa thành phố thất bại",
+    "Title_delete_multiple_city": "Xác nhận xóa nhiều thành phố",
+    "Confirm_delete_multiple_city": "Bạn có chắc xóa những thành phố này?",
+    "Title_delete_city": "Xác nhận xóa thành phố",
+    "Confirm_delete_city": "Bạn có chắc xóa thành phố này?",
+    "Edit_city": "Chỉnh sửa thành phố",
+    "Create_city": "Thêm thành phố",
+    "Name_city": "Tên thành phố",
+    "Enter_name_city": "Nhập tên thành phố"
 }
