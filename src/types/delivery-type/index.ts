@@ -1,23 +1,25 @@
-export type TParamsGetPaymentTypes = {
+export type TParamsGetDeliveryTypes = {
   limit?: number
   page?: number
   search?: string
   order?: string
 }
 
-export type TParamsCreatePaymentType = {
+export type TParamsCreateDeliveryType = {
   name: string
+  price: string
 }
 
-export type TParamsEditPaymentType = {
+export type TParamsEditDeliveryType = {
   id: string
   name: string
+  price: string
 }
 
-export type TParamsDeletePaymentType = {
+export type TParamsDeleteDeliveryType = {
   id: string
 }
 
-export type TParamsDeleteMultiplePaymentType = {
-  paymentTypeIds: string[]
+export type TParamsDeleteMultipleDeliveryType = {
+  deliveryTypeIds: string[]
 }

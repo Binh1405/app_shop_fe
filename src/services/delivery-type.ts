@@ -1,6 +1,11 @@
+import {
+  TParamsGetDeliveryTypes,
+  TParamsCreateDeliveryType,
+  TParamsEditDeliveryType,
+  TParamsDeleteMultipleDeliveryType
+} from 'src/types/delivery-type'
 import { API_ENDPOINT } from 'src/configs/api'
 import instanceAxios from 'src/helpers/axios'
-import { TParamsCreateDeliveryType, TParamsDeleteMultipleDeliveryType, TParamsEditDeliveryType, TParamsGetDeliveryTypes } from 'src/types/delivery-type'
 
 export const getAllDeliveryTypes = async (data: { params: TParamsGetDeliveryTypes }) => {
   try {
