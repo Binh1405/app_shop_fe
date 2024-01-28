@@ -33,6 +33,7 @@ import CustomSelect from 'src/components/custom-select'
 
 // ** Services
 import { getDetailsUser } from 'src/services/user'
+import { getAllCities } from 'src/services/city'
 
 // ** Redux
 import { AppDispatch } from 'src/stores'
@@ -67,6 +68,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
   const [avatar, setAvatar] = useState('')
   const [optionRoles, setOptionRoles] = useState<{ label: string; value: string }[]>([])
   const [showPassword, setShowPassword] = useState(false)
+  const [optionCities, setOptionCities] = useState<{ label: string; value: string }[]>([])
 
   // ** Props
   const { open, onClose, idUser } = props
@@ -160,7 +162,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
     setAvatar(base64 as string)
   }
 
-  // fetch
+  // fetch api
   const fetchDetailsUser = async (id: string) => {
     setLoading(true)
     await getDetailsUser(id)
@@ -201,6 +203,21 @@ const CreateEditUser = (props: TCreateEditUser) => {
       })
   }
 
+  const fetchAllCities = async () => {
+    setLoading(true)
+    await getAllCities({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data.cities
+        if (data) {
+          setOptionCities(data?.map((item: { name: string; _id: string }) => ({ label: item.name, value: item._id })))
+        }
+        setLoading(false)
+      })
+      .catch(e => {
+        setLoading(false)
+      })
+  }
+
   useEffect(() => {
     if (!open) {
       reset({
@@ -216,6 +233,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
 
   useEffect(() => {
     fetchAllRoles()
+    fetchAllCities()
   }, [])
 
   return (
@@ -502,7 +520,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                               <CustomSelect
                                 fullWidth
                                 onChange={onChange}
-                                options={[]}
+                                options={optionCities}
                                 error={Boolean(errors?.city)}
                                 onBlur={onBlur}
                                 value={value}

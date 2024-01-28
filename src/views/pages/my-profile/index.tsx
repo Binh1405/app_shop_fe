@@ -26,6 +26,8 @@ import { useTranslation } from 'react-i18next'
 
 // ** services
 import { getAuthMe } from 'src/services/auth'
+import { getAllRoles } from 'src/services/role'
+import { getAllCities } from 'src/services/city'
 
 // ** Utils
 import { convertBase64, separationFullName, toFullName } from 'src/utils'
@@ -43,7 +45,7 @@ import FallbackSpinner from 'src/components/fall-back'
 import toast from 'react-hot-toast'
 import Spinner from 'src/components/spinner'
 import CustomSelect from 'src/components/custom-select'
-import { getAllRoles } from 'src/services/role'
+
 
 type TProps = {}
 
@@ -62,6 +64,7 @@ const MyProfilePage: NextPage<TProps> = () => {
   const [avatar, setAvatar] = useState('')
   const [optionRoles, setOptionRoles] = useState<{ label: string; value: string }[]>([])
   const [isDisabledRole, setIsDisabledRole] = useState(false)
+  const [optionCities, setOptionCities] = useState<{ label: string; value: string }[]>([])
 
   // ** Hooks
   const { i18n } = useTranslation()
@@ -145,6 +148,21 @@ const MyProfilePage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchAllCities = async () => {
+    setLoading(true)
+    await getAllCities({ params: { limit: -1, page: -1 } })
+      .then(res => {
+        const data = res?.data.cities
+        if (data) {
+          setOptionCities(data?.map((item: { name: string; _id: string }) => ({ label: item.name, value: item._id })))
+        }
+        setLoading(false)
+      })
+      .catch(e => {
+        setLoading(false)
+      })
+  }
+
   useEffect(() => {
     fetchGetAuthMe()
   }, [i18n.language])
@@ -163,6 +181,7 @@ const MyProfilePage: NextPage<TProps> = () => {
 
   useEffect(() => {
     fetchAllRoles()
+    fetchAllCities()
   }, [])
 
   const onSubmit = (data: any) => {
@@ -398,7 +417,7 @@ const MyProfilePage: NextPage<TProps> = () => {
                         <CustomSelect
                           fullWidth
                           onChange={onChange}
-                          options={[]}
+                          options={optionCities}
                           error={Boolean(errors?.city)}
                           onBlur={onBlur}
                           value={value}
