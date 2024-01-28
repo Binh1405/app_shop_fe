@@ -7,11 +7,13 @@ export type TParamsGetPaymentTypes = {
 
 export type TParamsCreatePaymentType = {
   name: string
+  type: string
 }
 
 export type TParamsEditPaymentType = {
   id: string
   name: string
+  type: string
 }
 
 export type TParamsDeletePaymentType = {
