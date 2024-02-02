@@ -156,5 +156,25 @@
     "Created_date": "Ngày tạo",
     "Price_delivery_type": "Giá loại giao hàng",
     "Enter_price_delivery_type": "Nhập giá",
-    "least_1000_in_price": "Giá phải ít nhất 1000"
+    "least_1000_in_price": "Giá phải ít nhất 1000",
+    "Type_product": "Loại sản phẩm",
+
+    "Create_product_type_success": "Tạo loại sản phẩm thành công",
+    "Update_product_type_success": "Cập nhật loại sản phẩm thành công",
+    "Create_product_type_error": "Tạo loại sản phẩm thất bại",
+    "Update_product_type_error": "Cập nhật loại sản phẩm thất bại",
+    "Delete_multiple_product_type_success": "Xóa nhiều loại sản phẩm thành công",
+    "Delete_multiple_product_type_error": "Xóa nhiều loại sản phẩm thất bại",
+    "Delete_product_type_success": "Xóa loại sản phẩm thành công",
+    "Delete_product_type_error": "Xóa loại sản phẩm thất bại",
+    "Title_delete_multiple_product_type": "Xác nhận xóa nhiều loại sản phẩm",
+    "Confirm_delete_multiple_product_type": "Bạn có chắc xóa những loại sản phẩm này?",
+    "Title_delete_product_type": "Xác nhận xóa loại sản phẩm",
+    "Confirm_delete_product_type": "Bạn có chắc xóa loại sản phẩm này?",
+    "Edit_product_type": "Chỉnh sửa loại sản phẩm",
+    "Create_product_type": "Thêm loại sản phẩm",
+    "Name_product_type": "Tên loại sản phẩm",
+    "Enter_name_product_type": "Nhập tên loại sản phẩm",
+    "Enter_slug": "Nhập slug",
+    "Slug": "Slug"
 }
