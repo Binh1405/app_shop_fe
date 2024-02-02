@@ -29,7 +29,7 @@ import CreateEditCity from 'src/views/pages/settings/city/component/CreateEditCi
 
 // ** Others
 import toast from 'react-hot-toast'
-import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/role'
+import { OBJECT_TYPE_ERROR_CITY } from 'src/configs/error'
 
 // ** Hooks
 import { usePermission } from 'src/hooks/usePermission'
@@ -234,7 +234,7 @@ const CityListPage: NextPage<TProps> = () => {
       handleCloseCreateEdit()
       dispatch(resetInitialState())
     } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
-      const errorConfig = OBJECT_TYPE_ERROR_ROLE[typeError]
+      const errorConfig = OBJECT_TYPE_ERROR_CITY[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
       } else {
