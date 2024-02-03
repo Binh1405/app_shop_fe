@@ -32,7 +32,7 @@ import { getDetailsRole } from 'src/services/role'
 
 // ** Others
 import toast from 'react-hot-toast'
-import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/role'
+import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/error'
 import { PERMISSIONS } from 'src/configs/permission'
 import { getAllValueOfObject } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'

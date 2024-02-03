@@ -33,7 +33,7 @@ import CreateEditProductType from 'src/views/pages/manage-product/product-type/c
 
 // ** Others
 import toast from 'react-hot-toast'
-import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/role'
+import { OBJECT_TYPE_ERROR_PRODUCT_TYPE } from 'src/configs/error'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Hooks
@@ -65,7 +65,6 @@ const ProductTypeListPage: NextPage<TProps> = () => {
   const [sortBy, setSortBy] = useState('createdAt desc')
   const [searchBy, setSearchBy] = useState('')
 
-  const [loading, setLoading] = useState(false)
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
   const [page, setPage] = useState(1)
   const [selectedRow, setSelectedRow] = useState<string[]>([])
@@ -105,7 +104,7 @@ const ProductTypeListPage: NextPage<TProps> = () => {
   }
 
   // handle
-  const handleCloseConfirmDeleteCity = () => {
+  const handleCloseConfirmDeleteProductType = () => {
     setOpenDeleteProductType({
       open: false,
       id: ''
@@ -132,11 +131,11 @@ const ProductTypeListPage: NextPage<TProps> = () => {
     })
   }
 
-  const handleDeleteCity = () => {
+  const handleDeleteProductType = () => {
     dispatch(deleteProductTypeAsync(openDeleteProductType.id))
   }
 
-  const handleDeleteMultipleCity = () => {
+  const handleDeleteMultipleProductType = () => {
     dispatch(
       deleteMultipleProductTypeAsync({
         productTypeIds: selectedRow
@@ -254,7 +253,7 @@ const ProductTypeListPage: NextPage<TProps> = () => {
       handleCloseCreateEdit()
       dispatch(resetInitialState())
     } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
-      const errorConfig = OBJECT_TYPE_ERROR_ROLE[typeError]
+      const errorConfig = OBJECT_TYPE_ERROR_PRODUCT_TYPE[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
       } else {
@@ -287,7 +286,7 @@ const ProductTypeListPage: NextPage<TProps> = () => {
       toast.success(t('Delete_product_type_success'))
       handleGetListProductTypes()
       dispatch(resetInitialState())
-      handleCloseConfirmDeleteCity()
+      handleCloseConfirmDeleteProductType()
     } else if (isErrorDelete && messageErrorDelete) {
       toast.error(t('Delete_product_type_error'))
       dispatch(resetInitialState())
@@ -296,12 +295,11 @@ const ProductTypeListPage: NextPage<TProps> = () => {
 
   return (
     <>
-      {loading && <Spinner />}
       <ConfirmationDialog
         open={openDeleteProductType.open}
-        handleClose={handleCloseConfirmDeleteCity}
-        handleCancel={handleCloseConfirmDeleteCity}
-        handleConfirm={handleDeleteCity}
+        handleClose={handleCloseConfirmDeleteProductType}
+        handleCancel={handleCloseConfirmDeleteProductType}
+        handleConfirm={handleDeleteProductType}
         title={t('Title_delete_product_type')}
         description={t('Confirm_delete_product_type')}
       />
@@ -309,7 +307,7 @@ const ProductTypeListPage: NextPage<TProps> = () => {
         open={openDeleteMultipleProduct}
         handleClose={handleCloseConfirmDeleteMultipleProductType}
         handleCancel={handleCloseConfirmDeleteMultipleProductType}
-        handleConfirm={handleDeleteMultipleCity}
+        handleConfirm={handleDeleteMultipleProductType}
         title={t('Title_delete_multiple_product_type')}
         description={t('Confirm_delete_multiple_product_type')}
       />
