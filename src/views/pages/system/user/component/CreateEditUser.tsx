@@ -464,7 +464,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                 <Grid container item md={6} xs={12}>
                   <Box>
                     <Grid container spacing={4}>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           control={control}
                           render={({ field: { onChange, onBlur, value } }) => (
@@ -483,7 +483,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                           name='fullName'
                         />
                       </Grid>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           control={control}
                           name='address'
@@ -499,7 +499,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                           )}
                         />
                       </Grid>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           name='city'
                           control={control}
@@ -541,7 +541,7 @@ const CreateEditUser = (props: TCreateEditUser) => {
                           )}
                         />
                       </Grid>
-                      <Grid item md={6} xs={12}>
+                      <Grid item md={12} xs={12}>
                         <Controller
                           control={control}
                           render={({ field: { onChange, onBlur, value } }) => (
