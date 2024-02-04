@@ -44,7 +44,7 @@ import { OBJECT_STATUS_PRODUCT } from 'src/configs/product'
 import { getAllProductTypes } from 'src/services/product-type'
 
 // ** Utils
-import { formatDate } from 'src/utils'
+import { formatDate, formatNumberToLocal } from 'src/utils'
 import { formatFilter } from 'src/utils'
 
 type TProps = {}
@@ -230,12 +230,12 @@ const ProductListPage: NextPage<TProps> = () => {
       renderCell: params => {
         const { row } = params
 
-        return <Typography>{row?.price}</Typography>
+        return <Typography>{`${formatNumberToLocal(row?.price)} VND`}</Typography>
       }
     },
     {
       field: 'countInStock',
-      headerName: t('type'),
+      headerName: t('Count_in_stock'),
       minWidth: 200,
       maxWidth: 200,
       renderCell: params => {

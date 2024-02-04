@@ -15,6 +15,10 @@ import { Box, Button, Rating } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { TProduct } from 'src/types/product'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { useRouter } from 'next/router'
+import { ROUTE_CONFIG } from 'src/configs/route'
+import { formatNumberToLocal } from 'src/utils'
+import { format } from 'path'
 
 interface TCardProduct {
   item: TProduct
@@ -22,14 +26,25 @@ interface TCardProduct {
 
 const StyleCard = styled(Card)(({ theme }) => ({
   position: 'relative',
-  boxShadow: theme.shadows[4]
+  boxShadow: theme.shadows[4],
+  ".MuiCardMedia-root.MuiCardMedia-media": {
+    objectFit: "contain"
+  }
 }))
 
 const CardProduct = (props: TCardProduct) => {
   // ** Props
   const { item } = props
+
+  // ** Hooks
   const { t } = useTranslation()
   const theme = useTheme()
+  const router = useRouter()
+
+  // ** handle
+  const handleNavigateDetails = (slug: string) => {
+    router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
+  }
   console.log('item', { item })
 
   return (
@@ -37,10 +52,17 @@ const CardProduct = (props: TCardProduct) => {
       <CardMedia component='img' height='194' image={item.image} alt='image' />
       <CardContent sx={{ padding: '8px 12px' }}>
         <Typography
+          onClick={() => handleNavigateDetails(item.slug)}
           variant='h5'
           sx={{
             color: theme.palette.primary.main,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            '-webkitLineClamp': '2',
+            '-webkitBoxOrient': 'vertical'
           }}
         >
           {item.name}
@@ -56,7 +78,7 @@ const CardProduct = (props: TCardProduct) => {
                 fontSize: '14px'
               }}
             >
-              {item.price}
+              {formatNumberToLocal(item.price)} VND
             </Typography>
           )}
           <Typography
@@ -67,13 +89,13 @@ const CardProduct = (props: TCardProduct) => {
               fontSize: '18px'
             }}
           >
-            {item.discount > 0 ? <>{(item.price * (100 - item.discount)) / 100}</> : <>{item.price}</>} VND
+            {item.discount > 0 ? <>{formatNumberToLocal((item.price * (100 - item.discount)) / 100)}</> : <>{formatNumberToLocal(item.price)}</>} VND
           </Typography>
           {item.discount > 0 && (
             <Box
               sx={{
                 backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
-                width: '25px',
+                width: '36px',
                 height: '14px',
                 display: 'flex',
                 alignItems: 'center',
@@ -85,10 +107,11 @@ const CardProduct = (props: TCardProduct) => {
                 variant='h6'
                 sx={{
                   color: theme.palette.error.main,
-                  fontSize: '10px'
+                  fontSize: '10px',
+                  whiteSpace: "nowrap"
                 }}
               >
-                {item.discount} %
+               - {item.discount} %
               </Typography>
             </Box>
           )}
@@ -104,7 +127,6 @@ const CardProduct = (props: TCardProduct) => {
         {item.sold && (
           <Typography variant='body2' color='text.secondary'>
             <>{t('Sold_product', { count: item.countInStock })}</>
-
           </Typography>
         )}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -112,7 +134,13 @@ const CardProduct = (props: TCardProduct) => {
             {!!item.averageRating && (
               <Typography sx={{ display: 'flex', alignItems: 'center' }}>
                 <b>{item.averageRating}</b>
-                <Icon icon='emojione:star' fontSize={16} style={{ position: 'relative', top: '-1' }} />
+                <Rating
+                  name='read-only'
+                  sx={{ fontSize: '16px' }}
+                  defaultValue={item?.averageRating}
+                  precision={0.5}
+                  readOnly
+                />
               </Typography>
             )}
             <Typography sx={{ display: 'flex', alignItems: 'center' }}>

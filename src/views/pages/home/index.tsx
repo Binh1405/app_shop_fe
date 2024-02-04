@@ -24,12 +24,12 @@ import { getAllProductTypes } from 'src/services/product-type'
 
 // ** Utils
 import { formatFilter } from 'src/utils'
-import CardProduct from 'src/views/pages/home/components/CardProduct'
+import CardProduct from 'src/views/pages/product/components/CardProduct'
 import { getAllProductsPublic } from 'src/services/product'
 import { TProduct } from 'src/types/product'
 import InputSearch from 'src/components/input-search'
 import { styled } from '@mui/material'
-import FilterProduct from 'src/views/pages/home/components/FilterProduct'
+import FilterProduct from 'src/views/pages/product/components/FilterProduct'
 
 type TProps = {}
 

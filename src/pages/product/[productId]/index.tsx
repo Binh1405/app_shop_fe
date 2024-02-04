@@ -3,13 +3,13 @@ import { NextPage } from 'next'
 import { ReactNode } from 'react'
 
 // ** views
-import MyProfilePage from 'src/views/pages/my-profile'
 import LayoutNotApp from 'src/views/layouts/LayoutNotApp'
+import DetailsProductPage from 'src/views/pages/product/DetailsProduct'
 
 type TProps = {}
 
 const Index: NextPage<TProps> = () => {
-  return <MyProfilePage />
+  return <DetailsProductPage />
 }
 
 export default Index

@@ -38,7 +38,7 @@ import { AppDispatch } from 'src/stores'
 import { useDispatch } from 'react-redux'
 
 // ** Others
-import { convertBase64, convertHTMLToDraft, stringToSlug } from 'src/utils'
+import { convertBase64, convertHTMLToDraft, formatNumberToLocal, stringToSlug } from 'src/utils'
 import { createProductAsync, updateProductAsync } from 'src/stores/product/actions'
 import { getAllProductTypes } from 'src/services/product-type'
 import CustomDatePicker from 'src/components/custom-date-picker'
@@ -184,7 +184,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
 
   // handle
   const onSubmit = (data: any) => {
-    console.log('data', { data })
     if (!Object.keys(errors).length) {
       if (idProduct) {
         // update
@@ -195,7 +194,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
             price: Number(data.price),
             discountEndDate: data?.discountEndDate || null,
             discountStartDate: data?.discountStartDate || null,
-            city: data.city,
             image: imageProduct,
             type: data.type,
             discount: Number(data.discount) || 0,
@@ -215,7 +213,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
             discountStartDate: data.discountStartDate || null,
             image: imageProduct,
             type: data.type,
-            city: data.city,
             discount: Number(data.discount) || 0,
             description: data.description ? draftToHtml(convertToRaw(data.description.getCurrentContent())) : '',
             status: data.status ? 1 : 0,
@@ -248,8 +245,8 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
             countInStock: data.countInStock,
             price: data.price,
             status: data.status,
-            discountEndDate: data.discountEndDate || null,
-            discountStartDate: data.discountStartDate || null
+            discountEndDate: data.discountEndDate ? new Date(data.discountEndDate) : null,
+            discountStartDate: data.discountStartDate ? new Date(data.discountStartDate) : null
           })
           setImageProduct(data?.image)
         }
@@ -290,7 +287,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   useEffect(() => {
     fetchAllProductTypes()
   }, [])
-  console.log('errror', { errors })
 
   return (
     <>
@@ -350,12 +346,10 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
                               </IconButton>
                             )}
                             {imageProduct ? (
-                              <Avatar src={imageProduct} sx={{ width: 100, height: 100 }}>
-                                <Icon icon='ph:user-thin' fontSize={70} />
-                              </Avatar>
+                              <Avatar src={imageProduct} sx={{ width: 100, height: 100 }} />
                             ) : (
                               <Avatar sx={{ width: 100, height: 100 }}>
-                                <Icon icon='ph:user-thin' fontSize={70} />
+                                <Icon icon='fluent-mdl2:product-variant' fontSize={70} />
                               </Avatar>
                             )}
                           </Box>
