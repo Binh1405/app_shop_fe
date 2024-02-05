@@ -214,5 +214,11 @@
     "required_than_start_discount": "Ngày kết thúc phải lớn hơn ngày bắt đầu",
     "required_less_end_discount": "Ngày bắt đầu phải bé hơn ngày kết thúc",
     "Public": "Công khai",
-    "Private": "Không công khai"
+    "Private": "Không công khai",
+    "Buy_now": "Mua hàng",
+    "Add_to_cart": "Thêm giỏ hàng",
+    "not_review": "Chưa đánh giá",
+    "Sold_product": "Đã bán {{count}} sản phẩm",
+    "Count_in_stock_product": "Còn {{count}} sản phẩm trong kho",
+    "Description_product": "Mô tả sản phẩm"
 }

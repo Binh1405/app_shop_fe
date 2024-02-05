@@ -91,7 +91,7 @@ const UserDropdown = (props: TProps) => {
   }
 
   const handleNavigateMyProfile = () => {
-    router.push(ROUTE_CONFIG.My_profile)
+    router.push(ROUTE_CONFIG.MY_PROFILE)
     handleClose()
   }
 
