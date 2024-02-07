@@ -23,6 +23,9 @@ import { clearLocalUserData, setLocalUserData, setTemporaryToken } from 'src/hel
 import instanceAxios from 'src/helpers/axios'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from 'src/stores'
+import { addProductToCart } from 'src/stores/order-product'
 
 // ** Defaults
 const defaultProvider: AuthValuesType = {
@@ -46,6 +49,9 @@ const AuthProvider = ({ children }: Props) => {
   const [loading, setLoading] = useState<boolean>(defaultProvider.loading)
 
   const { t } = useTranslation()
+
+  // ** Redux
+  const dispatch:AppDispatch = useDispatch()
 
   // ** Hooks
   const router = useRouter()
@@ -105,7 +111,11 @@ const AuthProvider = ({ children }: Props) => {
     logoutAuth().then(res => {
       setUser(null)
       clearLocalUserData()
-      router.push('/login')
+      dispatch(
+        addProductToCart({
+          orderItems: []
+        })
+      )
     })
   }
 

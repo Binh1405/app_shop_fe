@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -44,7 +44,6 @@ const HomePage: NextPage<TProps> = () => {
   const { t } = useTranslation()
 
   // State
-
   const [sortBy, setSortBy] = useState('createdAt desc')
   const [searchBy, setSearchBy] = useState('')
   const [productTypeSelected, setProductTypeSelected] = useState('')
@@ -64,6 +63,8 @@ const HomePage: NextPage<TProps> = () => {
     total: 0
   })
 
+  const firstRender = useRef<boolean>(false)
+  console.log('firstRender', { firstRender })
   // ** theme
   const theme = useTheme()
 
@@ -102,6 +103,7 @@ const HomePage: NextPage<TProps> = () => {
         if (data) {
           setOptionTypes(data?.map((item: { name: string; _id: string }) => ({ label: item.name, value: item._id })))
           setProductTypeSelected(data?.[0]?._id)
+          firstRender.current = true
         }
         setLoading(false)
       })
@@ -111,17 +113,21 @@ const HomePage: NextPage<TProps> = () => {
   }
 
   useEffect(() => {
-    handleGetListProducts()
+    fetchAllTypes()
+  }, [])
+
+  useEffect(() => {
+    if (firstRender.current) {
+      handleGetListProducts()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortBy, searchBy, page, pageSize, filterBy])
 
   useEffect(() => {
-    setFilterBy({ productType: productTypeSelected, minStar: reviewSelected })
+    if (firstRender.current) {
+      setFilterBy({ productType: productTypeSelected, minStar: reviewSelected })
+    }
   }, [productTypeSelected, reviewSelected])
-
-  useEffect(() => {
-    fetchAllTypes()
-  }, [])
 
   return (
     <>
