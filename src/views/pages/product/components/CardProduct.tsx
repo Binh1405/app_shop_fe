@@ -1,24 +1,34 @@
+// ** React
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
+import { useRouter } from 'next/router'
+
+// ** Mui
 import { styled, useTheme } from '@mui/material/styles'
 import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
 import CardMedia from '@mui/material/CardMedia'
 import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import Collapse from '@mui/material/Collapse'
-import Avatar from '@mui/material/Avatar'
-import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import { red } from '@mui/material/colors'
-import Icon from 'src/components/Icon'
 import { Box, Button, Rating } from '@mui/material'
-import { useTranslation } from 'react-i18next'
 import { TProduct } from 'src/types/product'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
-import { useRouter } from 'next/router'
+
+/// ** Components
+import Icon from 'src/components/Icon'
+
+// ** Redux
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import { addProductToCart } from 'src/stores/order-product'
+
+// ** Others
 import { ROUTE_CONFIG } from 'src/configs/route'
-import { formatNumberToLocal } from 'src/utils'
-import { format } from 'path'
+import { convertAddProductToCart, formatNumberToLocal } from 'src/utils'
+
+// ** Storage
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import { useAuth } from 'src/hooks/useAuth'
 
 interface TCardProduct {
   item: TProduct
@@ -27,8 +37,8 @@ interface TCardProduct {
 const StyleCard = styled(Card)(({ theme }) => ({
   position: 'relative',
   boxShadow: theme.shadows[4],
-  ".MuiCardMedia-root.MuiCardMedia-media": {
-    objectFit: "contain"
+  '.MuiCardMedia-root.MuiCardMedia-media': {
+    objectFit: 'contain'
   }
 }))
 
@@ -40,12 +50,37 @@ const CardProduct = (props: TCardProduct) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const router = useRouter()
+  const { user } = useAuth()
+
+  // ** Redux
+  const dispatch: AppDispatch = useDispatch()
+  const { orderItems } = useSelector((state: RootState) => state.orderProduct)
 
   // ** handle
   const handleNavigateDetails = (slug: string) => {
     router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
   }
-  console.log('item', { item })
+
+  const handleAddProductToCart = (item: TProduct) => {
+    const productCart = getLocalProductCart()
+    const parseData = productCart ? JSON.parse(productCart) : {}
+    const listOrderItems = convertAddProductToCart(orderItems, {
+      name: item.name,
+      amount: 1,
+      image: item.image,
+      price: item.price,
+      discount: item.discount,
+      product: item._id
+    })
+    dispatch(
+      addProductToCart({
+        orderItems: listOrderItems
+      })
+    )
+    if(user?._id) {
+      setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
+    }
+  }
 
   return (
     <StyleCard sx={{ width: '100%' }}>
@@ -62,7 +97,8 @@ const CardProduct = (props: TCardProduct) => {
             textOverflow: 'ellipsis',
             display: '-webkit-box',
             '-webkitLineClamp': '2',
-            '-webkitBoxOrient': 'vertical'
+            '-webkitBoxOrient': 'vertical',
+            minHeight: '48px'
           }}
         >
           {item.name}
@@ -89,7 +125,12 @@ const CardProduct = (props: TCardProduct) => {
               fontSize: '18px'
             }}
           >
-            {item.discount > 0 ? <>{formatNumberToLocal((item.price * (100 - item.discount)) / 100)}</> : <>{formatNumberToLocal(item.price)}</>} VND
+            {item.discount > 0 ? (
+              <>{formatNumberToLocal((item.price * (100 - item.discount)) / 100)}</>
+            ) : (
+              <>{formatNumberToLocal(item.price)}</>
+            )}{' '}
+            VND
           </Typography>
           {item.discount > 0 && (
             <Box
@@ -108,10 +149,10 @@ const CardProduct = (props: TCardProduct) => {
                 sx={{
                   color: theme.palette.error.main,
                   fontSize: '10px',
-                  whiteSpace: "nowrap"
+                  whiteSpace: 'nowrap'
                 }}
               >
-               - {item.discount} %
+                - {item.discount} %
               </Typography>
             </Box>
           )}
@@ -163,6 +204,7 @@ const CardProduct = (props: TCardProduct) => {
             gap: '2px',
             fontWeight: 'bold'
           }}
+          onClick={() => handleAddProductToCart(item)}
         >
           <Icon icon='bx:cart' fontSize={24} style={{ position: 'relative', top: '-2px' }} />
           {t('Add_to_cart')}

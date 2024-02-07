@@ -7,7 +7,7 @@ export type LoginParams = {
 }
 
 export type UserDataType = {
-  id: number
+  _id: string
   role: {
     name: string
     permissions: string[]
