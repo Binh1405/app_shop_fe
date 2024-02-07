@@ -9,12 +9,12 @@ import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
+import MenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
-import { Badge, Typography, styled } from '@mui/material'
+import { Badge, Button, Typography, styled, useTheme } from '@mui/material'
 
 // ** Components
 import Icon from 'src/components/Icon'
@@ -26,17 +26,25 @@ import { useAuth } from 'src/hooks/useAuth'
 import { useTranslation } from 'react-i18next'
 
 // ** config
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 // ** Storage
+import { getLocalProductCart } from 'src/helpers/storage'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { TItemOrderProduct } from 'src/types/order-product'
-import { getLocalProductCart } from 'src/helpers/storage'
 import { addProductToCart } from 'src/stores/order-product'
 
+// ** Types
+import { TItemOrderProduct } from 'src/types/order-product'
+
+// ** Utils
+import { formatNumberToLocal } from 'src/utils'
+
 type TProps = {}
+
+const StyleMenuItem = styled(MenuItem)<MenuItemProps>(({ theme }) => ({}))
 
 const CartProduct = (props: TProps) => {
   // ** Translation
@@ -44,7 +52,10 @@ const CartProduct = (props: TProps) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
+  // ** Hooks
   const { user } = useAuth()
+  const theme = useTheme()
+  const router = useRouter()
 
   // ** Redux
   const { orderItems } = useSelector((state: RootState) => state.orderProduct)
@@ -52,6 +63,10 @@ const CartProduct = (props: TProps) => {
 
   const open = Boolean(anchorEl)
 
+  // && Handle
+  const handleNavigateDetailsProduct = (slug: string) => {
+    router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
+  }
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -80,6 +95,7 @@ const CartProduct = (props: TProps) => {
 
     return total
   }, [orderItems])
+  console.log('orderItems', { orderItems })
 
   return (
     <React.Fragment>
@@ -130,7 +146,53 @@ const CartProduct = (props: TProps) => {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      ></Menu>
+      >
+        {orderItems?.map((item: TItemOrderProduct) => {
+          return (
+            <StyleMenuItem key={item.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
+              <Avatar src={item.image} />
+              <Box>
+                <Typography>{item.name}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  {item.discount > 0 && (
+                    <Typography
+                      variant='h6'
+                      sx={{
+                        color: theme.palette.error.main,
+                        fontWeight: 'bold',
+                        textDecoration: 'line-through',
+                        fontSize: '10px'
+                      }}
+                    >
+                      {formatNumberToLocal(item.price)} VND
+                    </Typography>
+                  )}
+                  <Typography
+                    variant='h4'
+                    sx={{
+                      color: theme.palette.primary.main,
+                      fontWeight: 'bold',
+                      fontSize: '12px'
+                    }}
+                  >
+                    {item.discount > 0 ? (
+                      <>{formatNumberToLocal((item.price * (100 - item.discount)) / 100)}</>
+                    ) : (
+                      <>{formatNumberToLocal(item.price)}</>
+                    )}{' '}
+                    VND
+                  </Typography>
+                </Box>
+              </Box>
+            </StyleMenuItem>
+          )
+        })}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+          <Button type='submit' variant='contained' sx={{ mt: 3, mb: 2, mr: 2 }}>
+            {t('View_cart')}
+          </Button>
+        </Box>
+      </Menu>
     </React.Fragment>
   )
 }
