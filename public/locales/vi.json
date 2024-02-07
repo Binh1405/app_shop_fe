@@ -220,5 +220,6 @@
     "not_review": "Chưa đánh giá",
     "Sold_product": "Đã bán {{count}} sản phẩm",
     "Count_in_stock_product": "Còn {{count}} sản phẩm trong kho",
-    "Description_product": "Mô tả sản phẩm"
+    "Description_product": "Mô tả sản phẩm",
+    "View_cart": "Giỏ hàng"
 }
