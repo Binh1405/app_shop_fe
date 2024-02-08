@@ -3,7 +3,8 @@ import {
   TParamsGetProducts,
   TParamsCreateProduct,
   TParamsEditProduct,
-  TParamsDeleteMultipleProduct
+  TParamsDeleteMultipleProduct,
+  TParamsGetRelatedProduct
 } from 'src/types/product'
 
 // api endPoint
@@ -87,6 +88,17 @@ export const getDetailsProductPublic = async (id: string) => {
 export const getDetailsProductPublicBySlug = async (slug: string) => {
   try {
     const res = await axios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public/slug/${slug}`)
+
+    return res.data
+  } catch (error: any) {
+    return error?.response?.data
+  }
+}
+
+
+export const getListRelatedProductBySlug = async (data: { params: TParamsGetRelatedProduct }) => {
+  try {
+    const res = await axios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/related`, data)
 
     return res.data
   } catch (error: any) {

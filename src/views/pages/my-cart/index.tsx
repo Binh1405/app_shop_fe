@@ -22,6 +22,7 @@ import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Redux
 import { updateProductToCart } from 'src/stores/order-product'
+
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 
@@ -31,6 +32,7 @@ import { useAuth } from 'src/hooks/useAuth'
 // ** Other
 import { TItemOrderProduct } from 'src/types/order-product'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import NoData from 'src/components/no-data'
 
 type TProps = {}
 
@@ -321,7 +323,9 @@ const MyCartPage: NextPage<TProps> = () => {
             </Box>
           </Fragment>
         ) : (
-          <Box>{t('Không có dữ liệu')}</Box>
+          <Box sx={{ padding: '20px', width: '200px' }}>
+            <NoData widthImage='80px' heightImage='80px' textNodata={t('No_product')} />
+          </Box>
         )}
       </Box>
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 4 }}>

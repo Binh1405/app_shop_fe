@@ -227,5 +227,10 @@
     "Count": "Số lượng",
     "Image": "Ảnh",
     "Select_all": "Chọn tất cả",
-    "Delete_all": "Xóa tất cả"
+    "Delete_all": "Xóa tất cả",
+    "No_data": "Không có dữ liệu",
+    "No_product": "Không có sản phẩm",
+    "Location": "Vị trí",
+    "Product_same": "Sản phẩm tương tự",
+    "Delete_filter": "Reset bộ lọc"
 }
