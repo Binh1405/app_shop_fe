@@ -56,8 +56,12 @@ const InputSearch = (props: TInputSearch) => {
   const { value, onChange, placeholder = t('Search') } = props
 
   // ** State
-  const [search, setSearch] = useState(value)
-  const debounceSearch = useDebounce(search, 300)
+  const [search, setSearch] = useState("")
+  const debounceSearch = useDebounce(search, 500)
+
+  useEffect(() => {
+    setSearch(value)
+  }, [value])
 
   useEffect(() => {
     onChange(debounceSearch)

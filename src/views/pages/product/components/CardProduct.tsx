@@ -1,5 +1,5 @@
 // ** React
-import * as React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 
@@ -31,6 +31,7 @@ import { useAuth } from 'src/hooks/useAuth'
 
 // ** Storage
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+import { likeProductAsync, unLikeProductAsync } from 'src/stores/product/actions'
 
 interface TCardProduct {
   item: TProduct
@@ -93,7 +94,22 @@ const CardProduct = (props: TCardProduct) => {
     }
   }
 
-  const memoIsExpiry = React.useMemo(() => {
+  const handleToggleLikeProduct = (id: string, isLiked: boolean) => {
+    if (user?._id) {
+      if (isLiked) {
+        dispatch(unLikeProductAsync({ productId: id }))
+      } else {
+        dispatch(likeProductAsync({ productId: id }))
+      }
+    } else {
+      router.replace({
+        pathname: '/login',
+        query: { returnUrl: router.asPath }
+      })
+    }
+  }
+
+  const memoIsExpiry = useMemo(() => {
     return isExpiry(item.discountStartDate, item.discountEndDate)
   }, [item])
 
@@ -220,8 +236,14 @@ const CardProduct = (props: TCardProduct) => {
               {!!item.totalReviews ? <b>{item.totalReviews}</b> : <span>{t('not_review')}</span>}
             </Typography>
           </Box>
-          <IconButton>
-            <Icon icon='mdi:heart' />
+          <IconButton
+            onClick={() => handleToggleLikeProduct(item._id, Boolean(user && item?.likedBy?.includes(user._id)))}
+          >
+            {user && item?.likedBy?.includes(user._id) ? (
+              <Icon icon='mdi:heart' style={{ color: theme.palette.primary.main }} />
+            ) : (
+              <Icon icon='tabler:heart' style={{ color: theme.palette.primary.main }} />
+            )}
           </IconButton>
         </Box>
       </CardContent>

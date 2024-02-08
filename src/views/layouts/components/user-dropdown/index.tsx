@@ -105,6 +105,11 @@ const UserDropdown = (props: TProps) => {
     handleClose()
   }
 
+  const handleNavigateMyProduct = () => {
+    router.push(ROUTE_CONFIG.MY_PRODUCT)
+    handleClose()
+  }
+
   useEffect(() => {
     if(userData) {
       setUser({...userData})
@@ -221,6 +226,12 @@ const UserDropdown = (props: TProps) => {
             <Icon icon='ph:user-thin' />
           </Avatar>{' '}
           {t('My_profile')}
+        </MenuItem>
+        <MenuItem onClick={handleNavigateMyProduct}>
+          <Avatar>
+            <Icon icon="tabler:brand-producthunt" />
+          </Avatar>{' '}
+          {t('My_product')}
         </MenuItem>
         <MenuItem onClick={handleNavigateChangePassword}>
           <Avatar sx={{ backgroundColor: 'transparent' }}>
