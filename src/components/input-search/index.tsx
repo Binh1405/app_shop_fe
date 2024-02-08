@@ -10,7 +10,7 @@ import { useDebounce } from 'src/hooks/useDebounce'
 interface TInputSearch {
   value: string
   onChange: (value: string) => void
-  placeholder: string
+  placeholder?: string
 }
 
 const Search = styled('div')(({ theme }) => ({
