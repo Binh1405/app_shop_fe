@@ -1,66 +1,42 @@
 // ** Next
 import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import Image from 'next/image'
 
 // ** React
 import { useEffect, useState } from 'react'
 
 // ** Mui
-import {
-  Avatar,
-  Box,
-  Button,
-  FormHelperText,
-  Grid,
-  IconButton,
-  InputLabel,
-  Rating,
-  Typography,
-  useTheme
-} from '@mui/material'
+import { Box, Button, Grid, IconButton, Rating, Typography, useTheme } from '@mui/material'
 
 // ** Components
 import CustomTextField from 'src/components/text-field'
 import Icon from 'src/components/Icon'
-import WrapperFileUpload from 'src/components/wrapper-file-upload'
-
-// ** form
-import { Controller, useForm } from 'react-hook-form'
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-
-// ** Config
-import { EMAIL_REG } from 'src/configs/regex'
+import Spinner from 'src/components/spinner'
 
 // ** Translate
 import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
-// ** services
-import { getAuthMe } from 'src/services/auth'
-import { getAllRoles } from 'src/services/role'
-import { getAllCities } from 'src/services/city'
-
 // ** Utils
-import { convertBase64, formatNumberToLocal, separationFullName, toFullName } from 'src/utils'
+import { convertUpdateProductToCart, formatNumberToLocal } from 'src/utils'
+import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Redux
-import { updateAuthMeAsync } from 'src/stores/auth/actions'
-import { resetInitialState } from 'src/stores/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
+import { updateProductToCart } from 'src/stores/order-product'
 
-// ** component
-import FallbackSpinner from 'src/components/fall-back'
+// ** Hooks
+import { useAuth } from 'src/hooks/useAuth'
+
+// ** Services
+import { getDetailsProductPublicBySlug } from 'src/services/product'
 
 // ** Other
-import toast from 'react-hot-toast'
-import Spinner from 'src/components/spinner'
-import CustomSelect from 'src/components/custom-select'
-import { getDetailsProductPublicBySlug } from 'src/services/product'
-import { useRouter } from 'next/router'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+
 import { TProduct } from 'src/types/product'
-import Image from 'next/image'
-import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 type TProps = {}
 
@@ -68,16 +44,20 @@ const DetailsProductPage: NextPage<TProps> = () => {
   // State
   const [loading, setLoading] = useState(false)
   const [dataProduct, setDataProduct] = useState<TProduct | any>({})
-  const router = useRouter()
-  const productId = router.query?.productId as string
+  const [amountProduct, setAmountProduct] = useState(1)
 
   // ** Hooks
   const { i18n } = useTranslation()
+  const router = useRouter()
+  const productId = router.query?.productId as string
+  const { user } = useAuth()
 
   // ** theme
   const theme = useTheme()
 
   // ** redux
+  const { orderItems } = useSelector((state: RootState) => state.orderProduct)
+  const dispatch: AppDispatch = useDispatch()
 
   // fetch api
   const fetchGetDetailsProduct = async (slug: string) => {
@@ -95,12 +75,40 @@ const DetailsProductPage: NextPage<TProps> = () => {
       })
   }
 
+  // ** Handle
+  const handleUpdateProductToCart = (item: TProduct) => {
+    const productCart = getLocalProductCart()
+    const parseData = productCart ? JSON.parse(productCart) : {}
+    const listOrderItems = convertUpdateProductToCart(orderItems, {
+      name: item.name,
+      amount: amountProduct,
+      image: item.image,
+      price: item.price,
+      discount: item.discount,
+      product: item._id,
+      slug: item.slug
+    })
+
+    if (user?._id) {
+      dispatch(
+        updateProductToCart({
+          orderItems: listOrderItems
+        })
+      )
+      setLocalProductToCart({ ...parseData, [user?._id]: listOrderItems })
+    } else {
+      router.replace({
+        pathname: '/login',
+        query: { returnUrl: router.asPath }
+      })
+    }
+  }
+
   useEffect(() => {
     if (productId) {
       fetchGetDetailsProduct(productId)
     }
   }, [productId])
-  console.log('dataProduct', { dataProduct })
 
   return (
     <>
@@ -244,7 +252,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
                         sx={{
                           color: theme.palette.error.main,
                           fontSize: '10px',
-                          whiteSpace: "nowrap"
+                          whiteSpace: 'nowrap'
                         }}
                       >
                         - {dataProduct.discount} %
@@ -252,16 +260,80 @@ const DetailsProductPage: NextPage<TProps> = () => {
                     </Box>
                   )}
                 </Box>
+                <Box sx={{ flexBasis: '10%', mt: 8, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <IconButton
+                    onClick={() => {
+                      if (amountProduct > 1) {
+                        setAmountProduct(prev => prev - 1)
+                      }
+                    }}
+                    sx={{
+                      backgroundColor: `${theme.palette.primary.main} !important`,
+                      color: `${theme.palette.common.white}`
+                    }}
+                  >
+                    <Icon icon='ic:sharp-minus' />
+                  </IconButton>
+                  <CustomTextField
+                    type='number'
+                    value={amountProduct}
+                    onChange={e => {
+                      setAmountProduct(+e.target.value)
+                    }}
+                    inputProps={{
+                      inputMode: 'numeric',
+                      min: 1,
+                      max: dataProduct.countInStock
+                    }}
+                    margin='normal'
+                    sx={{
+                      '.MuiInputBase-input.MuiFilledInput-input': {
+                        width: '20px'
+                      },
+                      '.MuiInputBase-root.MuiFilledInput-root': {
+                        borderRadius: '0px',
+                        borderTop: 'none',
+                        borderRight: 'none',
+                        borderLeft: 'none',
+                        '&.Mui-focused': {
+                          backgroundColor: `${theme.palette.background.paper} !important`,
+                          boxShadow: 'none !important'
+                        }
+                      },
+                      'input::-webkit-outer-spin-button, input::-webkit-inner-spin-button': {
+                        WebkitAppearance: 'none',
+                        margin: 0
+                      },
+                      'input[type=number]': {
+                        MozAppearance: 'textfield'
+                      }
+                    }}
+                  />
+                  <IconButton
+                    onClick={() => {
+                      if (amountProduct < dataProduct.countInStock) {
+                        setAmountProduct(prev => prev + 1)
+                      }
+                    }}
+                    sx={{
+                      backgroundColor: `${theme.palette.primary.main} !important`,
+                      color: `${theme.palette.common.white}`
+                    }}
+                  >
+                    <Icon icon='ic:round-plus' />
+                  </IconButton>
+                </Box>
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    padding: '0 12px 10px',
                     gap: 6,
-                    mt: 8
+                    mt: 8,
+                    paddingBottom: '10px'
                   }}
                 >
                   <Button
+                    onClick={() => handleUpdateProductToCart(dataProduct)}
                     variant='outlined'
                     sx={{
                       height: 40,
@@ -322,7 +394,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
                 {t('Description_product')}
               </Typography>
             </Box>
-            <Box sx={{mt: 4}} dangerouslySetInnerHTML={{ __html: dataProduct.description}} />
+            <Box sx={{ mt: 4 }} dangerouslySetInnerHTML={{ __html: dataProduct.description }} />
           </Box>
         </Grid>
       </Grid>

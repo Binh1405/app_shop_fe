@@ -142,8 +142,9 @@ export const cloneDeep = (data: any) => {
   }
 }
 
-export const convertAddProductToCart = (orderItems: TItemOrderProduct[], addItem: TItemOrderProduct) => {
+export const convertUpdateProductToCart = (orderItems: TItemOrderProduct[], addItem: TItemOrderProduct) => {
   try {
+    let result = []
     const cloneOrderItems = cloneDeep(orderItems)
     const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item.product === addItem.product)
     if (findItems) {
@@ -151,8 +152,9 @@ export const convertAddProductToCart = (orderItems: TItemOrderProduct[], addItem
     } else {
       cloneOrderItems.push(addItem)
     }
+    result = cloneOrderItems.filter((item:TItemOrderProduct ) => item.amount)
 
-    return cloneOrderItems
+    return result
   } catch (error) {
 
     return orderItems

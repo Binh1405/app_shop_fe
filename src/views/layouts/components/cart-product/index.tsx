@@ -34,7 +34,7 @@ import { getLocalProductCart } from 'src/helpers/storage'
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { addProductToCart } from 'src/stores/order-product'
+import { updateProductToCart } from 'src/stores/order-product'
 
 // ** Types
 import { TItemOrderProduct } from 'src/types/order-product'
@@ -68,6 +68,10 @@ const CartProduct = (props: TProps) => {
     router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
   }
 
+  const handleNavigateMyCart = () => {
+    router.push(`${ROUTE_CONFIG.MY_CART}`)
+  }
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -81,7 +85,7 @@ const CartProduct = (props: TProps) => {
     const parseData = productCart ? JSON.parse(productCart) : {}
     if (user?._id) {
       dispatch(
-        addProductToCart({
+        updateProductToCart({
           orderItems: parseData[user?._id] || []
         })
       )
@@ -188,7 +192,7 @@ const CartProduct = (props: TProps) => {
           )
         })}
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-          <Button type='submit' variant='contained' sx={{ mt: 3, mb: 2, mr: 2 }}>
+          <Button type='submit' variant='contained' sx={{ mt: 3, mb: 2, mr: 2 }} onClick={handleNavigateMyCart}>
             {t('View_cart')}
           </Button>
         </Box>

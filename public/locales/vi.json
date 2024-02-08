@@ -221,5 +221,11 @@
     "Sold_product": "Đã bán {{count}} sản phẩm",
     "Count_in_stock_product": "Còn {{count}} sản phẩm trong kho",
     "Description_product": "Mô tả sản phẩm",
-    "View_cart": "Giỏ hàng"
+    "View_cart": "Giỏ hàng",
+    "Price_original": "Giá gốc",
+    "Price_discount": "Giảm giá",
+    "Count": "Số lượng",
+    "Image": "Ảnh",
+    "Select_all": "Chọn tất cả",
+    "Delete_all": "Xóa tất cả"
 }
