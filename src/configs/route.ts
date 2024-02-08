@@ -4,6 +4,7 @@ export const ROUTE_CONFIG = {
   PRODUCT: "/product",
   LOGIN: '/login',
   CHANGE_PASSWORD: '/change-password',
+  MY_CART: '/my-cart',
   SYSTEM: {
     ROLE: '/system/role',
     USER: '/system/user'
