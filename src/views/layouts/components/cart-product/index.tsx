@@ -102,7 +102,6 @@ const CartProduct = (props: TProps) => {
   }, [orderItems])
   console.log('orderItems', { orderItems })
 
-
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -155,46 +154,48 @@ const CartProduct = (props: TProps) => {
       >
         {orderItems.length > 0 ? (
           <>
-            {orderItems?.map((item: TItemOrderProduct) => {
-              return (
-                <StyleMenuItem key={item.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
-                  <Avatar src={item.image} />
-                  <Box>
-                    <Typography>{item.name}</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      {item.discount > 0 && (
+            <Box sx={{ maxHeight: '400px', overflow: 'auto' }}>
+              {orderItems?.map((item: TItemOrderProduct) => {
+                return (
+                  <StyleMenuItem key={item.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
+                    <Avatar src={item.image} sx={{ height: '60px !important', width: '60px !important' }} />
+                    <Box>
+                      <Typography>{item.name}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        {item.discount > 0 && (
+                          <Typography
+                            variant='h6'
+                            sx={{
+                              color: theme.palette.error.main,
+                              fontWeight: 'bold',
+                              textDecoration: 'line-through',
+                              fontSize: '10px'
+                            }}
+                          >
+                            {formatNumberToLocal(item.price)} VND
+                          </Typography>
+                        )}
                         <Typography
-                          variant='h6'
+                          variant='h4'
                           sx={{
-                            color: theme.palette.error.main,
+                            color: theme.palette.primary.main,
                             fontWeight: 'bold',
-                            textDecoration: 'line-through',
-                            fontSize: '10px'
+                            fontSize: '12px'
                           }}
                         >
-                          {formatNumberToLocal(item.price)} VND
+                          {item.discount > 0 ? (
+                            <>{formatNumberToLocal((item.price * (100 - item.discount)) / 100)}</>
+                          ) : (
+                            <>{formatNumberToLocal(item.price)}</>
+                          )}{' '}
+                          VND
                         </Typography>
-                      )}
-                      <Typography
-                        variant='h4'
-                        sx={{
-                          color: theme.palette.primary.main,
-                          fontWeight: 'bold',
-                          fontSize: '12px'
-                        }}
-                      >
-                        {item.discount > 0 ? (
-                          <>{formatNumberToLocal((item.price * (100 - item.discount)) / 100)}</>
-                        ) : (
-                          <>{formatNumberToLocal(item.price)}</>
-                        )}{' '}
-                        VND
-                      </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                </StyleMenuItem>
-              )
-            })}
+                  </StyleMenuItem>
+                )
+              })}
+            </Box>
             <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
               <Button type='submit' variant='contained' sx={{ mt: 3, mb: 2, mr: 2 }} onClick={handleNavigateMyCart}>
                 {t('View_cart')}
@@ -203,7 +204,7 @@ const CartProduct = (props: TProps) => {
           </>
         ) : (
           <Box sx={{ padding: '20px', width: '200px' }}>
-            <NoData widthImage='60px' heightImage='60px' textNodata={t("No_product")} />
+            <NoData widthImage='60px' heightImage='60px' textNodata={t('No_product')} />
           </Box>
         )}
       </Menu>

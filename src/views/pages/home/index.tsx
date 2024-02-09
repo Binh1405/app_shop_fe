@@ -30,6 +30,11 @@ import { getAllProductsPublic } from 'src/services/product'
 import { formatFilter } from 'src/utils'
 import { TProduct } from 'src/types/product'
 import { styled } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import toast from 'react-hot-toast'
+import { resetInitialState } from 'src/stores/product'
+import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 
 type TProps = {}
 
@@ -67,6 +72,19 @@ const HomePage: NextPage<TProps> = () => {
   })
 
   const firstRender = useRef<boolean>(false)
+
+  // ** Redux
+  const {
+    isSuccessLike,
+    isErrorLike,
+    isErrorUnLike,
+    typeError,
+    isSuccessUnLike,
+    messageErrorLike,
+    messageErrorUnLike,
+    isLoading
+  } = useSelector((state: RootState) => state.product)
+  const dispatch: AppDispatch = useDispatch()
 
   // ** theme
   const theme = useTheme()
@@ -162,6 +180,40 @@ const HomePage: NextPage<TProps> = () => {
     }
   }, [productTypeSelected, reviewSelected, locationSelected])
 
+  useEffect(() => {
+    if (isSuccessLike) {
+      toast.success(t('Like_product_success'))
+      handleGetListProducts()
+      dispatch(resetInitialState())
+    } else if (isErrorLike && messageErrorLike && typeError) {
+      const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
+      if (errorConfig) {
+        toast.error(t(errorConfig))
+      } else {
+        toast.error(t('Like_product_error'))
+      }
+      dispatch(resetInitialState())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccessLike, isErrorLike, messageErrorLike, typeError])
+
+  useEffect(() => {
+    if (isSuccessUnLike) {
+      toast.success(t('Unlike_product_success'))
+      dispatch(resetInitialState())
+      handleGetListProducts()
+    } else if (isErrorUnLike && messageErrorUnLike && typeError) {
+      const errorConfig = OBJECT_TYPE_ERROR_PRODUCT[typeError]
+      if (errorConfig) {
+        toast.error(t(errorConfig))
+      } else {
+        toast.error(t('Unlike_product_error'))
+      }
+      dispatch(resetInitialState())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccessUnLike, isErrorUnLike, messageErrorUnLike, typeError])
+
   return (
     <>
       {loading && <Spinner />}
@@ -244,7 +296,7 @@ const HomePage: NextPage<TProps> = () => {
           pageSizeOptions={PAGE_SIZE_OPTION}
           pageSize={pageSize}
           page={page}
-          rowLength={10}
+          rowLength={productsPublic.total}
           isHideShowed
         />
       </Box>

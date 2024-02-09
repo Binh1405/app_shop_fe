@@ -61,7 +61,7 @@ const AuthGuard = (props: AuthGuardProps) => {
       window.addEventListener('beforeunload', handleUnload)
     }
   }, [])
-
+  console.log("authContext", {authContext})
   if (authContext.loading || authContext.user === null) {
     return fallback
   }
