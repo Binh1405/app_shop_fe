@@ -5,7 +5,7 @@ import { createContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/router'
 
 // ** Config
-import authConfig from 'src/configs/auth'
+import authConfig, { LIST_PAGE_PUBLIC } from 'src/configs/auth'
 
 // ** Types
 import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
@@ -23,6 +23,8 @@ import { clearLocalUserData, setLocalUserData, setTemporaryToken } from 'src/hel
 import instanceAxios from 'src/helpers/axios'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+
+// ** Redux
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'src/stores'
 import { updateProductToCart } from 'src/stores/order-product'
@@ -51,7 +53,7 @@ const AuthProvider = ({ children }: Props) => {
   const { t } = useTranslation()
 
   // ** Redux
-  const dispatch:AppDispatch = useDispatch()
+  const dispatch: AppDispatch = useDispatch()
 
   // ** Hooks
   const router = useRouter()
@@ -111,6 +113,17 @@ const AuthProvider = ({ children }: Props) => {
     logoutAuth().then(res => {
       setUser(null)
       clearLocalUserData()
+
+      if (!LIST_PAGE_PUBLIC?.some(item => router.asPath?.startsWith(item))) {
+        if (router.asPath !== '/') {
+          router.replace({
+            pathname: '/login',
+            query: { returnUrl: router.asPath }
+          })
+        } else {
+          router.replace('/login')
+        }
+      }
       dispatch(
         updateProductToCart({
           orderItems: []
