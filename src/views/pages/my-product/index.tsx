@@ -44,7 +44,7 @@ const TYPE_VALUE = {
   viewed: '2'
 }
 
-const MyProfilePage: NextPage<TProps> = () => {
+const MyProductPage: NextPage<TProps> = () => {
   // ** Hooks
   const { i18n, t } = useTranslation()
 
@@ -234,4 +234,4 @@ const MyProfilePage: NextPage<TProps> = () => {
   )
 }
 
-export default MyProfilePage
+export default MyProductPage

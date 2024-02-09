@@ -58,7 +58,7 @@ type TDefaultValue = {
   fullName: string
 }
 
-const MyProductPage: NextPage<TProps> = () => {
+const MyProfilePage: NextPage<TProps> = () => {
   // State
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState('')
@@ -481,4 +481,4 @@ const MyProductPage: NextPage<TProps> = () => {
   )
 }
 
-export default MyProductPage
+export default MyProfilePage
