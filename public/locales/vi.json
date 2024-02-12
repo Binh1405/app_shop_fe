@@ -240,5 +240,8 @@
     "My_product": "Sản phẩm của tôi",
     "Product_viewed": "Đã xem",
     "Product_liked": "Đã thích",
-    "Search_name_product": "Tìm kiếm tên sản phẩm"
+    "Search_name_product": "Tìm kiếm tên sản phẩm",
+    "Sum_money": "Tổng tiền",
+    "Select_delivery_type": "Chọn phương thức giao hàng",
+    "Select_payment_type": "Chọn phương thức thanh toán"
 }
