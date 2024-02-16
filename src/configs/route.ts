@@ -1,11 +1,12 @@
 export const ROUTE_CONFIG = {
   MY_PROFILE: '/my-profile',
-  HOME: "/",
-  PRODUCT: "/product",
+  HOME: '/',
+  PRODUCT: '/product',
   LOGIN: '/login',
   CHANGE_PASSWORD: '/change-password',
   MY_CART: '/my-cart',
-  MY_PRODUCT: "/my-product",
+  MY_PRODUCT: '/my-product',
+  CHECKOUT_PRODUCT: '/checkout-product',
   SYSTEM: {
     ROLE: '/system/role',
     USER: '/system/user'
@@ -16,12 +17,12 @@ export const ROUTE_CONFIG = {
   },
   MANAGE_ORDER: {
     ORDER: '/manage-product/order',
-    MANAGE_REVIEW: '/manage-product/review',
+    MANAGE_REVIEW: '/manage-product/review'
   },
   SETTINGS: {
     CITY: '/settings/city',
     PAYMENT_TYPE: '/settings/payment-type',
     DELIVERY_TYPE: '/settings/delivery-type'
   },
-  DASHBOARD: "/dashboard"
+  DASHBOARD: '/dashboard'
 }
