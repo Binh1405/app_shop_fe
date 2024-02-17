@@ -251,5 +251,8 @@
     "Select_address_shipping": "Chọn địa chỉ giao hàng",
     "Add_new": "Thêm mới",
     "Price_item": "Giá sản phẩm",
-    "Price_shipping": "Phí giao hàng"
+    "Price_shipping": "Phí giao hàng",
+    "Return_home": "Quay về trang chủ",
+    "Warning": "Cảnh báo",
+    "Warning_order_product": "Cảnh báo sản phẩm mua hàng đang gặp vấn đề"
 }
