@@ -94,6 +94,16 @@ const CardProduct = (props: TCardProduct) => {
     }
   }
 
+  const handleBuyProductToCart = (item: TProduct) => {
+    handleUpdateProductToCart(item)
+    router.push({
+      pathname: ROUTE_CONFIG.MY_CART,
+      query: {
+        selected: item._id,
+      }
+    }, ROUTE_CONFIG.MY_CART)
+  }
+
   const handleToggleLikeProduct = (id: string, isLiked: boolean) => {
     if (user?._id) {
       if (isLiked) {
@@ -297,6 +307,7 @@ const CardProduct = (props: TCardProduct) => {
             fontWeight: 'bold'
           }}
           disabled={item.countInStock < 1}
+          onClick={() => handleBuyProductToCart(item)}
         >
           <Icon icon='icon-park-outline:buy' fontSize={20} style={{ position: 'relative', top: '-2px' }} />
           {t('Buy_now')}

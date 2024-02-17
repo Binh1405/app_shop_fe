@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 
 // ** Mui
 import { Avatar, Box, Button, Checkbox, Divider, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
@@ -79,7 +79,7 @@ const MyCartPage: NextPage<TProps> = () => {
   }, [selectedRows, orderItems])
 
   const memoTotalSelectedProduct = useMemo(() => {
-    const total = memoItemsSelectedProduct.reduce((result, current: TItemOrderProduct) => {
+    const total = memoItemsSelectedProduct?.reduce((result, current: TItemOrderProduct) => {
       const currentPrice = current.discount > 0 ? (current.price * (100 - current.discount)) / 100 : current.price
 
       return result + currentPrice * current.amount
@@ -87,6 +87,13 @@ const MyCartPage: NextPage<TProps> = () => {
 
     return total
   }, [memoItemsSelectedProduct])
+
+  useEffect(() => {
+    const productSelected = router.query.selected as string
+    if(productSelected) {
+      setSelectedRows([productSelected])
+    }
+  }, [router.query])
 
   // ** Handle
   const handleChangeAmountCart = (item: TItemOrderProduct, amount: number) => {

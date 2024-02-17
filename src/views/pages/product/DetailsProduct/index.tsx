@@ -13,6 +13,8 @@ import { Box, Button, Grid, IconButton, Rating, Typography, useTheme } from '@mu
 import CustomTextField from 'src/components/text-field'
 import Icon from 'src/components/Icon'
 import Spinner from 'src/components/spinner'
+import CardRelatedProduct from 'src/views/pages/product/components/CardRelatedProduct'
+import NoData from 'src/components/no-data'
 
 // ** Translate
 import { t } from 'i18next'
@@ -36,10 +38,11 @@ import { getDetailsProductPublicBySlug, getListRelatedProductBySlug } from 'src/
 // ** Other
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 
+// ** Types
 import { TProduct } from 'src/types/product'
-import NoData from 'src/components/no-data'
-import CardProduct from 'src/views/pages/product/components/CardProduct'
-import CardRelatedProduct from 'src/views/pages/product/components/CardRelatedProduct'
+
+// ** Configs
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 type TProps = {}
 
@@ -124,6 +127,19 @@ const DetailsProductPage: NextPage<TProps> = () => {
         query: { returnUrl: router.asPath }
       })
     }
+  }
+
+  const handleBuyProductToCart = (item: TProduct) => {
+    handleUpdateProductToCart(item)
+    router.push(
+      {
+        pathname: ROUTE_CONFIG.MY_CART,
+        query: {
+          selected: item._id
+        }
+      },
+      ROUTE_CONFIG.MY_CART
+    )
   }
 
   useEffect(() => {
@@ -429,6 +445,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
                       gap: '2px',
                       fontWeight: 'bold'
                     }}
+                    onClick={() => handleBuyProductToCart(dataProduct)}
                   >
                     <Icon icon='icon-park-outline:buy' fontSize={20} style={{ position: 'relative', top: '-2px' }} />
                     {t('Buy_now')}
