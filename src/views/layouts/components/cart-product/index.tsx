@@ -105,7 +105,7 @@ const CartProduct = (props: TProps) => {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title={t('Account')}>
+        <Tooltip title={t('My_cart')}>
           <IconButton onClick={handleClick} color='inherit'>
             {!!orderItems.length ? (
               <Badge color='primary' badgeContent={totalItemsCart}>
@@ -160,7 +160,7 @@ const CartProduct = (props: TProps) => {
                   <StyleMenuItem key={item.product} onClick={() => handleNavigateDetailsProduct(item.slug)}>
                     <Avatar src={item.image} sx={{ height: '60px !important', width: '60px !important' }} />
                     <Box>
-                      <Typography>{item.name}</Typography>
+                      <Typography sx={{maxWidth: "300px", overflow: "hidden", textOverflow: "ellipsis"}}>{item.name}</Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         {item.discount > 0 && (
                           <Typography

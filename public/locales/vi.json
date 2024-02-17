@@ -243,5 +243,13 @@
     "Search_name_product": "Tìm kiếm tên sản phẩm",
     "Sum_money": "Tổng tiền",
     "Select_delivery_type": "Chọn phương thức giao hàng",
-    "Select_payment_type": "Chọn phương thức thanh toán"
+    "Select_payment_type": "Chọn phương thức thanh toán",
+    "Address_shipping": "Địa chỉ giao hàng",
+    "Add_address": "Thêm địa chỉ",
+    "Change_address": "Thay đổi",
+    "No_address_shipping": "Không có địa chỉ giao hàng",
+    "Select_address_shipping": "Chọn địa chỉ giao hàng",
+    "Add_new": "Thêm mới",
+    "Price_item": "Giá sản phẩm",
+    "Price_shipping": "Phí giao hàng"
 }

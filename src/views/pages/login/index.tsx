@@ -150,7 +150,7 @@ const LoginPage: NextPage<TProps> = () => {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <CustomTextField
                     required
-                    autoFocus
+                    
                     fullWidth
                     label={t('Email')}
                     onChange={onChange}
@@ -175,7 +175,7 @@ const LoginPage: NextPage<TProps> = () => {
                   <CustomTextField
                     required
                     fullWidth
-                    autoFocus
+                    
                     label={t('Password')}
                     onChange={onChange}
                     onBlur={onBlur}
