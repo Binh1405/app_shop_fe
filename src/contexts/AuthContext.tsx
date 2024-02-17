@@ -70,7 +70,7 @@ const AuthProvider = ({ children }: Props) => {
             setLoading(false)
             setUser({ ...response.data.data })
           })
-          .catch((e) => {
+          .catch(e => {
             clearLocalUserData()
             setUser(null)
             setLoading(false)
