@@ -51,8 +51,6 @@ const CardRelatedProduct = (props: TCardRelatedProduct) => {
 
   // ** Redux
   const dispatch: AppDispatch = useDispatch()
-  const { orderItems } = useSelector((state: RootState) => state.orderProduct)
-
   // ** handle
   const handleNavigateDetails = (slug: string) => {
     router.push(`${ROUTE_CONFIG.PRODUCT}/${slug}`)
@@ -142,13 +140,35 @@ const CardRelatedProduct = (props: TCardRelatedProduct) => {
           {item.countInStock > 0 ? (
             <>{t('Count_in_stock_product', { count: item.countInStock })}</>
           ) : (
-            <span>Hết hàng</span>
+            <Box
+              sx={{
+                backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
+                width: '60px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '2px',
+                my: 1
+              }}
+            >
+              <Typography
+                variant='h6'
+                sx={{
+                  color: theme.palette.error.main,
+                  fontSize: '12px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Hết hàng
+              </Typography>
+            </Box>
           )}
         </Typography>
 
         {item.sold && (
           <Typography variant='body2' color='text.secondary'>
-            <>{t('Sold_product', { count: item.countInStock })}</>
+            <>{t('Sold_product', { count: item.sold })}</>
           </Typography>
         )}
         {item?.location?.name && (
@@ -184,7 +204,6 @@ const CardRelatedProduct = (props: TCardRelatedProduct) => {
               {!!item.totalReviews ? <b>{item.totalReviews}</b> : <span>{t('not_review')}</span>}
             </Typography>
           </Box>
-         
         </Box>
       </CardContent>
     </StyleCard>
