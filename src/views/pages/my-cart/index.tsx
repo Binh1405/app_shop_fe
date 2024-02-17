@@ -161,14 +161,16 @@ const MyCartPage: NextPage<TProps> = () => {
   }
 
   const handleNavigateCheckoutProduct = () => {
-    const formatData = JSON.stringify(memoItemsSelectedProduct)
+    const formatData = JSON.stringify(
+      memoItemsSelectedProduct.map(item => ({ product: item.product, amount: item.amount }))
+    )
     router.push({
       pathname: ROUTE_CONFIG.CHECKOUT_PRODUCT,
       query: {
         totalPrice: memoTotalSelectedProduct,
         productsSelected: formatData
       }
-    }, "checkout-product")
+    })
   }
 
   return (
@@ -378,11 +380,7 @@ const MyCartPage: NextPage<TProps> = () => {
             fontWeight: 'bold'
           }}
         >
-          <Icon
-            icon='icon-park-outline:buy'
-            fontSize={20}
-            style={{ position: 'relative', top: '-2px' }}
-          />
+          <Icon icon='icon-park-outline:buy' fontSize={20} style={{ position: 'relative', top: '-2px' }} />
           {t('Buy_now')}
         </Button>
       </Box>
