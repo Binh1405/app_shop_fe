@@ -31,14 +31,14 @@ import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 // ** Utils
-import { formatNumberToLocal, toFullName } from 'src/utils'
+import {  formatNumberToLocal, toFullName } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { createOrderProductAsync } from 'src/stores/order-product/actions'
-import { resetInitialState } from 'src/stores/order-product'
+import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
 
 // ** Hooks
 import { useAuth } from 'src/hooks/useAuth'
@@ -47,15 +47,15 @@ import { useAuth } from 'src/hooks/useAuth'
 import { TItemOrderProduct } from 'src/types/order-product'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
+import Swal from 'sweetalert2'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 
 // ** Services
 import { getAllPaymentTypes } from 'src/services/payment-type'
 import { getAllDeliveryTypes } from 'src/services/delivery-type'
 import { getAllCities } from 'src/services/city'
 
-
 type TProps = {}
-
 
 const CheckoutProductPage: NextPage<TProps> = () => {
   // State
@@ -112,7 +112,7 @@ const CheckoutProductPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     const data: any = router.query
-    if(!data?.productsSelected) {
+    if (!data?.productsSelected) {
       setOpenWarning(true)
     }
   }, [router.query])
@@ -234,12 +234,62 @@ const CheckoutProductPage: NextPage<TProps> = () => {
     handleGetListDeliveryMethod()
   }, [])
 
+  const handleChangeAmountCart = (items: TItemOrderProduct[]) => {
+    const productCart = getLocalProductCart()
+    const parseData = productCart ? JSON.parse(productCart) : {}
+    const objectMap: Record<string, number> = {}
+    items.forEach((item: any) => {
+      objectMap[item.product] = -item.amount
+    })
+    const listOrderItems:TItemOrderProduct[] = []
+    orderItems.forEach((order:TItemOrderProduct) => {
+      if(objectMap[order.product]) {
+        listOrderItems.push({
+          ...order,
+          amount: order.amount + objectMap[order.product]
+        })
+      }else {
+        listOrderItems.push(order)
+      }
+    })
+    const filterListOrder = listOrderItems.filter((item:TItemOrderProduct ) => item.amount)
+    if (user) {
+      dispatch(
+        updateProductToCart({
+          orderItems: filterListOrder
+        })
+      )
+      setLocalProductToCart({ ...parseData, [user?._id]: filterListOrder })
+    }
+  }
+
   useEffect(() => {
     if (isSuccessCreate) {
-      toast.success(t('Order_product_success'))
+      Swal.fire({
+        title: t('Congraturation!'),
+        text: t('Order_product_success'),
+        icon: 'success',
+        confirmButtonText: t('Confirm'),
+        background: theme.palette.background.paper,
+        color: `rgba(${theme.palette.customColors.main}, 0.78)`
+      }).then(result => {
+        if (result.isConfirmed) {
+          console.log("")
+        }
+      })
+      handleChangeAmountCart(memoQueryProduct.productsSelected)
+    
       dispatch(resetInitialState())
     } else if (isErrorCreate && messageErrorCreate) {
       toast.error(t('Order_product_error'))
+      Swal.fire({
+        title: t('Opps!'),
+        text: t('Order_product_error'),
+        icon: 'error',
+        confirmButtonText: t('Confirm'),
+        background: theme.palette.background.paper,
+        color: `rgba(${theme.palette.customColors.main}, 0.78)`
+      })
       dispatch(resetInitialState())
     }
   }, [isSuccessCreate, isErrorCreate, messageErrorCreate])

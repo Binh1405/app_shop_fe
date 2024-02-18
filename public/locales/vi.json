@@ -218,7 +218,8 @@
     "Buy_now": "Mua hàng",
     "Add_to_cart": "Thêm giỏ hàng",
     "not_review": "Chưa đánh giá",
-    "Sold_product": "Đã bán {{count}} sản phẩm",
+    "Sold_product": "Đã bán",
+    "Product": "sản phẩm",
     "Count_in_stock_product": "Còn {{count}} sản phẩm trong kho",
     "Description_product": "Mô tả sản phẩm",
     "View_cart": "Giỏ hàng",
@@ -254,5 +255,6 @@
     "Price_shipping": "Phí giao hàng",
     "Return_home": "Quay về trang chủ",
     "Warning": "Cảnh báo",
-    "Warning_order_product": "Cảnh báo sản phẩm mua hàng đang gặp vấn đề"
+    "Warning_order_product": "Cảnh báo sản phẩm mua hàng đang gặp vấn đề",
+    "Order_product_success": "Đặt hàng thành công"
 }

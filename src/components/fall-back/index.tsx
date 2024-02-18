@@ -1,5 +1,5 @@
 // ** MUI Imports
-import { useTheme } from '@mui/material/styles'
+import { useTheme } from '@mui/material'
 import Box, { BoxProps } from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 
@@ -15,11 +15,12 @@ const FallbackSpinner = ({ sx }: { sx?: BoxProps['sx'] }) => {
         alignItems: 'center',
         flexDirection: 'column',
         justifyContent: 'center',
+        backgroundColor: theme.palette.background.paper,
         ...sx
       }}
     >
       <CircularProgress disableShrink sx={{ mt: 6 }} />
-    </Box>
+     </Box>
   )
 }
 

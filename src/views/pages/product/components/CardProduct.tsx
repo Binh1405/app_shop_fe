@@ -94,6 +94,16 @@ const CardProduct = (props: TCardProduct) => {
     }
   }
 
+  const handleBuyProductToCart = (item: TProduct) => {
+    handleUpdateProductToCart(item)
+    router.push({
+      pathname: ROUTE_CONFIG.MY_CART,
+      query: {
+        selected: item._id,
+      }
+    }, ROUTE_CONFIG.MY_CART)
+  }
+
   const handleToggleLikeProduct = (id: string, isLiked: boolean) => {
     if (user?._id) {
       if (isLiked) {
@@ -194,13 +204,35 @@ const CardProduct = (props: TCardProduct) => {
           {item.countInStock > 0 ? (
             <>{t('Count_in_stock_product', { count: item.countInStock })}</>
           ) : (
-            <span>Hết hàng</span>
+            <Box
+              sx={{
+                backgroundColor: hexToRGBA(theme.palette.error.main, 0.42),
+                width: '60px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '2px',
+                my: 1
+              }}
+            >
+              <Typography
+                variant='h6'
+                sx={{
+                  color: theme.palette.error.main,
+                  fontSize: '12px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                Hết hàng
+              </Typography>
+            </Box>
           )}
         </Typography>
 
         {item.sold && (
           <Typography variant='body2' color='text.secondary'>
-            <>{t('Sold_product', { count: item.countInStock })}</>
+            <>{t('Sold_product')}</> <b>{item.sold}</b> <>{t('Product')}</>
           </Typography>
         )}
         {item?.location?.name && (
@@ -258,6 +290,7 @@ const CardProduct = (props: TCardProduct) => {
             gap: '2px',
             fontWeight: 'bold'
           }}
+          disabled={item.countInStock < 1}
           onClick={() => handleUpdateProductToCart(item)}
         >
           <Icon icon='bx:cart' fontSize={24} style={{ position: 'relative', top: '-2px' }} />
@@ -273,6 +306,8 @@ const CardProduct = (props: TCardProduct) => {
             gap: '2px',
             fontWeight: 'bold'
           }}
+          disabled={item.countInStock < 1}
+          onClick={() => handleBuyProductToCart(item)}
         >
           <Icon icon='icon-park-outline:buy' fontSize={20} style={{ position: 'relative', top: '-2px' }} />
           {t('Buy_now')}
