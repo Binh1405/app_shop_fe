@@ -72,10 +72,10 @@ const UserDropdown = (props: TProps) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
-  const { user, logout,setUser } = useAuth()
+  const { user, logout, setUser } = useAuth()
 
   // ** Redux
-  const {userData} = useSelector((state:RootState) => state.auth)
+  const { userData } = useSelector((state: RootState) => state.auth)
   const permissionUser = user?.role?.permissions ?? []
 
   const open = Boolean(anchorEl)
@@ -110,9 +110,14 @@ const UserDropdown = (props: TProps) => {
     handleClose()
   }
 
+  const handleNavigateMyOrder = () => {
+    router.push(ROUTE_CONFIG.MY_ORDER)
+    handleClose()
+  }
+
   useEffect(() => {
-    if(userData) {
-      setUser({...userData})
+    if (userData) {
+      setUser({ ...userData })
     }
   }, [userData])
 
@@ -229,9 +234,15 @@ const UserDropdown = (props: TProps) => {
         </MenuItem>
         <MenuItem onClick={handleNavigateMyProduct}>
           <Avatar>
-            <Icon icon="tabler:brand-producthunt" />
+            <Icon icon='tabler:brand-producthunt' />
           </Avatar>{' '}
           {t('My_product')}
+        </MenuItem>
+        <MenuItem onClick={handleNavigateMyOrder}>
+          <Avatar>
+            <Icon icon='material-symbols-light:order-approve-outline-rounded' />
+          </Avatar>{' '}
+          {t('My_order')}
         </MenuItem>
         <MenuItem onClick={handleNavigateChangePassword}>
           <Avatar sx={{ backgroundColor: 'transparent' }}>
