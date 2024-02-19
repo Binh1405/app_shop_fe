@@ -259,5 +259,10 @@
     "Order_product_success": "Đặt hàng thành công",
     "My_order": "Đơn hàng của tôi",
     "View_details": "Xem chi tiết",
-    "Buy_again": "Mua lại"
+    "Buy_again": "Mua lại",
+    "All": "Tất cả",
+    "Wait_payment": "Chờ thanh toán",
+    "Wait_delivery": "Chờ giao hàng",
+    "Done": "Hoàn thành",
+    "Cancel_order": "Hủy đơn hàng"
 }
