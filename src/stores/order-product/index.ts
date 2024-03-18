@@ -2,19 +2,27 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 // ** Actions
-import { createOrderProductAsync, getAllOrderProductsByMeAsync, serviceName } from 'src/stores/order-product/actions'
+import {
+  cancelOrderProductOfMeAsync,
+  createOrderProductAsync,
+  getAllOrderProductsByMeAsync,
+  serviceName
+} from 'src/stores/order-product/actions'
 
 const initialState = {
   isSuccessCreate: false,
   isErrorCreate: false,
   messageErrorCreate: '',
+  isSuccessCancelMe: false,
+  isErrorCancelMe: false,
+  messageErrorCancelMe: '',
   isLoading: false,
   typeError: '',
   orderItems: [],
   ordersOfMe: {
     data: [],
     total: 0
-  },
+  }
 }
 
 export const orderProductSlice = createSlice({
@@ -30,6 +38,9 @@ export const orderProductSlice = createSlice({
       state.messageErrorCreate = ''
       state.typeError = ''
       state.isLoading = false
+      state.isSuccessCancelMe = false
+      state.isErrorCancelMe = true
+      state.messageErrorCancelMe = ''
     }
   },
   extraReducers: builder => {
@@ -47,6 +58,7 @@ export const orderProductSlice = createSlice({
       state.ordersOfMe.data = []
       state.ordersOfMe.total = 0
     })
+
     // ** create order product
     builder.addCase(createOrderProductAsync.pending, (state, action) => {
       state.isLoading = true
@@ -56,6 +68,18 @@ export const orderProductSlice = createSlice({
       state.isSuccessCreate = !!action.payload?.data?._id
       state.isErrorCreate = !action.payload?.data?._id
       state.messageErrorCreate = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
+
+    // ** cancel order product of me
+    builder.addCase(cancelOrderProductOfMeAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(cancelOrderProductOfMeAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessCancelMe = !!action.payload?.data?._id
+      state.isErrorCancelMe = !action.payload?.data?._id
+      state.messageErrorCancelMe = action.payload?.message
       state.typeError = action.payload?.typeError
     })
   }

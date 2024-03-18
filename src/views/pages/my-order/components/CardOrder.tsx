@@ -2,41 +2,28 @@
 import { NextPage } from 'next'
 
 // ** React
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** Mui
-import { Avatar, Box, Button, Checkbox, Divider, IconButton, Tooltip, Typography, useTheme } from '@mui/material'
+import { Avatar, Box, Button, Divider, Typography, useTheme } from '@mui/material'
 
 // ** Components
-import CustomTextField from 'src/components/text-field'
-import Icon from 'src/components/Icon'
-import CustomSelect from 'src/components/custom-select'
+import ConfirmationDialog from 'src/components/confirmation-dialog'
 
 // ** Translate
 import { t } from 'i18next'
-import { useTranslation } from 'react-i18next'
 
 // ** Utils
-import { cloneDeep, convertUpdateProductToCart, formatNumberToLocal } from 'src/utils'
+import { formatNumberToLocal } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Redux
-import { updateProductToCart } from 'src/stores/order-product'
-
+import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 
-// ** Hooks
-import { useAuth } from 'src/hooks/useAuth'
-
 // ** Other
 import { TItemOrderProduct, TItemOrderProductMe } from 'src/types/order-product'
-import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
-import NoData from 'src/components/no-data'
-import { useRouter } from 'next/router'
-import { ROUTE_CONFIG } from 'src/configs/route'
-import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
-import { getAllOrderProductsByMeAsync } from 'src/stores/order-product/actions'
 
 type TProps = {
   dataOrder: TItemOrderProductMe
@@ -45,16 +32,12 @@ type TProps = {
 const CardOrder: NextPage<TProps> = props => {
   // ** Props
   const { dataOrder } = props
-  console.log('dataOrder', { dataOrder })
-  // State
-  const [selectedRows, setSelectedRows] = useState<string[]>([])
-  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
-  const [page, setPage] = useState(1)
 
-  // ** Hooks
-  const { i18n } = useTranslation()
-  const { user } = useAuth()
-  const router = useRouter()
+  // State
+  const [openCancel, setOpenCancel] = useState(false)
+
+  // ** Redux
+  const { isSuccessCancelMe } = useSelector((state: RootState) => state.orderProduct)
 
   // ** theme
   const theme = useTheme()
@@ -62,9 +45,32 @@ const CardOrder: NextPage<TProps> = props => {
   // ** redux
   const dispatch: AppDispatch = useDispatch()
 
+  const handleConfirmCancel = () => {
+    dispatch(cancelOrderProductOfMeAsync(dataOrder._id))
+  }
+
+  // ** handle
+  const handleCloseDialog = () => {
+    setOpenCancel(false)
+  }
+
+  useEffect(() => {
+    if (isSuccessCancelMe) {
+      handleCloseDialog()
+    }
+  }, [isSuccessCancelMe])
+
   return (
     <>
       {/* {loading || (isLoading && <Spinner />)} */}
+      <ConfirmationDialog
+        open={openCancel}
+        handleClose={handleCloseDialog}
+        handleCancel={handleCloseDialog}
+        handleConfirm={handleConfirmCancel}
+        title={t('Title_cancel_order')}
+        description={t('Confirm_cancel_order')}
+      />
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
@@ -74,7 +80,7 @@ const CardOrder: NextPage<TProps> = props => {
         }}
       >
         <Divider />
-        <Box mt={2} mb={2} sx={{display: "flex", flexDirection: "column", gap: 4}}>
+        <Box mt={2} mb={2} sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {dataOrder?.orderItems?.map((item: TItemOrderProduct) => {
             return (
               <Box key={item.product} sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
@@ -171,6 +177,23 @@ const CardOrder: NextPage<TProps> = props => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mt: 6, justifyContent: 'flex-end' }}>
+          {[0, 1].includes(dataOrder.status) && (
+            <Button
+              variant='outlined'
+              onClick={() => setOpenCancel(true)}
+              sx={{
+                height: 40,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2px',
+                color: '#da251d !important',
+                backgroundColor: 'transparent !important',
+                border: '1px solid #da251d !important'
+              }}
+            >
+              {t('Cancel_order')}
+            </Button>
+          )}
           <Button
             variant='contained'
             sx={{
