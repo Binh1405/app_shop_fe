@@ -8,6 +8,19 @@ export type TItemOrderProduct = {
   slug: string
 }
 
+export type TItemProductMe = {
+  name: string
+  amount: number
+  image: string
+  price: number
+  discount: number
+  product: {
+    _id: string,
+    countInStock: number,
+    slug: string
+  }
+}
+
 export type TParamsCreateOrderProduct = {
   orderItems: TItemOrderProduct[]
   fullName: string
@@ -34,10 +47,13 @@ export type TItemOrderProductMe = {
   shippingAddress: {
     fullName: string
     address: string
-    city: string
+    city: {
+      _id: string,
+      name: string
+    }
     phone: string
   }
-  orderItems: TItemOrderProduct[]
+  orderItems: TItemProductMe[]
   paymentMethod: {
     _id: string
     name: string

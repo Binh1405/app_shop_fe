@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 // ** Mui
 import { Avatar, Box, Button, Divider, Typography, useTheme } from '@mui/material'
@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 
 // ** Other
-import { TItemOrderProduct, TItemOrderProductMe } from 'src/types/order-product'
+import { TItemOrderProduct, TItemOrderProductMe, TItemProductMe } from 'src/types/order-product'
 import { STATUS_ORDER_PRODUCT } from 'src/configs/orderProduct'
 import Icon from 'src/components/Icon'
 import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
@@ -75,7 +75,7 @@ const CardOrder: NextPage<TProps> = props => {
     const parseData = productCart ? JSON.parse(productCart) : {}
 
     const listOrderItems = convertUpdateMultipleProductsCart(orderItems, items)
-    
+
     if (user) {
       dispatch(
         updateProductToCart({
@@ -87,19 +87,33 @@ const CardOrder: NextPage<TProps> = props => {
   }
 
   const handleBuyAgain = () => {
-    handleUpdateProductToCart(dataOrder.orderItems)
+    handleUpdateProductToCart(dataOrder.orderItems.map((item) => ({
+      name: item.name,
+      amount: item.amount,
+      image: item.image,
+      price: item.price,
+      discount: item.discount,
+      product: item?.product?._id,
+      slug: item?.product?.slug,
+    })))
     router.push(
       {
         pathname: ROUTE_CONFIG.MY_CART,
         query: {
-          selected: dataOrder?.orderItems?.map((item: TItemOrderProduct) => item.product)
+          selected: dataOrder?.orderItems?.map((item: TItemProductMe) => item?.product?._id)
         }
       },
       ROUTE_CONFIG.MY_CART
     )
   }
 
-  console.log('dataOrder', { dataOrder })
+  const handleNavigateDetailsOrder = () => {
+    router.push(`${ROUTE_CONFIG.MY_ORDER}/${dataOrder._id}`)
+  }
+
+  const memeDisabledBuyAgain = useMemo(() => {
+    return dataOrder?.orderItems?.some((item) => !item.product.countInStock)
+  }, [dataOrder.orderItems])
 
   return (
     <>
@@ -135,10 +149,10 @@ const CardOrder: NextPage<TProps> = props => {
           </Typography>
         </Box>
         <Divider />
-        <Box mt={2} mb={2} sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {dataOrder?.orderItems?.map((item: TItemOrderProduct) => {
+        <Box mt={2} mb={2} sx={{ display: 'flex', flexDirection: 'column', gap: 4, cursor: "pointer" }} onClick={handleNavigateDetailsOrder}>
+          {dataOrder?.orderItems?.map((item: TItemProductMe) => {
             return (
-              <Box key={item.product} sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <Box key={item?.product?._id} sx={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                 <Box
                   sx={{
                     border: `1px solid rgba(${theme.palette.customColors.main}, 0.2)`
@@ -259,6 +273,7 @@ const CardOrder: NextPage<TProps> = props => {
               gap: '2px',
               fontWeight: 'bold'
             }}
+            disabled={memeDisabledBuyAgain}
           >
             {t('Buy_again')}
           </Button>
