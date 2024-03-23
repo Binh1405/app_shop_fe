@@ -47,7 +47,10 @@ export type TItemOrderProductMe = {
   shippingAddress: {
     fullName: string
     address: string
-    city: string
+    city: {
+      _id: string,
+      name: string
+    }
     phone: string
   }
   orderItems: TItemProductMe[]
