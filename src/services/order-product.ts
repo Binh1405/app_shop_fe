@@ -51,7 +51,7 @@ export const cancelOrderProductOfMe = async (id: string) => {
 // admin cms
 export const deleteOrderProduct = async (id: string) => {
   try {
-    const res = await instanceAxios.delete(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/${id}`)
+    const res = await instanceAxios.delete(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/${id}`)
 
     return res.data
   } catch (error: any) {
@@ -61,7 +61,7 @@ export const deleteOrderProduct = async (id: string) => {
 
 export const getDetailsOrderProduct = async (id: string) => {
   try {
-    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/${id}`)
+    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_ORDER.ORDER.INDEX}/${id}`)
 
     return res.data
   } catch (error: any) {
