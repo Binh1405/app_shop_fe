@@ -81,3 +81,5 @@ export type TItemOrderProductMe = {
   isDelivered: number
   status: number
 }
+
+export interface TItemOrderProducts extends TItemOrderProductMe {}
