@@ -7,30 +7,29 @@ import { useTranslation } from 'react-i18next'
 
 // ** Mui
 import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, Typography, styled, useTheme } from '@mui/material'
-import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
+import { GridColDef, GridSortModel } from '@mui/x-data-grid'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState } from 'src/stores/user'
+import { deleteOrderProductAsync, getAllOrderProductsAsync } from 'src/stores/order-product/actions'
 
 // ** Components
 import GridDelete from 'src/components/grid-delete'
 import GridEdit from 'src/components/grid-edit'
-import GridCreate from 'src/components/grid-create'
 import InputSearch from 'src/components/input-search'
 import CustomDataGrid from 'src/components/custom-data-grid'
 import Spinner from 'src/components/spinner'
 import ConfirmationDialog from 'src/components/confirmation-dialog'
 import CustomPagination from 'src/components/custom-pagination'
-import CreateEditUser from 'src/views/pages/system/user/component/CreateEditUser'
-import TableHeader from 'src/components/table-header'
 import CustomSelect from 'src/components/custom-select'
+import EditOrderProduct from 'src/views/pages/manage-order/order-product/components/EditOrderProduct'
 
 // ** Others
 import toast from 'react-hot-toast'
 import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/error'
-import { toFullName, formatFilter } from 'src/utils'
+import {formatFilter } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Hooks
@@ -38,17 +37,16 @@ import { usePermission } from 'src/hooks/usePermission'
 
 // ** Config
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
-import { PERMISSIONS } from 'src/configs/permission'
-import { getAllRoles } from 'src/services/role'
-import { getAllCities } from 'src/services/city'
-import { deleteOrderProductAsync, getAllOrderProductsAsync } from 'src/stores/order-product/actions'
 import { STATUS_ORDER_PRODUCT } from 'src/configs/orderProduct'
-import { ThemeContext } from '@emotion/react'
-import { TItemOrderProducts, TItemProductMe } from 'src/types/order-product'
+
+// ** Services
+import { getAllCities } from 'src/services/city'
+
+// ** Types
+import { TItemProductMe } from 'src/types/order-product'
 
 type TProps = {}
 
-type TSelectedRow = { id: string; role: { name: string; permissions: string[] } }
 interface StatusOrderChipT extends ChipProps {
   background: string
 }
@@ -153,7 +151,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseEdit = () => {
     setOpenEdit({
       open: false,
       id: ''
@@ -173,13 +171,14 @@ const OrderProductListPage: NextPage<TProps> = () => {
     {
       field: "items",
       headerName: t('Product_items'),
+      hideSortIcons: true,
       flex: 1,
       minWidth: 200,
       renderCell: params => {
         const { row } = params
 
         return (
-          <AvatarGroup max={1} total={row?.orderItems?.length}>
+          <AvatarGroup max={1}>
             {row.orderItems?.map((item: TItemProductMe) => {
               return (
                 <Avatar key={item?.product?._id} alt={item?.product?.slug} src={item?.image} />
@@ -225,6 +224,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
     {
       field: 'city',
       headerName: t('City'),
+      hideSortIcons: true,
       minWidth: 200,
       maxWidth: 200,
       renderCell: params => {
@@ -254,6 +254,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
       align: 'left',
       renderCell: params => {
         const { row } = params
+        console.log("params", { params })
 
         return (
           <>
@@ -323,24 +324,18 @@ const OrderProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     if (isSuccessEdit) {
-      if (!openEdit.id) {
-        toast.success(t('Create_order-product_success'))
-      } else {
-        toast.success(t('Update_order-product_success'))
-      }
+
+      toast.success(t('Update_order_product_success'))
       handleGetListOrderProducts()
-      handleCloseCreateEdit()
+      handleCloseEdit()
       dispatch(resetInitialState())
     } else if (isErrorEdit && messageErrorEdit && typeError) {
       const errorConfig = OBJECT_TYPE_ERROR_ROLE[typeError]
       if (errorConfig) {
         toast.error(t(errorConfig))
       } else {
-        if (openEdit.id) {
-          toast.error(t('Update_order-product_error'))
-        } else {
-          toast.error(t('Create_order-product_error'))
-        }
+        toast.error(t('Update_order_product_error'))
+
       }
       dispatch(resetInitialState())
     }
@@ -349,15 +344,22 @@ const OrderProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     if (isSuccessDelete) {
-      toast.success(t('Delete_order-product_success'))
+      toast.success(t('Delete_order_product_success'))
       handleGetListOrderProducts()
       dispatch(resetInitialState())
       handleCloseConfirmDeleteOrder()
     } else if (isErrorDelete && messageErrorDelete) {
-      toast.error(t('Delete_order-product_error'))
+      toast.error(t('Delete_order_product_error'))
       dispatch(resetInitialState())
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+
+  const memoOptionStatus = useMemo(() => {
+    return Object.values(STATUS_ORDER_PRODUCT).map((item) => ({
+      label: t(item.label),
+      value: item.value
+    }))
+  }, [])
 
   return (
     <>
@@ -371,7 +373,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
         description={t('Confirm_delete_order_product')}
       />
 
-      {/* <EditOrderProduct open={openEdit.open} onClose={handleCloseCreateEdit} idUser={openEdit.id} /> */}
+      <EditOrderProduct open={openEdit.open} onClose={handleCloseEdit} idOrder={openEdit.id} />
       {isLoading && <Spinner />}
       <Box
         sx={{
@@ -406,7 +408,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
                   setStatusSelected(e.target.value as string[])
                 }}
                 multiple
-                options={Object.values(STATUS_ORDER_PRODUCT)}
+                options={memoOptionStatus}
                 value={statusSelected}
                 placeholder={t('Status')}
               />

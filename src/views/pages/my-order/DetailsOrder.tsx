@@ -6,38 +6,40 @@ import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 
 // ** Mui
-import { Avatar, Box, Button, Divider, Tabs, TabsProps, Typography, styled, useTheme } from '@mui/material'
+import { Avatar, Box, Button, Divider, Typography, useTheme } from '@mui/material'
 
 // ** Components
-import NoData from 'src/components/no-data'
-import CardOrder from 'src/views/pages/my-order/components/CardOrder'
-import CustomPagination from 'src/components/custom-pagination'
+import ConfirmationDialog from 'src/components/confirmation-dialog'
 import Spinner from 'src/components/spinner'
-import InputSearch from 'src/components/input-search'
+import Icon from 'src/components/Icon'
 
 // ** Translate
 import { useTranslation } from 'react-i18next'
 
 // ** Redux
-import { cancelOrderProductOfMeAsync, getAllOrderProductsByMeAsync } from 'src/stores/order-product/actions'
+import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
+
 // ** Other
-import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import toast from 'react-hot-toast'
+import { hexToRGBA } from 'src/utils/hex-to-rgba'
+import { convertUpdateMultipleProductsCart, formatNumberToLocal } from 'src/utils'
+import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+
+// ** Services
+import { getDetailsOrderProductByMe } from 'src/services/order-product'
 
 // ** Types
 import { TItemOrderProduct, TItemOrderProductMe, TItemProductMe } from 'src/types/order-product'
-import { STATUS_ORDER_PRODUCT } from 'src/configs/orderProduct'
-import { convertUpdateMultipleProductsCart, formatNumberToLocal } from 'src/utils'
-import { hexToRGBA } from 'src/utils/hex-to-rgba'
-import { getDetailsOrderProductByMe } from 'src/services/order-product'
-import Icon from 'src/components/Icon'
-import ConfirmationDialog from 'src/components/confirmation-dialog'
-import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
+
+// ** Hooks
 import { useAuth } from 'src/hooks/useAuth'
+
+// ** Config
 import { ROUTE_CONFIG } from 'src/configs/route'
+import { STATUS_ORDER_PRODUCT } from 'src/configs/orderProduct'
 
 
 type TProps = {}
