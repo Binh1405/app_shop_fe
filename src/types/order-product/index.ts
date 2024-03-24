@@ -35,6 +35,10 @@ export type TParamsCreateOrderProduct = {
   deliveryMethod: string
 }
 
+export interface TParamsEditOrderProduct extends TParamsCreateOrderProduct {
+  id: string
+}
+
 export type TParamsGetOrderProducts = {
   limit?: number
   page?: number
@@ -77,3 +81,5 @@ export type TItemOrderProductMe = {
   isDelivered: number
   status: number
 }
+
+export interface TItemOrderProducts extends TItemOrderProductMe {}
