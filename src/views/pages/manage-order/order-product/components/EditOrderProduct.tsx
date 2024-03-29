@@ -235,7 +235,7 @@ const EditOrderProduct = (props: TCreateEditProduct) => {
                           render={({ field: { onChange, onBlur, value } }) => (
                             <CustomTextField
                               required
-                              disabled
+                            
                               fullWidth
                               label={t('Address')}
                               onChange={onChange}
@@ -255,10 +255,17 @@ const EditOrderProduct = (props: TCreateEditProduct) => {
                           render={({ field: { onChange, onBlur, value } }) => (
                             <CustomTextField
                               required
-                              disabled
                               fullWidth
                               label={t('Phone')}
-                              onChange={onChange}
+                              onChange={e => {
+                                const numValue = e.target.value.replace(/\D/g, '')
+                                onChange(numValue)
+                              }}
+                              inputProps={{
+                                inputMode: 'numeric',
+                                pattern: '[0-9]*',
+                                minLength: 8
+                              }}                       
                               onBlur={onBlur}
                               value={value}
                               placeholder={t('Enter_phone')}

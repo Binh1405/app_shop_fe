@@ -290,5 +290,14 @@
     "Delete_order_product_error": "Xóa đơn hàng thất bại",
     "Product_items": "Sản phẩm",
     "Total_price": "Tổng tiền",
-    "Search": "Tìm kiếm"
+    "Search": "Tìm kiếm",
+    "Title_delete_review": "Xác nhận xóa đánh giá",
+    "Confirm_delete_review":"Xác nhận xóa đánh giá",
+    "Update_review_success": "Cập nhật đánh giá thành công",
+    "Update_review_error": "Cập nhật đánh giá thất bại",
+    "Delete_review_success": "Xóa đánh giá thành công",
+    "Delete_review_error": "Xóa đánh giá thất bại",
+    "Product_name": "Tên sản phẩm",
+    "Content": "Nội dung",
+    "Star": "Số sao"
 }
