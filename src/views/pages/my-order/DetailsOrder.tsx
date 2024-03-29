@@ -21,6 +21,7 @@ import { cancelOrderProductOfMeAsync } from 'src/stores/order-product/actions'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState, updateProductToCart } from 'src/stores/order-product'
+import { resetInitialState as resetInitialReview } from 'src/stores/reviews'
 
 // ** Other
 import toast from 'react-hot-toast'
@@ -40,6 +41,7 @@ import { useAuth } from 'src/hooks/useAuth'
 // ** Config
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { STATUS_ORDER_PRODUCT } from 'src/configs/orderProduct'
+import ModalWriteReview from 'src/views/pages/my-order/components/ModalWriteReview'
 
 
 type TProps = {}
@@ -50,6 +52,11 @@ const MyOrderPage: NextPage<TProps> = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [dataOrder, setDataOrder] = useState<TItemOrderProductMe>({} as any)
     const [openCancel, setOpenCancel] = useState(false)
+    const [openReview, setOpenReview] = useState({
+        open: false,
+        userId: "",
+        productId: ""
+    })
 
     // ** Hooks
     const { t } = useTranslation()
@@ -63,6 +70,8 @@ const MyOrderPage: NextPage<TProps> = () => {
     // ** redux
     const dispatch: AppDispatch = useDispatch()
     const { isSuccessCancelMe, orderItems, isErrorCancelMe, messageErrorCancelMe } = useSelector((state: RootState) => state.orderProduct)
+    const { isSuccessCreate, isErrorCreate, messageErrorCreate, isLoading: loadingReview } = useSelector((state: RootState) => state.reviews)
+
 
     // ** fetch API
 
@@ -126,6 +135,10 @@ const MyOrderPage: NextPage<TProps> = () => {
         )
     }
 
+    const handleCloseReview = () => {
+        setOpenReview({ open: false, productId: "", userId: "" })
+    }
+
     const memeDisabledBuyAgain = useMemo(() => {
         return dataOrder?.orderItems?.some((item) => !item.product.countInStock)
     }, [dataOrder?.orderItems])
@@ -147,9 +160,27 @@ const MyOrderPage: NextPage<TProps> = () => {
         }
     }, [isSuccessCancelMe, isErrorCancelMe, messageErrorCancelMe])
 
+    useEffect(() => {
+        if (isSuccessCreate) {
+            handleGetDetailsOrdersOfMe()
+            toast.success(t('Write_review_success'))
+            dispatch(resetInitialReview())
+            handleCloseReview()
+        } else if (isErrorCreate && messageErrorCreate) {
+            toast.error(t('Write_review_error'))
+            dispatch(resetInitialReview())
+        }
+    }, [isSuccessCreate, isErrorCreate, messageErrorCreate])
+
     return (
         <>
             {isLoading && <Spinner />}
+            <ModalWriteReview
+                open={openReview.open}
+                productId={openReview.productId}
+                userId={openReview.userId}
+                onClose={handleCloseReview}
+            />
             <ConfirmationDialog
                 open={openCancel}
                 handleClose={handleCloseDialog}
@@ -170,18 +201,20 @@ const MyOrderPage: NextPage<TProps> = () => {
                     <Button startIcon={<Icon icon="fluent-mdl2:chrome-back"></Icon>} onClick={() => router.back()}>
                         {t("Back")}
                     </Button>
-                    {dataOrder?.status === 2 && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Icon icon='carbon:delivery'></Icon>
-                            <Typography>
-                                <span style={{ color: theme.palette.success.main }}>{t('Order_has_been_delivery')}</span>
-                                <span>{' | '}</span>
-                            </Typography>
-                        </Box>
-                    )}
-                    <Typography sx={{ textTransform: 'uppercase', color: theme.palette.primary.main, fontWeight: 600 }}>
-                        {t(`${(STATUS_ORDER_PRODUCT as any)[dataOrder?.status]?.label}`)}
-                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        {dataOrder?.status === 2 && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Icon icon='carbon:delivery'></Icon>
+                                <Typography>
+                                    <span style={{ color: theme.palette.success.main }}>{t('Order_has_been_delivery')}</span>
+                                    <span>{' | '}</span>
+                                </Typography>
+                            </Box>
+                        )}
+                        <Typography sx={{ textTransform: 'uppercase', color: theme.palette.primary.main, fontWeight: 600 }}>
+                            {t(`${(STATUS_ORDER_PRODUCT as any)[dataOrder?.status]?.label}`)}
+                        </Typography>
+                    </Box>
                 </Box>
                 <Divider />
                 <Box mt={2} mb={2} sx={{ display: 'flex', flexDirection: 'column', gap: 4, cursor: "pointer" }}>
@@ -202,16 +235,23 @@ const MyOrderPage: NextPage<TProps> = () => {
                                     />
                                 </Box>
                                 <Box>
-                                    <Typography
-                                        sx={{
-                                            fontSize: '18px',
-                                            textOverflow: 'ellipsis',
-                                            overflow: 'hidden',
-                                            display: 'block'
-                                        }}
-                                    >
-                                        {item.name}
-                                    </Typography>
+                                    <Box sx={{ display: 'flex', alignItems: "center", gap: "20px" }}>
+                                        <Typography
+                                            sx={{
+                                                fontSize: '18px',
+                                                textOverflow: 'ellipsis',
+                                                overflow: 'hidden',
+                                                display: 'block'
+                                            }}
+                                        >
+                                            {item.name}
+                                        </Typography>
+                                        {+dataOrder.status === +STATUS_ORDER_PRODUCT[2].value && (
+                                            <Button onClick={() => setOpenReview({ open: true, productId: item?.product?._id, userId: user ? user?._id : "" })}>{t("Write_review")}</Button>
+
+                                        )}
+                                    </Box>
+
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <Typography
                                             variant='h6'
