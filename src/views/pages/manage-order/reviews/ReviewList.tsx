@@ -249,7 +249,6 @@ const ReviewListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     if (isSuccessEdit) {
-
       toast.success(t('Update_review_success'))
       handleGetListReviews()
       handleCloseEdit()

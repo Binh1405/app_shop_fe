@@ -24,7 +24,6 @@ import {
 import Icon from 'src/components/Icon'
 import CustomModal from 'src/components/custom-modal'
 import Spinner from 'src/components/spinner'
-import CustomTextField from 'src/components/text-field'
 import CustomTextArea from 'src/components/text-area'
 
 // ** Services
@@ -33,10 +32,9 @@ import { getDetailsReview } from 'src/services/reviewProduct'
 // ** Redux
 import { AppDispatch } from 'src/stores'
 import { useDispatch } from 'react-redux'
-import { updateReviewAsync } from 'src/stores/reviews/actions'
+import { updateMyReviewAsync } from 'src/stores/reviews/actions'
 
 // ** Others
-import { stringToSlug } from 'src/utils'
 
 
 interface TCreateReview {
@@ -95,7 +93,7 @@ const EditReview = (props: TCreateReview) => {
       // update
       if (idReview) {
         dispatch(
-          updateReviewAsync({
+          updateMyReviewAsync({
             id: idReview,
             content: data.content,
             star: +data.star,
