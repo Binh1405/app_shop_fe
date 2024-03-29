@@ -220,7 +220,8 @@
     "not_review": "Chưa đánh giá",
     "Sold_product": "Đã bán",
     "Product": "sản phẩm",
-    "Count_in_stock_product": "Còn {{count}} sản phẩm trong kho",
+    "Still": "Còn",
+    "product_in_stock": "sản phẩm trong kho",
     "Description_product": "Mô tả sản phẩm",
     "View_cart": "Giỏ hàng",
     "Price_original": "Giá gốc",
@@ -299,5 +300,7 @@
     "Delete_review_error": "Xóa đánh giá thất bại",
     "Product_name": "Tên sản phẩm",
     "Content": "Nội dung",
-    "Star": "Số sao"
+    "Star": "Số sao",
+    "Write_review": "Viết đánh giá",
+    "Review_product": "Đánh giá sản phẩm"
 }
