@@ -88,6 +88,8 @@ export type TItemOrderProductMe = {
   isPaid: number
   isDelivered: number
   status: number
+  deliveryAt: Date
+  paidAt: Date
 }
 
 export interface TItemOrderProducts extends TItemOrderProductMe {}

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import Icon from "src/components/Icon"
 import { ROUTE_CONFIG } from "src/configs/route"
 import { getVNPayIpnPayment } from "src/services/payment"
+import { formatNumberToLocal } from "src/utils"
 
 const PaymentVNPay = () => {
     const { t } = useTranslation()
@@ -12,7 +13,10 @@ const PaymentVNPay = () => {
     const router = useRouter()
     const { vnp_SecureHash, vnp_ResponseCode, vnp_TxnRef, ...rests } = router.query
     // ** State
-    const [statusPayment, setStatusPayment] = useState("")
+    const [dataPayment, setDataPayment] = useState({
+        status: "",
+        totalPrice: 0
+    })
 
     const fetchGetIpnVNPay = async (param: any) => {
         await getVNPayIpnPayment({
@@ -20,9 +24,12 @@ const PaymentVNPay = () => {
                 ...param
             }
         }).then((res) => {
-            const data = res?.data?.RspCode
+            const data = res?.data
             if (data) {
-                setStatusPayment(data)
+                setDataPayment({
+                    status: data.RspCode,
+                    totalPrice: data.totalPrice,
+                })
             }
         })
     }
@@ -35,7 +42,12 @@ const PaymentVNPay = () => {
 
     return (
         <Card sx={{ padding: "20px" }}>
-            {statusPayment === "00" ? (
+            <Box sx={{display: "flex", justifyContent: "center"}}>
+            <Typography sx={{ fontSize: '26px', fontWeight: 600, color: theme.palette.primary.main }}>
+                {formatNumberToLocal(dataPayment?.totalPrice)} VND
+            </Typography>
+            </Box>
+            {dataPayment.status === "00" ? (
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
 
                     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: "20px" }}>

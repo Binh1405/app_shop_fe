@@ -306,5 +306,8 @@
     "Payment": "Thanh toán",
     "Payment_error": "Thanh toán lỗi",
     "Payment_success": "Thanh toán thành công",
-    "Back_home": "Quay về trang chủ"
+    "Back_home": "Quay về trang chủ",
+    "Order_has_been_paid": "Đơn hàng đã thanh toán",
+    "Order_has_not_been_paid": "Đơn hàng chưa thanh toán",
+    "Order_has_not_been_delivery": "Đơn hàng chưa được giao hàng"
 }

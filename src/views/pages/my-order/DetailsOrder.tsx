@@ -42,6 +42,9 @@ import { useAuth } from 'src/hooks/useAuth'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { STATUS_ORDER_PRODUCT } from 'src/configs/orderProduct'
 import ModalWriteReview from 'src/views/pages/my-order/components/ModalWriteReview'
+import { createURLpaymentVNPay } from 'src/services/payment'
+import { PAYMENT_TYPES } from 'src/configs/payment'
+import { formatDate } from 'src/utils/date'
 
 
 type TProps = {}
@@ -59,10 +62,11 @@ const MyOrderPage: NextPage<TProps> = () => {
     })
 
     // ** Hooks
-    const { t } = useTranslation()
+    const { t, i18n } = useTranslation()
     const router = useRouter()
     const orderId = router.query.orderId as string
     const { user } = useAuth()
+    const PAYMENT_DATA = PAYMENT_TYPES()
 
     // ** theme
     const theme = useTheme()
@@ -137,6 +141,33 @@ const MyOrderPage: NextPage<TProps> = () => {
 
     const handleCloseReview = () => {
         setOpenReview({ open: false, productId: "", userId: "" })
+    }
+
+    const handlePaymentVNPay = async () => {
+        setIsLoading(true)
+        await createURLpaymentVNPay({
+            totalPrice: 10000,
+            // dataOrder.totalPrice,
+            orderId: dataOrder?._id,
+            language: i18n.language === "vi" ? "vn" : i18n.language
+        }).then((res) => {
+            if (res?.data) {
+                window.open(res?.data, '_blank')
+            }
+            setIsLoading(false)
+        })
+
+    }
+
+    const handlePaymentTypeOrder = (type: string) => {
+        switch (type) {
+            case PAYMENT_DATA.VN_PAYMENT.value: {
+                handlePaymentVNPay()
+                break
+            }
+            default:
+                break
+        }
     }
 
     const memeDisabledBuyAgain = useMemo(() => {
@@ -357,8 +388,53 @@ const MyOrderPage: NextPage<TProps> = () => {
                     </Box>
                 </Box>
 
+                <Box mt={2} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Icon icon='carbon:delivery'></Icon>
+                        <Typography>
+                            {!!dataOrder.isDelivered ? (
+                                <>
+                                    <span style={{ color: theme.palette.success.main, fontSize: "16px" }}>{t('Order_has_been_delivery')}</span>
+                                    <span style={{ fontSize: "16px", fontWeight: "bold" }}>{" "}{formatDate(dataOrder.deliveryAt, { dateStyle: 'short' })}</span>
+                                </>
+                            ) : (
+                                <span style={{ color: theme.palette.error.main, fontSize: "16px" }}>{t('Order_has_not_been_delivery')}</span>
+                            )}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Icon icon='carbon:delivery'></Icon>
+                        <Typography>
+                            {!!dataOrder.isPaid ? (
+                                <>
+
+                                    <span style={{ color: theme.palette.success.main, fontSize: "16px" }}>{t('Order_has_been_paid')}</span>
+                                    <span style={{fontSize: "16px", fontWeight: "bold" }}>{" "}{formatDate(dataOrder.paidAt, { dateStyle: 'short' })}</span>
+                                </>
+                            ) : (
+                                <span style={{ color: theme.palette.error.main, fontSize: "16px" }}>{t('Order_has_not_been_paid')}</span>
+                            )}
+                        </Typography>
+                    </Box>
+                </Box>
+
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mt: 6, justifyContent: 'flex-end' }}>
+                    {[0].includes(dataOrder.status) && dataOrder.paymentMethod.type !== PAYMENT_DATA.PAYMENT_LATER.value && (
+                        <Button
+                            variant='outlined'
+                            onClick={() => handlePaymentTypeOrder(dataOrder.paymentMethod.type)}
+                            sx={{
+                                height: 40,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '2px',
+                                backgroundColor: 'transparent !important',
+                            }}
+                        >
+                            {t('Payment')}
+                        </Button>
+                    )}
                     {[0, 1].includes(dataOrder?.status) && (
                         <Button
                             variant='outlined'

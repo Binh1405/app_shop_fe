@@ -121,7 +121,18 @@ const CardOrder: NextPage<TProps> = props => {
     router.push(`${ROUTE_CONFIG.MY_ORDER}/${dataOrder._id}`)
   }
 
-  const handlePaymentOrder = async () => {
+  const handlePaymentTypeOrder = (type: string) => {
+    switch(type) {
+      case PAYMENT_DATA.VN_PAYMENT.value : {
+        handlePaymentVNPay()
+        break
+      }
+      default: 
+      break
+    }
+  }
+
+  const handlePaymentVNPay = async () => {
     setLoading(true)
     await createURLpaymentVNPay({
       totalPrice: 10000 ,
@@ -162,11 +173,20 @@ const CardOrder: NextPage<TProps> = props => {
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-          {dataOrder.status === 2 && (
+          {!!dataOrder.isDelivered && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Icon icon='carbon:delivery'></Icon>
               <Typography>
                 <span style={{ color: theme.palette.success.main }}>{t('Order_has_been_delivery')}</span>
+                <span>{' | '}</span>
+              </Typography>
+            </Box>
+          )}
+           {!!dataOrder.isPaid && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Icon icon='streamline:payment-10'></Icon>
+              <Typography>
+                <span style={{ color: theme.palette.success.main }}>{t('Order_has_been_paid')}</span>
                 <span>{' | '}</span>
               </Typography>
             </Box>
@@ -273,10 +293,10 @@ const CardOrder: NextPage<TProps> = props => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mt: 6, justifyContent: 'flex-end' }}>
-          {/* {[0].includes(dataOrder.status) && dataOrder.paymentMethod.type !== PAYMENT_DATA.PAYMENT_LATER.value && ( */}
+          {[0].includes(dataOrder.status) && dataOrder.paymentMethod.type !== PAYMENT_DATA.PAYMENT_LATER.value && (
           <Button
             variant='outlined'
-            onClick={handlePaymentOrder}
+            onClick={() => handlePaymentTypeOrder(dataOrder.paymentMethod.type)}
             sx={{
               height: 40,
               display: 'flex',
@@ -287,7 +307,7 @@ const CardOrder: NextPage<TProps> = props => {
           >
             {t('Payment')}
           </Button>
-          {/* )} */}
+          )}
           {[0, 1].includes(dataOrder.status) && (
             <Button
               variant='outlined'
