@@ -146,8 +146,8 @@ const MyOrderPage: NextPage<TProps> = () => {
     const handlePaymentVNPay = async () => {
         setIsLoading(true)
         await createURLpaymentVNPay({
-            totalPrice: 10000,
-            // dataOrder.totalPrice,
+            totalPrice:
+            dataOrder.totalPrice,
             orderId: dataOrder?._id,
             language: i18n.language === "vi" ? "vn" : i18n.language
         }).then((res) => {

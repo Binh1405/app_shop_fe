@@ -122,25 +122,25 @@ const CardOrder: NextPage<TProps> = props => {
   }
 
   const handlePaymentTypeOrder = (type: string) => {
-    switch(type) {
-      case PAYMENT_DATA.VN_PAYMENT.value : {
+    switch (type) {
+      case PAYMENT_DATA.VN_PAYMENT.value: {
         handlePaymentVNPay()
         break
       }
-      default: 
-      break
+      default:
+        break
     }
   }
 
   const handlePaymentVNPay = async () => {
     setLoading(true)
     await createURLpaymentVNPay({
-      totalPrice: 10000 ,
-      // dataOrder.totalPrice,
+      totalPrice:
+        dataOrder.totalPrice,
       orderId: dataOrder?._id,
       language: i18n.language === "vi" ? "vn" : i18n.language
     }).then((res) => {
-      if(res?.data) {
+      if (res?.data) {
         window.open(res?.data, '_blank')
       }
       setLoading(false)
@@ -182,7 +182,7 @@ const CardOrder: NextPage<TProps> = props => {
               </Typography>
             </Box>
           )}
-           {!!dataOrder.isPaid && (
+          {!!dataOrder.isPaid && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Icon icon='streamline:payment-10'></Icon>
               <Typography>
@@ -294,19 +294,19 @@ const CardOrder: NextPage<TProps> = props => {
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mt: 6, justifyContent: 'flex-end' }}>
           {[0].includes(dataOrder.status) && dataOrder?.paymentMethod?.type !== PAYMENT_DATA.PAYMENT_LATER.value && (
-          <Button
-            variant='outlined'
-            onClick={() => handlePaymentTypeOrder(dataOrder?.paymentMethod?.type)}
-            sx={{
-              height: 40,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '2px',
-              backgroundColor: 'transparent !important',
-            }}
-          >
-            {t('Payment')}
-          </Button>
+            <Button
+              variant='outlined'
+              onClick={() => handlePaymentTypeOrder(dataOrder?.paymentMethod?.type)}
+              sx={{
+                height: 40,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2px',
+                backgroundColor: 'transparent !important',
+              }}
+            >
+              {t('Payment')}
+            </Button>
           )}
           {[0, 1].includes(dataOrder.status) && (
             <Button

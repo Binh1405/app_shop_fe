@@ -152,7 +152,7 @@ const CheckoutProductPage: NextPage<TProps> = () => {
   const handlePaymentVNPay = async (data: { orderId: string, totalPrice: number }) => {
     setLoading(true)
     await createURLpaymentVNPay({
-      totalPrice: 10000,
+      totalPrice: data.totalPrice,
       orderId: data?.orderId,
       language: i18n.language === "vi" ? "vn" : i18n.language
     }).then((res) => {
