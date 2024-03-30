@@ -293,10 +293,10 @@ const CardOrder: NextPage<TProps> = props => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mt: 6, justifyContent: 'flex-end' }}>
-          {[0].includes(dataOrder.status) && dataOrder.paymentMethod.type !== PAYMENT_DATA.PAYMENT_LATER.value && (
+          {[0].includes(dataOrder.status) && dataOrder?.paymentMethod?.type !== PAYMENT_DATA.PAYMENT_LATER.value && (
           <Button
             variant='outlined'
-            onClick={() => handlePaymentTypeOrder(dataOrder.paymentMethod.type)}
+            onClick={() => handlePaymentTypeOrder(dataOrder?.paymentMethod?.type)}
             sx={{
               height: 40,
               display: 'flex',

@@ -409,7 +409,7 @@ const MyOrderPage: NextPage<TProps> = () => {
                                 <>
 
                                     <span style={{ color: theme.palette.success.main, fontSize: "16px" }}>{t('Order_has_been_paid')}</span>
-                                    <span style={{fontSize: "16px", fontWeight: "bold" }}>{" "}{formatDate(dataOrder.paidAt, { dateStyle: 'short' })}</span>
+                                    <span style={{ fontSize: "16px", fontWeight: "bold" }}>{" "}{formatDate(dataOrder.paidAt, { dateStyle: 'short' })}</span>
                                 </>
                             ) : (
                                 <span style={{ color: theme.palette.error.main, fontSize: "16px" }}>{t('Order_has_not_been_paid')}</span>
