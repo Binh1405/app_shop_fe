@@ -44,8 +44,8 @@ import { OBJECT_STATUS_PRODUCT } from 'src/configs/product'
 import { getAllProductTypes } from 'src/services/product-type'
 
 // ** Utils
-import { formatDate, formatNumberToLocal } from 'src/utils'
-import { formatFilter } from 'src/utils'
+import { formatNumberToLocal,formatFilter } from 'src/utils'
+import {formatDate} from "src/utils/date"
 
 type TProps = {}
 

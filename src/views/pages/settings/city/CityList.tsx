@@ -38,7 +38,7 @@ import { usePermission } from 'src/hooks/usePermission'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 
 // ** Utils
-import { formatDate } from 'src/utils'
+import { formatDate } from 'src/utils/date'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 type TProps = {}
