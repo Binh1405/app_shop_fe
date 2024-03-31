@@ -120,6 +120,7 @@ const UserDropdown = (props: TProps) => {
       setUser({ ...userData })
     }
   }, [userData])
+console.log("useruser", {user})
 
   return (
     <React.Fragment>

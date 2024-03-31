@@ -3,7 +3,7 @@ import { Dispatch } from 'redux'
 import { createSlice } from '@reduxjs/toolkit'
 
 // ** Axios Imports
-import { changePasswordMeAsync, registerAuthAsync, serviceName, updateAuthMeAsync } from 'src/stores/auth/actions'
+import { changePasswordMeAsync, registerAuthAsync, registerAuthGoogleAsync, serviceName, updateAuthMeAsync } from 'src/stores/auth/actions'
 
 // ** Type
 import { UserDataType } from 'src/contexts/types'
@@ -68,6 +68,26 @@ export const authSlice = createSlice({
       state.typeError = action.payload?.typeError
     })
     builder.addCase(registerAuthAsync.rejected, (state, action) => {
+      state.isLoading = false
+      state.isSuccess = false
+      state.isError = true
+      state.message = ''
+      state.typeError = ''
+    })
+
+    // ** register
+    builder.addCase(registerAuthGoogleAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(registerAuthGoogleAsync.fulfilled, (state, action) => {
+      console.log("action", {action})
+      state.isLoading = false
+      state.isSuccess = !!action.payload?.data?.email
+      state.isError = !action.payload?.data?.email
+      state.message = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
+    builder.addCase(registerAuthGoogleAsync.rejected, (state, action) => {
       state.isLoading = false
       state.isSuccess = false
       state.isError = true

@@ -13,6 +13,12 @@ export const loginAuth = async (data: TLoginAuth) => {
   return res.data
 }
 
+export const loginAuthGoogle = async (idToken: string) => {
+  const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/login-google`, { idToken })
+
+  return res.data
+}
+
 export const logoutAuth = async () => {
   try {
     const res = await instanceAxios.post(`${API_ENDPOINT.AUTH.INDEX}/logout`)
@@ -26,6 +32,16 @@ export const logoutAuth = async () => {
 export const registerAuth = async (data: TRegisterAuth) => {
   try {
     const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/register`, data)
+
+    return res.data
+  } catch (error) {
+    return error
+  }
+}
+
+export const registerAuthGoogle = async (idToken: string) => {
+  try {
+    const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/register-google`, { idToken })
 
     return res.data
   } catch (error) {

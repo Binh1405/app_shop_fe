@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 // ** React
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
 // ** Mui
 import {
@@ -39,6 +39,9 @@ import LoginLight from '/public/images/login-light.png'
 import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { signIn, useSession } from 'next-auth/react'
+import { loginAuth } from 'src/services/auth'
+import { clearLocalPreTokenGoogle, getLocalPreTokenGoogle, setLocalPreTokenGoogle } from 'src/helpers/storage'
 
 type TProps = {}
 
@@ -51,18 +54,23 @@ const LoginPage: NextPage<TProps> = () => {
   // State
   const [showPassword, setShowPassword] = useState(false)
   const [isRemember, setIsRemember] = useState(true)
+  const prevTokenLocal = getLocalPreTokenGoogle()
 
   // ** Translate
   const { t } = useTranslation()
 
   // ** context
-  const { login } = useAuth()
+  const { login, loginGoogle } = useAuth()
 
   // ** theme
   const theme = useTheme()
 
+  // ** Hooks
+  const { data: session } = useSession()
+  console.log("session", {session})
+
   const schema = yup.object().shape({
-    email: yup.string().required(t('Required_field')).matches(EMAIL_REG,t("Rules_email")),
+    email: yup.string().required(t('Required_field')).matches(EMAIL_REG, t("Rules_email")),
     password: yup
       .string()
       .required(t('Required_field'))
@@ -92,6 +100,20 @@ const LoginPage: NextPage<TProps> = () => {
       })
     }
   }
+
+  const handleLoginGoogle = () => {
+    signIn("google")
+    clearLocalPreTokenGoogle()
+  }
+
+  useEffect(() => {
+    if ((session as any)?.accessToken && (session as any)?.accessToken !== prevTokenLocal) {
+      loginGoogle({ idToken: (session as any)?.accessToken, rememberMe: isRemember }, err => {
+        if (err?.response?.data?.typeError === 'INVALID') toast.error(t('The_email_or_password_wrong'))
+      })
+      setLocalPreTokenGoogle((session as any)?.accessToken)
+    }
+  }, [(session as any)?.accessToken])
 
   return (
     <Box
@@ -150,7 +172,7 @@ const LoginPage: NextPage<TProps> = () => {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <CustomTextField
                     required
-                    
+
                     fullWidth
                     label={t('Email')}
                     onChange={onChange}
@@ -175,7 +197,7 @@ const LoginPage: NextPage<TProps> = () => {
                   <CustomTextField
                     required
                     fullWidth
-                    
+
                     label={t('Password')}
                     onChange={onChange}
                     onBlur={onBlur}
@@ -232,7 +254,7 @@ const LoginPage: NextPage<TProps> = () => {
               </Link>
             </Box>
             <Typography sx={{ textAlign: 'center', mt: 2, mb: 2 }}>{t("Or")}</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }} >
               <IconButton sx={{ color: '#497ce2' }}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -249,7 +271,7 @@ const LoginPage: NextPage<TProps> = () => {
                   ></path>
                 </svg>
               </IconButton>
-              <IconButton sx={{ color: theme.palette.error.main }}>
+              <IconButton sx={{ color: theme.palette.error.main }} onClick={handleLoginGoogle}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   role='img'
