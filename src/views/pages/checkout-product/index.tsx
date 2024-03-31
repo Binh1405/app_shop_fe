@@ -31,7 +31,7 @@ import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 // ** Utils
-import {  formatNumberToLocal, toFullName } from 'src/utils'
+import { formatNumberToLocal, toFullName } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Redux
@@ -54,12 +54,15 @@ import { getLocalProductCart, setLocalProductToCart } from 'src/helpers/storage'
 import { getAllPaymentTypes } from 'src/services/payment-type'
 import { getAllDeliveryTypes } from 'src/services/delivery-type'
 import { getAllCities } from 'src/services/city'
+import { ROUTE_CONFIG } from 'src/configs/route'
+import { createURLpaymentVNPay } from 'src/services/payment'
+import { PAYMENT_TYPES } from 'src/configs/payment'
 
 type TProps = {}
 
 const CheckoutProductPage: NextPage<TProps> = () => {
   // State
-  const [optionPayments, setOptionPayments] = useState<{ label: string; value: string }[]>([])
+  const [optionPayments, setOptionPayments] = useState<{ label: string; value: string, type: string }[]>([])
   const [optionDeliveries, setOptionDeliveries] = useState<{ label: string; value: string; price: string }[]>([])
   const [paymentSelected, setPaymentSelected] = useState('')
   const [deliverySelected, setDeliverySelected] = useState('')
@@ -72,6 +75,7 @@ const CheckoutProductPage: NextPage<TProps> = () => {
   const { i18n } = useTranslation()
   const { user } = useAuth()
   const router = useRouter()
+  const PAYMENT_DATA = PAYMENT_TYPES()
 
   // ** theme
   const theme = useTheme()
@@ -145,6 +149,32 @@ const CheckoutProductPage: NextPage<TProps> = () => {
     setPaymentSelected(value)
   }
 
+  const handlePaymentVNPay = async (data: { orderId: string, totalPrice: number }) => {
+    setLoading(true)
+    await createURLpaymentVNPay({
+      totalPrice: data.totalPrice,
+      orderId: data?.orderId,
+      language: i18n.language === "vi" ? "vn" : i18n.language
+    }).then((res) => {
+      if (res?.data) {
+        window.open(res?.data, '_blank')
+      }
+      setLoading(false)
+    })
+
+  }
+
+  const handlePaymentTypeOrder = (type: string, data: { orderId: string, totalPrice: number }) => {
+    switch (type) {
+      case PAYMENT_DATA.VN_PAYMENT.value: {
+        handlePaymentVNPay(data)
+        break
+      }
+      default:
+        break
+    }
+  }
+
   const handleOrderProduct = () => {
     const totalPrice = memoPriceShipping + Number(memoQueryProduct.totalPrice)
     dispatch(
@@ -156,11 +186,11 @@ const CheckoutProductPage: NextPage<TProps> = () => {
         user: user ? user?._id : '',
         fullName: memoAddressDefault
           ? toFullName(
-              memoAddressDefault?.lastName,
-              memoAddressDefault?.middleName,
-              memoAddressDefault?.firstName,
-              i18n.language
-            )
+            memoAddressDefault?.lastName,
+            memoAddressDefault?.middleName,
+            memoAddressDefault?.firstName,
+            i18n.language
+          )
           : '',
         address: memoAddressDefault ? memoAddressDefault.address : '',
         city: memoAddressDefault ? memoAddressDefault.city : '',
@@ -169,10 +199,16 @@ const CheckoutProductPage: NextPage<TProps> = () => {
         totalPrice: totalPrice
       })
     ).then((res) => {
-      console.log("resss", {res})
+      const idPaymentMethod = res?.payload?.data?.paymentMethod
+      const orderId = res?.payload?.data?._id
+      const totalPrice = res?.payload?.data?._totalPrice
+      const findPayment = optionPayments.find((item) => item.value === idPaymentMethod)
+      if (findPayment) {
+        handlePaymentTypeOrder(findPayment.type, { totalPrice, orderId, })
+      }
     })
   }
-
+  console.log("ơpeew", { optionPayments })
   // ** Fetch API
   const handleGetListPaymentMethod = async () => {
     setLoading(true)
@@ -180,9 +216,10 @@ const CheckoutProductPage: NextPage<TProps> = () => {
       .then(res => {
         if (res.data) {
           setOptionPayments(
-            res?.data?.paymentTypes?.map((item: { name: string; _id: string }) => ({
+            res?.data?.paymentTypes?.map((item: { name: string; _id: string, type: string }) => ({
               label: item.name,
-              value: item._id
+              value: item._id,
+              type: item.type
             }))
           )
           setPaymentSelected(res?.data?.paymentTypes?.[0]?._id)
@@ -243,18 +280,18 @@ const CheckoutProductPage: NextPage<TProps> = () => {
     items.forEach((item: any) => {
       objectMap[item.product] = -item.amount
     })
-    const listOrderItems:TItemOrderProduct[] = []
-    orderItems.forEach((order:TItemOrderProduct) => {
-      if(objectMap[order.product]) {
+    const listOrderItems: TItemOrderProduct[] = []
+    orderItems.forEach((order: TItemOrderProduct) => {
+      if (objectMap[order.product]) {
         listOrderItems.push({
           ...order,
           amount: order.amount + objectMap[order.product]
         })
-      }else {
+      } else {
         listOrderItems.push(order)
       }
     })
-    const filterListOrder = listOrderItems.filter((item:TItemOrderProduct ) => item.amount)
+    const filterListOrder = listOrderItems.filter((item: TItemOrderProduct) => item.amount)
     if (user) {
       dispatch(
         updateProductToCart({
@@ -276,11 +313,11 @@ const CheckoutProductPage: NextPage<TProps> = () => {
         color: `rgba(${theme.palette.customColors.main}, 0.78)`
       }).then(result => {
         if (result.isConfirmed) {
-          console.log("")
+          router.push(ROUTE_CONFIG.MY_ORDER)
         }
       })
       handleChangeAmountCart(memoQueryProduct.productsSelected)
-    
+
       dispatch(resetInitialState())
     } else if (isErrorCreate && messageErrorCreate) {
       toast.error(t('Order_product_error'))

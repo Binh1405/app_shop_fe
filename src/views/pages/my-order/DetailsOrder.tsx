@@ -146,8 +146,8 @@ const MyOrderPage: NextPage<TProps> = () => {
     const handlePaymentVNPay = async () => {
         setIsLoading(true)
         await createURLpaymentVNPay({
-            totalPrice: 10000,
-            // dataOrder.totalPrice,
+            totalPrice:
+            dataOrder.totalPrice,
             orderId: dataOrder?._id,
             language: i18n.language === "vi" ? "vn" : i18n.language
         }).then((res) => {
@@ -409,7 +409,7 @@ const MyOrderPage: NextPage<TProps> = () => {
                                 <>
 
                                     <span style={{ color: theme.palette.success.main, fontSize: "16px" }}>{t('Order_has_been_paid')}</span>
-                                    <span style={{fontSize: "16px", fontWeight: "bold" }}>{" "}{formatDate(dataOrder.paidAt, { dateStyle: 'short' })}</span>
+                                    <span style={{ fontSize: "16px", fontWeight: "bold" }}>{" "}{formatDate(dataOrder.paidAt, { dateStyle: 'short' })}</span>
                                 </>
                             ) : (
                                 <span style={{ color: theme.palette.error.main, fontSize: "16px" }}>{t('Order_has_not_been_paid')}</span>
