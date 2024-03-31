@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN, REFRESH_TOKEN, TEMPORARY_TOKEN, USER_DATA } from 'src/configs/auth'
+import { ACCESS_TOKEN, PRE_GOOGLE_TOKEN, REFRESH_TOKEN, TEMPORARY_TOKEN, USER_DATA } from 'src/configs/auth'
 import { LOCAL_PRODUCT_CART } from 'src/configs/product'
 import { TItemOrderProduct } from 'src/types/order-product'
 
@@ -9,6 +9,8 @@ export const setLocalUserData = (userData: string, accessToken: string, refreshT
       window.localStorage.setItem(REFRESH_TOKEN, refreshToken)
   }
 }
+
+
 
 export const getLocalUserData = () => {
   if (typeof window !== 'undefined') {
@@ -68,6 +70,26 @@ export const setLocalProductToCart = (data: Record<string, TItemOrderProduct[]>)
 export const getLocalProductCart = () => {
   if (typeof window !== 'undefined') {
     return window.localStorage.getItem(LOCAL_PRODUCT_CART)
+  }
+
+  return ""
+}
+
+export const setLocalPreTokenGoogle = (token: string) => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(PRE_GOOGLE_TOKEN, token)
+  }
+}
+
+export const clearLocalPreTokenGoogle = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(PRE_GOOGLE_TOKEN)
+  }
+}
+
+export const getLocalPreTokenGoogle = () => {
+  if (typeof window !== 'undefined') {
+    return window.localStorage.getItem(PRE_GOOGLE_TOKEN)
   }
 
   return ""

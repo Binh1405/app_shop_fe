@@ -3,9 +3,10 @@ import { NextPage } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useSession, signIn, signOut } from "next-auth/react"
 
 // ** React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -38,13 +39,14 @@ import RegisterLight from '/public/images/register-light.png'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
-import { registerAuthAsync } from 'src/stores/auth/actions'
+import { registerAuthAsync, registerAuthGoogleAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState } from 'src/stores/auth'
 
 // ** Other
 import { ROUTE_CONFIG } from 'src/configs/route'
 import toast from 'react-hot-toast'
+import { clearLocalPreTokenGoogle, getLocalPreTokenGoogle, setLocalPreTokenGoogle } from 'src/helpers/storage'
 
 
 type TProps = {}
@@ -59,6 +61,7 @@ const RegisterPage: NextPage<TProps> = () => {
   // State
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const prevTokenLocal = getLocalPreTokenGoogle()
 
   // ** router
   const router = useRouter()
@@ -71,8 +74,11 @@ const RegisterPage: NextPage<TProps> = () => {
   const theme = useTheme()
 
   // ** Translate
-  const {t} = useTranslation()
+  const { t } = useTranslation()
 
+  // ** Hooks
+  const { data: session,...restsss } = useSession()
+  console.log("restsss", {restsss, session})
   const schema = yup.object().shape({
     email: yup.string().required(t('Required_field')).matches(EMAIL_REG, t("Rules_email")),
     password: yup
@@ -108,15 +114,28 @@ const RegisterPage: NextPage<TProps> = () => {
     }
   }
 
+  const handleRegisterGoogle = async () => {
+   signIn("google")
+   clearLocalPreTokenGoogle()
+  }
+
   useEffect(() => {
-    if (message) {
+    if ((session as any)?.accessToken && (session as any)?.accessToken !== prevTokenLocal) {
+      dispatch(registerAuthGoogleAsync((session as any)?.accessToken))
+      setLocalPreTokenGoogle((session as any)?.accessToken)
+    }
+  }, [(session as any)?.accessToken])
+
+  useEffect(() => {
+    if(message) {
       if (isError) {
         toast.error(message)
+        dispatch(resetInitialState())
       } else if (isSuccess) {
-        toast.success(message)
+        toast.success(t("Sign_up_success"))
         router.push(ROUTE_CONFIG.LOGIN)
+        dispatch(resetInitialState())
       }
-      dispatch(resetInitialState())
     }
   }, [isError, isSuccess, message])
 
@@ -179,7 +198,7 @@ const RegisterPage: NextPage<TProps> = () => {
                   render={({ field: { onChange, onBlur, value } }) => (
                     <CustomTextField
                       required
-                      
+
                       fullWidth
                       label={t("Email")}
                       onChange={onChange}
@@ -204,7 +223,7 @@ const RegisterPage: NextPage<TProps> = () => {
                     <CustomTextField
                       required
                       fullWidth
-                      
+
                       label={t("Password")}
                       onChange={onChange}
                       onBlur={onBlur}
@@ -242,7 +261,7 @@ const RegisterPage: NextPage<TProps> = () => {
                     <CustomTextField
                       required
                       fullWidth
-                      
+
                       label={t("Confirm_password")}
                       onChange={onChange}
                       onBlur={onBlur}
@@ -302,7 +321,7 @@ const RegisterPage: NextPage<TProps> = () => {
                     ></path>
                   </svg>
                 </IconButton>
-                <IconButton sx={{ color: theme.palette.error.main }}>
+                <IconButton sx={{ color: theme.palette.error.main }} onClick={handleRegisterGoogle}>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     role='img'
