@@ -39,14 +39,14 @@ import RegisterLight from '/public/images/register-light.png'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
-import { registerAuthAsync, registerAuthGoogleAsync } from 'src/stores/auth/actions'
+import { registerAuthAsync, registerAuthFacebookAsync, registerAuthGoogleAsync } from 'src/stores/auth/actions'
 import { AppDispatch, RootState } from 'src/stores'
 import { resetInitialState } from 'src/stores/auth'
 
 // ** Other
 import { ROUTE_CONFIG } from 'src/configs/route'
 import toast from 'react-hot-toast'
-import { clearLocalPreTokenGoogle, getLocalPreTokenGoogle, setLocalPreTokenGoogle } from 'src/helpers/storage'
+import { clearLocalPreTokenAuthSocial, getLocalPreTokenAuthSocial, setLocalPreTokenAuthSocial } from 'src/helpers/storage'
 
 
 type TProps = {}
@@ -61,7 +61,7 @@ const RegisterPage: NextPage<TProps> = () => {
   // State
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const prevTokenLocal = getLocalPreTokenGoogle()
+  const prevTokenLocal = getLocalPreTokenAuthSocial()
 
   // ** router
   const router = useRouter()
@@ -77,8 +77,8 @@ const RegisterPage: NextPage<TProps> = () => {
   const { t } = useTranslation()
 
   // ** Hooks
-  const { data: session,...restsss } = useSession()
-  console.log("restsss", {restsss, session})
+  const { data: session, ...restsss } = useSession()
+  console.log("restsss", { restsss, session })
   const schema = yup.object().shape({
     email: yup.string().required(t('Required_field')).matches(EMAIL_REG, t("Rules_email")),
     password: yup
@@ -114,20 +114,29 @@ const RegisterPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleRegisterGoogle = async () => {
-   signIn("google")
-   clearLocalPreTokenGoogle()
+  const handleRegisterGoogle = () => {
+    signIn("google")
+    clearLocalPreTokenAuthSocial()
+  }
+
+  const handleRegisterFacebook = () => {
+    signIn("facebook")
+    clearLocalPreTokenAuthSocial()
   }
 
   useEffect(() => {
     if ((session as any)?.accessToken && (session as any)?.accessToken !== prevTokenLocal) {
-      dispatch(registerAuthGoogleAsync((session as any)?.accessToken))
-      setLocalPreTokenGoogle((session as any)?.accessToken)
+      if((session as any)?.provider === "facebook") {
+        dispatch(registerAuthFacebookAsync((session as any)?.accessToken))
+      }else {
+        dispatch(registerAuthGoogleAsync((session as any)?.accessToken))
+      }
+      setLocalPreTokenAuthSocial((session as any)?.accessToken)
     }
   }, [(session as any)?.accessToken])
 
   useEffect(() => {
-    if(message) {
+    if (message) {
       if (isError) {
         toast.error(message)
         dispatch(resetInitialState())
@@ -305,7 +314,7 @@ const RegisterPage: NextPage<TProps> = () => {
               </Box>
               <Typography sx={{ textAlign: 'center', mt: 2, mb: 2 }}>{t("Or")}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                <IconButton sx={{ color: '#497ce2' }}>
+                <IconButton sx={{ color: '#497ce2' }} onClick={handleRegisterFacebook}>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     role='img'
