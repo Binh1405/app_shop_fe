@@ -40,8 +40,8 @@ import { useAuth } from 'src/hooks/useAuth'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { signIn, useSession } from 'next-auth/react'
-import { loginAuth } from 'src/services/auth'
-import { clearLocalPreTokenGoogle, getLocalPreTokenGoogle, setLocalPreTokenGoogle } from 'src/helpers/storage'
+import { clearLocalPreTokenAuthSocial, getLocalPreTokenAuthSocial, setLocalPreTokenAuthSocial } from 'src/helpers/storage'
+import FallbackSpinner from 'src/components/fall-back'
 
 type TProps = {}
 
@@ -54,20 +54,20 @@ const LoginPage: NextPage<TProps> = () => {
   // State
   const [showPassword, setShowPassword] = useState(false)
   const [isRemember, setIsRemember] = useState(true)
-  const prevTokenLocal = getLocalPreTokenGoogle()
+  const prevTokenLocal = getLocalPreTokenAuthSocial()
 
   // ** Translate
   const { t } = useTranslation()
 
   // ** context
-  const { login, loginGoogle } = useAuth()
+  const { login, loginGoogle, loginFacebook } = useAuth()
 
   // ** theme
   const theme = useTheme()
 
   // ** Hooks
-  const { data: session } = useSession()
-  console.log("session", {session})
+  const { data: session, status } = useSession()
+  console.log("session", {session, status})
 
   const schema = yup.object().shape({
     email: yup.string().required(t('Required_field')).matches(EMAIL_REG, t("Rules_email")),
@@ -103,19 +103,32 @@ const LoginPage: NextPage<TProps> = () => {
 
   const handleLoginGoogle = () => {
     signIn("google")
-    clearLocalPreTokenGoogle()
+    clearLocalPreTokenAuthSocial()
+  }
+
+  const handleLoginFacebook = () => {
+    signIn("facebook")
+    clearLocalPreTokenAuthSocial()
   }
 
   useEffect(() => {
     if ((session as any)?.accessToken && (session as any)?.accessToken !== prevTokenLocal) {
-      loginGoogle({ idToken: (session as any)?.accessToken, rememberMe: isRemember }, err => {
-        if (err?.response?.data?.typeError === 'INVALID') toast.error(t('The_email_or_password_wrong'))
-      })
-      setLocalPreTokenGoogle((session as any)?.accessToken)
+      if((session as any)?.provider  === "facebook") {
+        loginFacebook({ idToken: (session as any)?.accessToken, rememberMe: isRemember }, err => {
+          if (err?.response?.data?.typeError === 'INVALID') toast.error(t('The_email_or_password_wrong'))
+        })
+      }else {
+        loginGoogle({ idToken: (session as any)?.accessToken, rememberMe: isRemember }, err => {
+          if (err?.response?.data?.typeError === 'INVALID') toast.error(t('The_email_or_password_wrong'))
+        })
+      }
+      setLocalPreTokenAuthSocial((session as any)?.accessToken)
     }
   }, [(session as any)?.accessToken])
 
   return (
+    <>
+    {status === "loading" && <FallbackSpinner />}
     <Box
       sx={{
         height: '100vh',
@@ -255,7 +268,7 @@ const LoginPage: NextPage<TProps> = () => {
             </Box>
             <Typography sx={{ textAlign: 'center', mt: 2, mb: 2 }}>{t("Or")}</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }} >
-              <IconButton sx={{ color: '#497ce2' }}>
+              <IconButton sx={{ color: '#497ce2' }} onClick={handleLoginFacebook}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   role='img'
@@ -292,6 +305,7 @@ const LoginPage: NextPage<TProps> = () => {
         </Box>
       </Box>
     </Box>
+    </>
   )
 }
 
