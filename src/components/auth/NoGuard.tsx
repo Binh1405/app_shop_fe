@@ -1,5 +1,7 @@
 // ** React Imports
-import { ReactElement, ReactNode } from 'react'
+import { useSession } from 'next-auth/react'
+import { ReactElement, ReactNode, useEffect } from 'react'
+import { clearLocalRememberLoginAuthSocial, clearTemporaryToken } from 'src/helpers/storage'
 
 // ** Types
 import { useAuth } from 'src/hooks/useAuth'
@@ -15,6 +17,21 @@ const NoGuard = (props: NoGuardProps) => {
   const { children, fallback } = props
 
   const auth = useAuth()
+  const { status } = useSession()
+
+  useEffect(() => {
+    const handleUnload = () => {
+      if (status !== "loading") {
+        clearTemporaryToken()
+        clearLocalRememberLoginAuthSocial()
+      }
+    }
+    window.addEventListener('beforeunload', handleUnload)
+
+    return () => {
+      window.addEventListener('beforeunload', handleUnload)
+    }
+  }, [])
 
   if (auth.loading) {
     return fallback
