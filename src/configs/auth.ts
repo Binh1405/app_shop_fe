@@ -8,5 +8,6 @@ export const REFRESH_TOKEN = 'refreshToken'
 export const USER_DATA = 'userData'
 export const TEMPORARY_TOKEN = 'temporaryToken'
 export const PRE_AUTH_TOKEN = 'prevAuthToken'
+export const REMEMBER_AUTH_TOKEN = 'rememberAuthToken'
 export const LIST_PAGE_PUBLIC = ["/product", "/home"]
 
