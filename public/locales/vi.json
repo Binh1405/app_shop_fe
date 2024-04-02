@@ -309,5 +309,8 @@
     "Back_home": "Quay về trang chủ",
     "Order_has_been_paid": "Đơn hàng đã thanh toán",
     "Order_has_not_been_paid": "Đơn hàng chưa thanh toán",
-    "Order_has_not_been_delivery": "Đơn hàng chưa được giao hàng"
+    "Order_has_not_been_delivery": "Đơn hàng chưa được giao hàng",
+    "Reset_password": "Khôi phục mật khẩu",
+    "Send_request": "Gửi yêu cầu",
+    "Back_login": "Quay về đăng nhập"
 }
