@@ -5,7 +5,7 @@ import { API_ENDPOINT } from 'src/configs/api'
 import instanceAxios from 'src/helpers/axios'
 
 // ** Types
-import { TLoginAuth, TRegisterAuth, TChangePassword } from 'src/types/auth'
+import { TLoginAuth, TRegisterAuth, TChangePassword, TForgotPasswordAuth, TResetPasswordAuth } from 'src/types/auth'
 
 export const loginAuth = async (data: TLoginAuth) => {
   const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/login`, data)
@@ -88,6 +88,26 @@ export const getAuthMe = async () => {
 export const changePasswordMe = async (data: TChangePassword) => {
   try {
     const res = await instanceAxios.patch(`${API_ENDPOINT.AUTH.INDEX}/change-password`, data)
+
+    return res.data
+  } catch (error) {
+    return error
+  }
+}
+
+export const forgotPasswordAuth = async (data: TForgotPasswordAuth) => {
+  try {
+    const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/forgot-password`, data)
+
+    return res.data
+  } catch (error) {
+    return error
+  }
+}
+
+export const resetPasswordAuth = async (data: TResetPasswordAuth) => {
+  try {
+    const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/reset-password`, data)
 
     return res.data
   } catch (error) {

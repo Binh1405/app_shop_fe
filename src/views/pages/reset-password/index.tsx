@@ -40,6 +40,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { useRouter } from 'next/router'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import Spinner from 'src/components/spinner'
+import { resetPasswordAuthAsync } from 'src/stores/auth/actions'
+import { resetInitialState } from 'src/stores/auth'
 
 type TProps = {}
 
@@ -59,21 +64,25 @@ const ResetPasswordPage: NextPage<TProps> = () => {
 
   // ** Router
   const router = useRouter()
+  const secretKey = router?.query?.secretKey as string
 
   // ** theme
   const theme = useTheme()
 
+  // ** Redux
+  const dispatch: AppDispatch = useDispatch()
+  const { isLoading, isSuccessResetPassword, isErrorResetPassword, messageResetPassword } = useSelector((state: RootState) => state.auth)
 
   const schema = yup.object().shape({
     newPassword: yup
-    .string()
-    .required(t('Required_field'))
-    .matches(PASSWORD_REG, t("Rules_password")),
+      .string()
+      .required(t('Required_field'))
+      .matches(PASSWORD_REG, t("Rules_password")),
     confirmNewPassword: yup
-    .string()
-    .required(t('Required_field'))
-    .matches(PASSWORD_REG, t("Rules_password"))
-    .oneOf([yup.ref('password'), ''], t("Rules_confirm_password"))
+      .string()
+      .required(t('Required_field'))
+      .matches(PASSWORD_REG, t("Rules_password"))
+      .oneOf([yup.ref('newPassword'), ''], t("Rules_confirm_password"))
   })
 
   const defaultValues: TDefaultValue = {
@@ -92,15 +101,31 @@ const ResetPasswordPage: NextPage<TProps> = () => {
     resolver: yupResolver(schema)
   })
 
-  const onSubmit = (data: { confirmNewPassword: string,newPassword:string }) => {
+  const onSubmit = (data: { confirmNewPassword: string, newPassword: string }) => {
     if (!Object.keys(errors)?.length) {
-      
+      dispatch(resetPasswordAuthAsync({
+        newPassword: data.newPassword,
+        secretKey
+      }))
     }
   }
 
+  useEffect(() => {
+    if (messageResetPassword) {
+      if (isSuccessResetPassword) {
+        toast.success(t('Reset_password_success'))
+        dispatch(resetInitialState())
+        router.push(ROUTE_CONFIG.LOGIN)
+      } else if (isErrorResetPassword) {
+        toast.error(t('Reset_password_error'))
+        dispatch(resetInitialState())
+      }
+    }
+  }, [isSuccessResetPassword, isErrorResetPassword, messageResetPassword])
+
   return (
     <>
-      {/* {status === "loading" && <FallbackSpinner />} */}
+      {isLoading && <Spinner />}
       <Box
         sx={{
           height: '100vh',
@@ -148,7 +173,7 @@ const ResetPasswordPage: NextPage<TProps> = () => {
               {t("Reset_password")}
             </Typography>
             <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' noValidate>
-            <Box sx={{ mt: 2, width: '300px' }}>
+              <Box sx={{ mt: 2, width: '300px' }}>
                 <Controller
                   control={control}
                   rules={{
@@ -222,13 +247,14 @@ const ResetPasswordPage: NextPage<TProps> = () => {
                   name='confirmNewPassword'
                 />
               </Box>
-           
-              <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
-               {(t("Send_request"))}
+<Box sx={{display: "flex", flexDirection: "column", gap: "8px", mt: "4px"}}>
+              <Button type='submit' variant='contained' sx={{ mt: 3, mb: 2, width: "300px" }}>
+                {(t("Send_request"))}
               </Button>
-              <Button startIcon={<Icon icon="uiw:left"></Icon>} onClick={() => router.push(ROUTE_CONFIG.LOGIN)} fullWidth variant='outlined' sx={{ mt: 3, mb: 2 }}>
-               {(t("Back_login"))}
+              <Button startIcon={<Icon icon="uiw:left"></Icon>} onClick={() => router.push(ROUTE_CONFIG.LOGIN)} variant='outlined' sx={{ mt: 3, mb: 2, width: "300px" }}>
+                {(t("Back_login"))}
               </Button>
+              </Box>
             </form>
           </Box>
         </Box>

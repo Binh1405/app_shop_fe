@@ -40,6 +40,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { ROUTE_CONFIG } from 'src/configs/route'
 import { useRouter } from 'next/router'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import { forgotPasswordAuthAsync } from 'src/stores/auth/actions'
+import { resetInitialState } from 'src/stores/auth'
+import Spinner from 'src/components/spinner'
 
 type TProps = {}
 
@@ -57,6 +62,9 @@ const ForgotPasswordPage: NextPage<TProps> = () => {
 
   // ** theme
   const theme = useTheme()
+
+  const dispatch:AppDispatch = useDispatch()
+  const { isLoading, isSuccessForgotPassword, isErrorForgotPassword, messageForgotPassword} = useSelector((state:RootState) => state.auth)
 
 
   const schema = yup.object().shape({
@@ -80,13 +88,25 @@ const ForgotPasswordPage: NextPage<TProps> = () => {
 
   const onSubmit = (data: { email: string }) => {
     if (!Object.keys(errors)?.length) {
-      
+      dispatch(forgotPasswordAuthAsync({email: data.email}))
     }
   }
 
+  useEffect(() => {
+    if(messageForgotPassword) {
+      if (isSuccessForgotPassword) {
+        toast.success(t('Forgot_password_success'))
+        dispatch(resetInitialState())
+      } else if (isErrorForgotPassword) {
+        toast.error(t('Forgot_password_error'))
+        dispatch(resetInitialState())
+      }
+    }
+  }, [isSuccessForgotPassword, isErrorForgotPassword, messageForgotPassword])
+
   return (
     <>
-      {/* {status === "loading" && <FallbackSpinner />} */}
+      {isLoading && <Spinner />}
       <Box
         sx={{
           height: '100vh',
@@ -134,7 +154,7 @@ const ForgotPasswordPage: NextPage<TProps> = () => {
               {t("Forgot_password")}
             </Typography>
             <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' noValidate>
-              <Box sx={{ mt: 2, width: '300px' }}>
+              <Box sx={{ mt: 2 }}>
                 <Controller
                   control={control}
                   rules={{
