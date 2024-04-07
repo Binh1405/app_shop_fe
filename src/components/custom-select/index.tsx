@@ -9,7 +9,8 @@ const StyledSelect = styled(Select)<SelectProps>(({ theme }) => ({
   '& .MuiSelect-select.MuiSelect-outlined.MuiInputBase-input': {
     padding: '8px 8px 8px 8px !important',
     height: '38px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    backgroundColor: theme.palette.background.paper
   },
   legend: {
     display: 'none'
@@ -36,7 +37,8 @@ const StyledMenuItem = styled(MenuItem)<MenuItemProps>(({ theme }) => ({}))
 const CustomSelect = (props: TCustomSelect) => {
   const { value, label, onChange, fullWidth, placeholder, options, ...rest } = props
   const { t } = useTranslation()
-  
+  console.log("value", {value})
+
   return (
     <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
       {((Array.isArray(value) && !value.length) || !value) && <CustomPlaceHolder>{placeholder}</CustomPlaceHolder>}
