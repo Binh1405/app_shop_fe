@@ -316,5 +316,9 @@
     "Reset_password_success": "Khôi phục mật khẩu thành công",
     "Reset_password_error": "Khôi phục mật khẩu thất bại",
     "Forgot_password_success": "Gửi yêu cầu thành công",
-    "Forgot_password_error": "Gửi yêu cầu thất bại"
+    "Forgot_password_error": "Gửi yêu cầu thất bại",
+    "No_sell_product": "Chưa bán sản phẩm",
+    "Sort_new_create": "Sắp xếp mới nhất",
+    "Sort_best_sold": "Bán chạy nhất",
+    "Sort_by": "Sắp xếp theo"
 }
