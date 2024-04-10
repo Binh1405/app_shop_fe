@@ -35,6 +35,7 @@ import { AppDispatch, RootState } from 'src/stores'
 import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/product'
 import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
+import CustomSelect from 'src/components/custom-select'
 
 type TProps = {}
 
@@ -229,12 +230,34 @@ const HomePage: NextPage<TProps> = () => {
           })}
         </StyledTabs>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+          <Box sx={{display: "flex", gap: "20px"}}>
+          <Box sx={{ width: '300px' }}>
+            <CustomSelect
+              fullWidth
+              onChange={(e) => {
+                setSortBy(e.target.value as string)
+              }}
+              value={sortBy}
+              options={[
+                {
+                  label: t("Sort_best_sold"),
+                  value: "sold desc"
+                },
+                {
+                  label: t("Sort_new_create"),
+                  value: "createdAt desc"
+                }
+              ]}
+              placeholder={t('Sort_by')}
+            />
+          </Box>
           <Box sx={{ width: '300px' }}>
             <InputSearch
               placeholder={t('Search_name_product')}
               value={searchBy}
               onChange={(value: string) => setSearchBy(value)}
             />
+          </Box>
           </Box>
         </Box>
 
@@ -291,6 +314,7 @@ const HomePage: NextPage<TProps> = () => {
             </Grid>
           </Grid>
         </Box>
+        <Box>
         <CustomPagination
           onChangePagination={handleOnchangePagination}
           pageSizeOptions={PAGE_SIZE_OPTION}
@@ -299,6 +323,8 @@ const HomePage: NextPage<TProps> = () => {
           rowLength={productsPublic.total}
           isHideShowed
         />
+        </Box>
+       
       </Box>
     </>
   )
