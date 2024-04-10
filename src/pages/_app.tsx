@@ -103,6 +103,8 @@ export default function App(props: ExtendedAppProps) {
   const router = useRouter()
   const slugProduct = (router?.query?.productId as string)?.replaceAll("-", " ")
 
+  const [queryClient] = useState(() => new QueryClient())
+
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
