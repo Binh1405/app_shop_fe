@@ -36,6 +36,7 @@ import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/product'
 import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 import CustomSelect from 'src/components/custom-select'
+import CardSkeleton from 'src/views/pages/product/components/CardSkeleton'
 
 type TProps = {}
 
@@ -288,7 +289,25 @@ const HomePage: NextPage<TProps> = () => {
               </Box>
             </Grid>
             <Grid item md={9} xs={12}>
-              <Grid
+              {loading ? (
+                <Grid
+                container
+                spacing={{
+                  md: 6,
+                  xs: 4
+                }}
+              >
+                {Array.from({length: 6}).map((_, index) => {
+                  return (
+                    <Grid item key={index} md={4} sm={6} xs={12}>
+
+                    <CardSkeleton />
+                    </Grid>
+                  )
+                })}
+              </Grid>
+              ) : (
+                <Grid
                 container
                 spacing={{
                   md: 6,
@@ -311,6 +330,7 @@ const HomePage: NextPage<TProps> = () => {
                   </Box>
                 )}
               </Grid>
+              )}
             </Grid>
           </Grid>
         </Box>

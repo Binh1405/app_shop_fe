@@ -49,6 +49,7 @@ import { TReviewItem } from 'src/types/reviews'
 import CardReview from 'src/views/pages/product/components/CardReview'
 import toast from 'react-hot-toast'
 import { OBJECT_TYPE_ERROR_REVIEW } from 'src/configs/error'
+import CardSkeletonRelated from 'src/views/pages/product/components/CardSkeletonRelated'
 
 
 type TProps = {}
@@ -640,17 +641,30 @@ const DetailsProductPage: NextPage<TProps> = () => {
                     mt: 4
                   }}
                 >
-                  {listRelatedProduct.length > 0 ? (
+                  {loading ? (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {listRelatedProduct.map(item => {
-                        return <CardRelatedProduct key={item._id} item={item} />
+                      {Array.from({ length: 6 }).map((_, index) => {
+                        return (
+                          <CardSkeletonRelated key={index} />
+                        )
                       })}
                     </Box>
                   ) : (
-                    <Box sx={{ width: '100%', mt: 10 }}>
-                      <NoData widthImage='60px' heightImage='60px' textNodata={t('No_product')} />
-                    </Box>
+                    <>
+                      {listRelatedProduct.length > 0 ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {listRelatedProduct.map(item => {
+                            return <CardRelatedProduct key={item._id} item={item} />
+                          })}
+                        </Box>
+                      ) : (
+                        <Box sx={{ width: '100%', mt: 10 }}>
+                          <NoData widthImage='60px' heightImage='60px' textNodata={t('No_product')} />
+                        </Box>
+                      )}
+                    </>
                   )}
+
                 </Box>
               </Box>
             </Grid>
@@ -678,6 +692,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
                     </Grid>
                   )
                 })}
+
               </Grid>
             </Box>
           </Grid>
