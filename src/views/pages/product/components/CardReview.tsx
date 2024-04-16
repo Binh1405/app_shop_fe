@@ -114,7 +114,7 @@ const CardReview = (props: TCardReview) => {
                 description={t('Confirm_delete_review')}
             />
             <EditReview open={openEdit.open} onClose={handleCloseEdit} idReview={openEdit.id} />
-            <StyleCard sx={{ width: '100%' }}>
+            <StyleCard>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Avatar src={item.user.avatar} />
                     <Box sx={{ flexDirection: "column" }}>
