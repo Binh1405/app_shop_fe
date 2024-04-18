@@ -23,6 +23,7 @@ import { getDetailsRole } from 'src/services/role'
 import { AppDispatch } from 'src/stores'
 import { createRoleAsync, updateRoleAsync } from 'src/stores/role/actions'
 import { useDispatch } from 'react-redux'
+import { PERMISSIONS } from 'src/configs/permission'
 
 interface TCreateEditRole {
   open: boolean
@@ -70,7 +71,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
         dispatch(updateRoleAsync({ name: data?.name, id: idRole }))
         // update
       } else {
-        dispatch(createRoleAsync({ name: data?.name }))
+        dispatch(createRoleAsync({ name: data?.name, permissions: [PERMISSIONS.DASHBOARD] }))
       }
     }
   }
