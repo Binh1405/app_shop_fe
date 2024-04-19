@@ -88,8 +88,15 @@ export const updateReview = async (data: TParamsUpdateReview) => {
 export const deleteMultipleReview = async (data: TParamsDeleteMultipleReview) => {
   try {
     const res = await instanceAxios.delete(`${API_ENDPOINT.MANAGE_ORDER.REVIEW.INDEX}/delete-many`, { data })
+    if (res?.data?.status === 'Success') {
+      return {
+        data: []
+      }
+    }
 
-    return res.data
+    return {
+      data: null
+    }
   } catch (error: any) {
     return error?.response?.data
   }

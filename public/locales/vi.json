@@ -321,5 +321,11 @@
     "Sort_new_create": "Sắp xếp mới nhất",
     "Sort_best_sold": "Bán chạy nhất",
     "Sort_by": "Sắp xếp theo",
-    "Comment": "Bình luận"
+    "Comment": "Bình luận",
+    "Title_delete_comment": "Xác nhận xóa bình luận",
+    "Confirm_delete_comment":"Xác nhận xóa bình luận",
+    "Update_comment_success": "Cập nhật bình luận thành công",
+    "Update_comment_error": "Cập nhật bình luận thất bại",
+    "Delete_comment_success": "Xóa bình luận thành công",
+    "Delete_comment_error": "Xóa bình luận thất bại"
 }

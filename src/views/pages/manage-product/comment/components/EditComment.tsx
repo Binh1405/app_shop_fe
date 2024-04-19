@@ -13,9 +13,6 @@ import {
   Button,
   Grid,
   IconButton,
-
-  Rating,
-
   Typography,
   useTheme
 } from '@mui/material'
@@ -25,38 +22,31 @@ import Icon from 'src/components/Icon'
 import CustomModal from 'src/components/custom-modal'
 import Spinner from 'src/components/spinner'
 import CustomTextField from 'src/components/text-field'
-import CustomTextArea from 'src/components/text-area'
 
 // ** Services
-import { getDetailsReview } from 'src/services/reviewProduct'
+import { getDetailsComment } from 'src/services/commentProduct'
 
 // ** Redux
 import { AppDispatch } from 'src/stores'
 import { useDispatch } from 'react-redux'
-import { updateReviewAsync } from 'src/stores/reviews/actions'
+import { updateCommentAsync } from 'src/stores/comments/actions'
 
-// ** Others
-import { stringToSlug } from 'src/utils'
-
-
-interface TCreateReview {
+interface TEditComment {
   open: boolean
   onClose: () => void
-  idReview?: string
+  idComment?: string
 }
 
 type TDefaultValue = {
-  star: string,
   content: string,
 }
 
-const EditReview = (props: TCreateReview) => {
+const EditComment = (props: TEditComment) => {
   // State
   const [loading, setLoading] = useState(false)
-  const [optionCities, setOptionCities] = useState<{ label: string; value: string }[]>([])
 
   // ** Props
-  const { open, onClose, idReview } = props
+  const { open, onClose, idComment } = props
 
   // Hooks
   const theme = useTheme()
@@ -67,11 +57,9 @@ const EditReview = (props: TCreateReview) => {
 
   const schema = yup.object().shape({
     content: yup.string().required(t('Required_field')),
-    star: yup.string().required(t('Required_field')),
   })
 
   const defaultValues: TDefaultValue = {
-    star: "",
     content: '',
   }
 
@@ -93,12 +81,11 @@ const EditReview = (props: TCreateReview) => {
   const onSubmit = (data: any) => {
     if (!Object.keys(errors).length) {
       // update
-      if (idReview) {
+      if (idComment) {
         dispatch(
-          updateReviewAsync({
-            id: idReview,
+          updateCommentAsync({
+            id: idComment,
             content: data.content,
-            star: +data.star,
           })
         )
       }
@@ -106,14 +93,13 @@ const EditReview = (props: TCreateReview) => {
   }
 
   // fetch api
-  const fetchDetailsReview = async (id: string) => {
+  const fetchDetailsComment = async (id: string) => {
     setLoading(true)
-    await getDetailsReview(id)
+    await getDetailsComment(id)
       .then(res => {
         const data = res.data
         if (data) {
           reset({
-            star: data?.star,
             content: data?.content,
           })
         }
@@ -130,11 +116,11 @@ const EditReview = (props: TCreateReview) => {
       reset({
         ...defaultValues
       })
-    } else if (idReview && open) {
-      fetchDetailsReview(idReview)
+    } else if (idComment && open) {
+      fetchDetailsComment(idComment)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, idReview])
+  }, [open, idComment])
 
   return (
     <>
@@ -146,13 +132,13 @@ const EditReview = (props: TCreateReview) => {
             borderRadius: '15px',
             backgroundColor: theme.palette.customColors.bodyBg
           }}
-          minWidth={{ md: '40px', xs: '80vw' }}
+          minWidth={{ md: '400px', xs: '80vw' }}
           maxWidth={{ md: '40vw', xs: '80vw' }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'center', position: 'relative', paddingBottom: '20px' }}>
             <Typography variant='h4' sx={{ fontWeight: 600 }}>
               {' '}
-              {t('Edit_review')}
+              {t('Edit_comment')}
             </Typography>
             <IconButton sx={{ position: 'absolute', top: '-4px', right: '-10px' }} onClick={onClose}>
               <Icon icon='material-symbols-light:close' fontSize={'30px'} />
@@ -168,20 +154,8 @@ const EditReview = (props: TCreateReview) => {
                         <Controller
                           control={control}
                           render={({ field: { onChange, onBlur, value } }) => (
-                            <Box sx={{ display: "flex", justifyContent: "center" }}>
-                              <Rating name="half-rating" onChange={(e: any) => {
-                                onChange(+e.target.value)
-                              }} value={value ? +value : 0} precision={0.5} size="large" />
-                            </Box>
-                          )}
-                          name='star'
-                        />
-                      </Grid>
-                      <Grid item md={12} xs={12}>
-                        <Controller
-                          control={control}
-                          render={({ field: { onChange, onBlur, value } }) => (
-                            <CustomTextArea
+                            <CustomTextField
+                            fullWidth
                               required
                               label={t('Content')}
                               onChange={onChange}
@@ -190,8 +164,6 @@ const EditReview = (props: TCreateReview) => {
                               placeholder={t('Enter_content')}
                               error={Boolean(errors?.content)}
                               helperText={errors?.content?.message}
-                              minRows={3}
-                              maxRows={3}
                             />
                           )}
                           name='content'
@@ -204,7 +176,7 @@ const EditReview = (props: TCreateReview) => {
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button type='submit' variant='contained' sx={{ mt: 3, mb: 2 }}>
-                {!idReview ? t('Create') : t('Update')}
+                {t('Update')}
               </Button>
             </Box>
           </form>
@@ -214,4 +186,4 @@ const EditReview = (props: TCreateReview) => {
   )
 }
 
-export default EditReview
+export default EditComment
