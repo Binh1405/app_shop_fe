@@ -6,13 +6,14 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
-import {  Box, Grid, Typography, useTheme } from '@mui/material'
-import { GridColDef, GridSortModel } from '@mui/x-data-grid'
+import { Box, Grid, Typography, useTheme } from '@mui/material'
+import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
+import { Tooltip } from '@mui/material'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { deleteReviewAsync, getAllReviewAsync } from 'src/stores/reviews/actions'
+import { deleteMultipleReviewAsync, deleteReviewAsync, getAllReviewAsync } from 'src/stores/reviews/actions'
 import { resetInitialState } from 'src/stores/reviews'
 
 // ** Components
@@ -25,6 +26,7 @@ import ConfirmationDialog from 'src/components/confirmation-dialog'
 import CustomPagination from 'src/components/custom-pagination'
 import CustomSelect from 'src/components/custom-select'
 import EditReview from 'src/views/pages/manage-order/reviews/components/EditReview'
+import TableHeader from 'src/components/table-header'
 
 // ** Others
 import toast from 'react-hot-toast'
@@ -38,10 +40,6 @@ import { usePermission } from 'src/hooks/usePermission'
 // ** Config
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { FILTER_REVIEW_CMS } from 'src/configs/reviews'
-import { Tooltip } from '@mui/material'
-
-// ** Services
-
 
 type TProps = {}
 
@@ -67,6 +65,8 @@ const ReviewListPage: NextPage<TProps> = () => {
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
   const [page, setPage] = useState(1)
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
+  const [openDeleteMultipleMultiple, setOpenDeleteMultipleMultiple] = useState(false)
+  const [selectedRow, setSelectedRow] = useState<string[]>([])
 
   // ** Hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.REVIEW', ['CREATE', 'VIEW', 'UPDATE', 'DELETE'])
@@ -85,6 +85,9 @@ const ReviewListPage: NextPage<TProps> = () => {
     isSuccessDelete,
     messageErrorDelete,
     typeError,
+    isSuccessMultipleDelete,
+    isErrorMultipleDelete,
+    messageErrorMultipleDelete
   } = useSelector((state: RootState) => state.reviews)
 
   // ** theme
@@ -131,6 +134,27 @@ const ReviewListPage: NextPage<TProps> = () => {
     setPageSize(pageSize)
   }
 
+  const handleCloseConfirmDeleteMultiple = () => {
+    setOpenDeleteMultipleMultiple(false)
+  }
+
+  const handleDeleteMultipleReview = () => {
+    dispatch(
+      deleteMultipleReviewAsync({
+        reviewIds: selectedRow
+      })
+    )
+  }
+
+  const handleAction = (action: string) => {
+    switch (action) {
+      case 'delete': {
+        setOpenDeleteMultipleMultiple(true)
+        break
+      }
+    }
+  }
+
   const columns: GridColDef[] = [
     {
       field: "firstName",
@@ -148,7 +172,7 @@ const ReviewListPage: NextPage<TProps> = () => {
           )
 
         return (
-          <Typography sx={{overflow: "hidden", textOverflow: "ellipsis", width: "100%"}}>
+          <Typography sx={{ overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>
             {fullName}
           </Typography>
         )
@@ -162,7 +186,7 @@ const ReviewListPage: NextPage<TProps> = () => {
       renderCell: params => {
         const { row } = params
 
-        return <Typography sx={{overflow: "hidden", textOverflow: "ellipsis", width: "100%"}}>
+        return <Typography sx={{ overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>
           <Tooltip title={row.product.name}>
             <span>{row?.product?.name}</span>
           </Tooltip>
@@ -243,7 +267,7 @@ const ReviewListPage: NextPage<TProps> = () => {
   }, [sortBy, searchBy, page, pageSize, filterBy])
 
   useEffect(() => {
-    setFilterBy({minStar: starSelected })
+    setFilterBy({ minStar: starSelected })
   }, [starSelected])
 
 
@@ -278,6 +302,19 @@ const ReviewListPage: NextPage<TProps> = () => {
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
+  useEffect(() => {
+    if (isSuccessMultipleDelete) {
+      toast.success(t('Delete_multiple_review_success'))
+      handleGetListReviews()
+      dispatch(resetInitialState())
+      handleCloseConfirmDeleteMultiple()
+      setSelectedRow([])
+    } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
+      toast.error(t('Delete_multiple_review_error'))
+      dispatch(resetInitialState())
+    }
+  }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
+
   return (
     <>
       <ConfirmationDialog
@@ -288,7 +325,14 @@ const ReviewListPage: NextPage<TProps> = () => {
         title={t('Title_delete_review')}
         description={t('Confirm_delete_review')}
       />
-
+      <ConfirmationDialog
+        open={openDeleteMultipleMultiple}
+        handleClose={handleCloseConfirmDeleteMultiple}
+        handleCancel={handleCloseConfirmDeleteMultiple}
+        handleConfirm={handleDeleteMultipleReview}
+        title={t('Title_delete_multiple_review')}
+        description={t('Confirm_delete_multiple_review')}
+      />
       <EditReview open={openEdit.open} onClose={handleCloseEdit} idReview={openEdit.id} />
       {isLoading && <Spinner />}
       <Box
@@ -302,25 +346,35 @@ const ReviewListPage: NextPage<TProps> = () => {
         }}
       >
         <Grid container sx={{ height: '100%', width: '100%' }}>
-          <Box
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, mb: 4, width: '100%' }}
-          >
-            <Box sx={{ width: '200px' }}>
-              <CustomSelect
-                fullWidth
-                onChange={e => {
-                  setStarSelected(e.target.value as string[])
-                }}
-                multiple
-                options={optionReviews}
-                value={starSelected}
-                placeholder={t('Star')}
-              />
+          {!selectedRow.length && (
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, mb: 4, width: '100%' }}
+            >
+              <Box sx={{ width: '200px' }}>
+                <CustomSelect
+                  fullWidth
+                  onChange={e => {
+                    setStarSelected(e.target.value as string[])
+                  }}
+                  multiple
+                  options={optionReviews}
+                  value={starSelected}
+                  placeholder={t('Star')}
+                />
+              </Box>
+              <Box sx={{ width: '200px' }}>
+                <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
+              </Box>
             </Box>
-            <Box sx={{ width: '200px' }}>
-              <InputSearch value={searchBy} onChange={(value: string) => setSearchBy(value)} />
-            </Box>
-          </Box>
+          )}
+          {selectedRow?.length > 0 && (
+            <TableHeader
+              numRow={selectedRow?.length}
+              onClear={() => setSelectedRow([])}
+              handleAction={handleAction}
+              actions={[{ label: t('Xóa'), value: 'delete', disabled: !DELETE }]}
+            />
+          )}
           <CustomDataGrid
             rows={reviews.data}
             columns={columns}
@@ -331,6 +385,7 @@ const ReviewListPage: NextPage<TProps> = () => {
                 color: `${theme.palette.primary.main} !important`
               }
             }}
+            checkboxSelection
             sortingOrder={['desc', 'asc']}
             sortingMode='server'
             onSortModelChange={handleSort}
@@ -338,6 +393,9 @@ const ReviewListPage: NextPage<TProps> = () => {
             disableRowSelectionOnClick
             slots={{
               pagination: PaginationComponent
+            }}
+            onRowSelectionModelChange={(row: GridRowSelectionModel) => {
+              setSelectedRow(row as string[])
             }}
             disableColumnFilter
             disableColumnMenu

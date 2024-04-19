@@ -89,7 +89,15 @@ export const deleteMultipleComment = async (data: TParamsDeleteMultipleComment) 
   try {
     const res = await instanceAxios.delete(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}/delete-many`, { data })
 
-    return res.data
+    if (res?.data?.status === 'Success') {
+      return {
+        data: []
+      }
+    }
+
+    return {
+      data: null
+    }
   } catch (error: any) {
     return error?.response?.data
   }

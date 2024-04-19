@@ -137,7 +137,7 @@ const ProductListPage: NextPage<TProps> = () => {
     })
   }
 
-  const handleCloseConfirmDeleteMultipleProductType = () => {
+  const handleCloseConfirmDeleteMultipleProduct = () => {
     setOpenDeleteMultipleProduct(false)
   }
 
@@ -350,7 +350,7 @@ const ProductListPage: NextPage<TProps> = () => {
       toast.success(t('Delete_multiple_product_success'))
       handleGetListProducts()
       dispatch(resetInitialState())
-      handleCloseConfirmDeleteMultipleProductType()
+      handleCloseConfirmDeleteMultipleProduct()
       setSelectedRow([])
     } else if (isErrorMultipleDelete && messageErrorMultipleDelete) {
       toast.error(t('Delete_multiple_product_error'))
@@ -391,8 +391,8 @@ const ProductListPage: NextPage<TProps> = () => {
       />
       <ConfirmationDialog
         open={openDeleteMultipleProduct}
-        handleClose={handleCloseConfirmDeleteMultipleProductType}
-        handleCancel={handleCloseConfirmDeleteMultipleProductType}
+        handleClose={handleCloseConfirmDeleteMultipleProduct}
+        handleCancel={handleCloseConfirmDeleteMultipleProduct}
         handleConfirm={handleDeleteMultipleProduct}
         title={t('Title_delete_multiple_product')}
         description={t('Confirm_delete_multiple_product')}
