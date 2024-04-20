@@ -2,12 +2,23 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 // ** Actions
-import { deleteCommentAsync, deleteMultipleCommentAsync, getAllCommentCMSAsync, serviceName, updateCommentAsync } from 'src/stores/comments/actions'
+import {
+  createCommentAsync,
+  deleteCommentAsync,
+  deleteMultipleCommentAsync,
+  getAllCommentCMSAsync,
+  replyCommentAsync,
+  serviceName,
+  updateCommentAsync
+} from 'src/stores/comments/actions'
 
 const initialState = {
-  // isSuccessCreate: false,
-  // isErrorCreate: false,
-  // messageErrorCreate: '',
+  isSuccessCreate: false,
+  isErrorCreate: false,
+  messageErrorCreate: '',
+  isSuccessReply: false,
+  isErrorReply: false,
+  messageErrorReply: '',
   isSuccessEdit: false,
   isErrorEdit: false,
   messageErrorEdit: '',
@@ -30,14 +41,14 @@ export const commentSlice = createSlice({
   initialState,
   reducers: {
     resetInitialState: state => {
-      // state.isSuccessCreate = false
-      // state.isErrorCreate = true
-      // state.messageErrorCreate = ''
-      // state.typeError = ''
-      // state.isLoading = false
-      // state.isSuccessCancelMe = false
-      // state.isErrorCancelMe = true
-      // state.messageErrorCancelMe = ''
+      state.isSuccessCreate = false
+      state.isErrorCreate = true
+      state.messageErrorCreate = ''
+      state.isSuccessReply = false
+      state.isErrorReply = true
+      state.messageErrorReply = ''
+      state.typeError = ''
+      state.isLoading = false
       state.isSuccessEdit = false
       state.isErrorEdit = true
       state.messageErrorEdit = ''
@@ -65,17 +76,29 @@ export const commentSlice = createSlice({
       state.comments.total = 0
     })
 
-    // // ** create review
-    // builder.addCase(createReviewAsync.pending, (state, action) => {
-    //   state.isLoading = true
-    // })
-    // builder.addCase(createReviewAsync.fulfilled, (state, action) => {
-    //   state.isLoading = false
-    //   state.isSuccessCreate = !!action.payload?.data?._id
-    //   state.isErrorCreate = !action.payload?.data?._id
-    //   state.messageErrorCreate = action.payload?.message
-    //   state.typeError = action.payload?.typeError
-    // })
+    // ** create comment
+    builder.addCase(createCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(createCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessCreate = !!action.payload?.data?._id
+      state.isErrorCreate = !action.payload?.data?._id
+      state.messageErrorCreate = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
+
+    // ** reply comment
+    builder.addCase(replyCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(replyCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessReply = !!action.payload?.data?._id
+      state.isErrorReply = !action.payload?.data?._id
+      state.messageErrorReply = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
 
     // ** update comment
     builder.addCase(updateCommentAsync.pending, (state, action) => {
