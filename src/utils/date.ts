@@ -4,7 +4,6 @@ export const getTimePast = (date: Date, t: any): string => {
 
   const pastTimeSecond: number = currentDate.getTime() - date.getTime()
   const pastTimeDate: number = pastTimeSecond / millisecondsInDay
-console.log("pastTimeDate", {pastTimeDate})
   if (pastTimeDate < 30) {
     if(pastTimeDate < 1) {
         return `${"recently"}`

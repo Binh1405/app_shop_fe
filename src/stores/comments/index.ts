@@ -6,10 +6,12 @@ import {
   createCommentAsync,
   deleteCommentAsync,
   deleteMultipleCommentAsync,
+  deleteMyCommentAsync,
   getAllCommentCMSAsync,
   replyCommentAsync,
   serviceName,
-  updateCommentAsync
+  updateCommentAsync,
+  updateMyCommentAsync
 } from 'src/stores/comments/actions'
 
 const initialState = {
@@ -124,29 +126,29 @@ export const commentSlice = createSlice({
       state.typeError = action.payload?.typeError
     })
 
-    // // ** delete my review
-    // builder.addCase(deleteMyReviewAsync.pending, (state, action) => {
-    //   state.isLoading = true
-    // })
-    // builder.addCase(deleteMyReviewAsync.fulfilled, (state, action) => {
-    //   state.isLoading = false
-    //   state.isSuccessDelete = !!action.payload?.data?._id
-    //   state.isErrorDelete = !action.payload?.data?._id
-    //   state.messageErrorDelete = action.payload?.message
-    //   state.typeError = action.payload?.typeError
-    // })
+    // ** delete my comment
+    builder.addCase(deleteMyCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(deleteMyCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessDelete = !!action.payload?.data?._id
+      state.isErrorDelete = !action.payload?.data?._id
+      state.messageErrorDelete = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
 
-    // // ** update my review
-    // builder.addCase(updateMyReviewAsync.pending, (state, action) => {
-    //   state.isLoading = true
-    // })
-    // builder.addCase(updateMyReviewAsync.fulfilled, (state, action) => {
-    //   state.isLoading = false
-    //   state.isSuccessEdit = !!action.payload?.data?._id
-    //   state.isErrorEdit = !action.payload?.data?._id
-    //   state.messageErrorEdit = action.payload?.message
-    //   state.typeError = action.payload?.typeError
-    // })
+    // ** update my comment
+    builder.addCase(updateMyCommentAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(updateMyCommentAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessEdit = !!action.payload?.data?._id
+      state.isErrorEdit = !action.payload?.data?._id
+      state.messageErrorEdit = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
 
     // ** delete multiple comment
     builder.addCase(deleteMultipleCommentAsync.pending, (state, action) => {

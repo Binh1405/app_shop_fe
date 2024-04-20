@@ -1,6 +1,6 @@
 // ** React
 import { useTranslation } from "react-i18next"
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 // ** Mui
 import { Avatar, Box, Button, IconButton, styled } from "@mui/material"
@@ -46,9 +46,10 @@ const StyleWrapper = styled(Box)(({ theme }) => ({
 }))
 
 interface TCommentInput {
-    onApply: (comment: string, item?:TCommentItemProduct) => void
+    onApply: (comment: string,isEdit: boolean, item?: TCommentItemProduct) => void
     onCancel?: () => void
     item?: TCommentItemProduct
+    isEdit?: boolean
 }
 
 const CommentInput = (props: TCommentInput) => {
@@ -57,7 +58,7 @@ const CommentInput = (props: TCommentInput) => {
     const { t } = useTranslation()
     const [isVisible, setIsVisible] = useState(false)
     const [isFocus, setIsFocus] = useState(false)
-    const {user} = useAuth()
+    const { user } = useAuth()
 
     const onEmojiClick = (emojiObject: EmojiClickData) => {
         setInputComment((prevInput) => prevInput + emojiObject.emoji);
@@ -67,20 +68,28 @@ const CommentInput = (props: TCommentInput) => {
     const handleCancel = () => {
         setIsFocus(false)
         setInputComment("")
-        if(props?.onCancel) {
+        if (props?.onCancel) {
             props?.onCancel()
         }
     }
 
     const handleApply = () => {
-        props.onApply(inputComment, props?.item)
+        props.onApply(inputComment, !!props?.isEdit, props?.item)
         setIsFocus(false)
         setInputComment("")
     }
 
+    useEffect(() => {
+        if (props.isEdit && props.item) {
+            setInputComment(props?.item?.content)
+        }
+    }, [props.isEdit])
+
     return (
         <StyleWrapper>
-            <Avatar src={user?.avatar || ""} sx={{ height: '40px !important', width: '40px !important', mt: 4 }} />
+            {!props.isEdit && (
+                <Avatar src={user?.avatar || ""} sx={{ height: '40px !important', width: '40px !important', mt: 4 }} />
+            )}
             <Box sx={{ flex: 1 }}>
                 <CustomTextField
                     fullWidth
@@ -120,7 +129,7 @@ const CommentInput = (props: TCommentInput) => {
                                 {t('Cancel')}
                             </Button>
                             <Button variant='contained' onClick={handleApply}>
-                                {t('Comment')}
+                                {props.isEdit ? t("Edit_comment") : t('Comment')}
                             </Button>
                         </Box>
                     </Box>
