@@ -26,7 +26,7 @@ import { t } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
 // ** Utils
-import { convertUpdateProductToCart, formatNumberToLocal, isExpiry, formatFilter } from 'src/utils'
+import { convertUpdateProductToCart, formatNumberToLocal, isExpiry, formatFilter, cloneDeep } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Redux
@@ -249,6 +249,58 @@ const DetailsProductPage: NextPage<TProps> = () => {
     }
   }
 
+  const findCommentByIdRecursive = (comments: TCommentItemProduct[], id: string): undefined | TCommentItemProduct => {
+    const findComment: undefined | TCommentItemProduct = comments.find((item) => item._id === id)
+    if (findComment) return findComment
+
+    for (const comment of comments) {
+      if (comment.replies && comment.replies.length > 0) {
+        const findReply: undefined | TCommentItemProduct = findCommentByIdRecursive(comment.replies, id)
+        if (findReply) return findReply
+      }
+    }
+
+    return undefined
+  }
+
+  const deleteCommentByIdRecursive = (comments: TCommentItemProduct[], id: string): undefined | TCommentItemProduct => {
+    const index = comments.findIndex((item) => item._id === id)
+    if (index !== -1) {
+      const item = comments[index]
+      comments.splice(index, 1)
+
+      return item
+    }
+
+    for (const comment of comments) {
+      if (comment.replies && comment.replies.length > 0) {
+        const findReply: undefined | TCommentItemProduct = deleteCommentByIdRecursive(comment.replies, id)
+        if (findReply) return findReply
+      }
+    }
+
+    return undefined
+  }
+
+  const deleteManyCommentRecursive = (comments: TCommentItemProduct[], ids: string[]) => {
+    let deletedCount:number = 0
+    ids.forEach((id) => {
+      const index = comments.findIndex((item) => item._id === id)
+      if (index !== -1) {
+        comments.splice(index, 1)
+        deletedCount+=1
+      }
+    })
+   
+    for (const comment of comments) {
+      if (comment.replies && comment.replies.length > 0) {
+        deleteManyCommentRecursive(comment.replies, ids)
+      }
+    }
+
+    return deletedCount
+  }
+
   const renderCommentItem = (item: TCommentItemProduct, level: number) => {
     level += 1
 
@@ -270,38 +322,65 @@ const DetailsProductPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     const socket = connectSocketIO()
+    const cloneListComment = cloneDeep(listComment)
 
     socket.on(ACTION_SOCKET_COMMENT.CREATE_COMMENT, (data) => {
-      const cloneListComment = {...listComment}
       const newListComment = cloneListComment.data
-      newListComment.unshift({...data})
-      
+      newListComment.unshift({ ...data })
+
       setListComment({
         data: newListComment,
         total: cloneListComment.total + 1
       })
     })
 
+
     socket.on(ACTION_SOCKET_COMMENT.REPLY_COMMENT, (data) => {
-      console.log("datadata", {data})
+      const parentId = data.parent
+      const findParent = cloneListComment?.data?.find((item: TCommentItemProduct) => item?._id === parentId)
+      if (findParent) {
+        findParent.replies.push({ ...data })
+        setListComment({
+          data: cloneListComment.data,
+          total: cloneListComment.total + 1
+        })
+      }
     })
 
     socket.on(ACTION_SOCKET_COMMENT.UPDATE_COMMENT, (data) => {
-      console.log("datadataUpdate", {data})
+      const findComment = findCommentByIdRecursive(cloneListComment.data, data._id)
+      if (findComment) {
+        findComment.content = data.content
+        setListComment(cloneListComment)
+      }
     })
 
     socket.on(ACTION_SOCKET_COMMENT.DELETE_COMMENT, (data) => {
-      console.log("datadataDeleteone", {data})
+      const deleteComment = deleteCommentByIdRecursive(cloneListComment.data, data._id)
+      if (deleteComment) {
+        const totalDelete = (deleteComment?.replies ? deleteComment?.replies?.length : 0) + 1
+        setListComment({
+          data: cloneListComment.data,
+          total: cloneListComment.total - totalDelete
+        })
+      }
     })
 
     socket.on(ACTION_SOCKET_COMMENT.DELETE_MULTIPLE_COMMENT, (data) => {
-      console.log("datadatamultile", {data})
+      const deletedCount = deleteManyCommentRecursive(cloneListComment.data, data)
+      console.log("deletedCount", {deletedCount})
+      setListComment({
+        data: cloneListComment.data,
+        total: cloneListComment.total - deletedCount
+      })
     })
 
     return () => {
       socket.disconnect()
     }
-  }, [])
+  }, [listComment])
+
+  console.log("cloneListComment", { listComment })
 
   useEffect(() => {
     if (productId) {
@@ -353,7 +432,6 @@ const DetailsProductPage: NextPage<TProps> = () => {
   useEffect(() => {
     if (isSuccessDeleteComment) {
       toast.success(t('Delete_comment_success'))
-      fetchListCommentProduct()
       dispatch(resetInitialStateComment())
     } else if (isErrorDeleteComment && messageErrorDeleteComment) {
       toast.error(t('Delete_comment_error'))
@@ -375,7 +453,6 @@ const DetailsProductPage: NextPage<TProps> = () => {
   useEffect(() => {
     if (isSuccessEditComment) {
       toast.success(t('Update_comment_success'))
-      fetchListCommentProduct()
       dispatch(resetInitialStateComment())
     } else if (isErrorEditComment && messageErrorEditComment) {
       toast.error(t('Update_comment_error'))
@@ -387,7 +464,6 @@ const DetailsProductPage: NextPage<TProps> = () => {
   useEffect(() => {
     if (isSuccessReply) {
       toast.success(t('Create_reply_success'))
-      fetchListCommentProduct()
       dispatch(resetInitialStateComment())
     } else if (isErrorReply && messageErrorReply) {
       toast.error(t('Create_reply_error'))
