@@ -3,6 +3,7 @@ import {
   TParamsAddComment,
   TParamsDeleteMultipleComment,
   TParamsGetComments,
+  TParamsReplyComment,
   TParamsUpdateComment
 } from 'src/types/comment'
 
@@ -15,6 +16,16 @@ import instanceAxios from 'src/helpers/axios'
 export const addComment = async (data: TParamsAddComment) => {
   try {
     const res = await instanceAxios.post(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}`, data)
+
+    return res.data
+  } catch (error) {
+    return error
+  }
+}
+
+export const replyComment = async (data: TParamsReplyComment) => {
+  try {
+    const res = await instanceAxios.post(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}/reply`, data)
 
     return res.data
   } catch (error) {

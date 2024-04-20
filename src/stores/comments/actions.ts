@@ -1,30 +1,22 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { deleteComment, deleteMultipleComment, getAllComments, updateComment } from 'src/services/commentProduct'
+
 
 // ** Services
-import {
-  addReview,
-  deleteMultipleReview,
-  deleteMyReview,
-  deleteReview,
-  getAllReviews,
-  updateMyReview,
-  updateReview
-} from 'src/services/reviewProduct'
-import { TParamsDeleteMultipleComment, TParamsGetComments, TParamsUpdateComment } from 'src/types/comment'
+import { addComment, deleteComment, deleteMultipleComment, deleteMyComment, getAllComments, replyComment, updateComment, updateMyComment } from 'src/services/commentProduct'
 
 // ** Types
-import {
-  TParamsAddReview,
-  TParamsDeleteMultipleReview,
-  TParamsGetReviews,
-  TParamsUpdateReview
-} from 'src/types/reviews'
+import { TParamsAddComment, TParamsDeleteMultipleComment, TParamsGetComments, TParamsReplyComment, TParamsUpdateComment } from 'src/types/comment'
 
 export const serviceName = 'comment'
 
-export const createReviewAsync = createAsyncThunk(`${serviceName}/create`, async (data: TParamsAddReview) => {
-  const response = await addReview(data)
+export const createCommentAsync = createAsyncThunk(`${serviceName}/create`, async (data: TParamsAddComment) => {
+  const response = await addComment(data)
+
+  return response
+})
+
+export const replyCommentAsync = createAsyncThunk(`${serviceName}/reply`, async (data: TParamsReplyComment) => {
+  const response = await replyComment(data)
 
   return response
 })
@@ -59,16 +51,16 @@ export const deleteMultipleCommentAsync = createAsyncThunk(
   }
 )
 
-export const deleteMyReviewAsync = createAsyncThunk(`${serviceName}/delete-my-review`, async (id: string) => {
-  const response = await deleteMyReview(id)
+export const deleteMyCommentAsync = createAsyncThunk(`${serviceName}/delete-my-comment`, async (id: string) => {
+  const response = await deleteMyComment(id)
 
   return response
 })
 
-export const updateMyReviewAsync = createAsyncThunk(
-  `${serviceName}/update-my-review`,
-  async (data: TParamsUpdateReview) => {
-    const response = await updateMyReview(data)
+export const updateMyCommentAsync = createAsyncThunk(
+  `${serviceName}/update-my-comment`,
+  async (data: TParamsUpdateComment) => {
+    const response = await updateMyComment(data)
 
     return response
   }

@@ -17,9 +17,6 @@ const initialState = {
   isSuccessCreate: false,
   isErrorCreate: false,
   messageErrorCreate: '',
-  isSuccessCancelMe: false,
-  isErrorCancelMe: false,
-  messageErrorCancelMe: '',
   isSuccessEdit: false,
   isErrorEdit: false,
   messageErrorEdit: '',
@@ -47,9 +44,6 @@ export const reviewSlice = createSlice({
       state.messageErrorCreate = ''
       state.typeError = ''
       state.isLoading = false
-      state.isSuccessCancelMe = false
-      state.isErrorCancelMe = true
-      state.messageErrorCancelMe = ''
       state.isSuccessEdit = false
       state.isErrorEdit = true
       state.messageErrorEdit = ''
