@@ -35,5 +35,11 @@ export type TCommentItem = {
     name: string
   }
   content: string
-  updatedAt: Date
+  createdAt: Date
 }
+
+export interface TCommentItemProduct extends TCommentItem {
+  replies?: TCommentItem[]
+}
+
+

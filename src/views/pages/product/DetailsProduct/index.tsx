@@ -51,8 +51,13 @@ import toast from 'react-hot-toast'
 import { OBJECT_TYPE_ERROR_REVIEW } from 'src/configs/error'
 import CardSkeletonRelated from 'src/views/pages/product/components/CardSkeletonRelated'
 import CustomCarousel from 'src/components/custom-carousel'
+import CommentInput from 'src/views/pages/product/components/CommentInput'
+import CommentItem from 'src/views/pages/product/components/CommentItem'
+import { getAllCommentsPublic } from 'src/services/commentProduct'
+import { TCommentItemProduct } from 'src/types/comment'
 
 type TProps = {}
+
 
 const DetailsProductPage: NextPage<TProps> = () => {
   // State
@@ -60,6 +65,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
   const [dataProduct, setDataProduct] = useState<TProduct | any>({})
   const [listRelatedProduct, setRelatedProduct] = useState<TProduct[]>([])
   const [listReviews, setListReview] = useState<TReviewItem[]>([])
+  const [listComment, setListComment] = useState<TCommentItemProduct[]>([])
 
   const [amountProduct, setAmountProduct] = useState(1)
 
@@ -136,6 +142,21 @@ const DetailsProductPage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchListCommentProduct = async () => {
+    setLoading(true)
+    await getAllCommentsPublic({ params: { limit: -1, page: -1, order: "createdAt desc" } })
+      .then(async response => {
+        setLoading(false)
+        const data = response?.data
+        if (data) {
+          setListComment(data.comments)
+        }
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   // ** Handle
   const handleUpdateProductToCart = (item: TProduct) => {
     const productCart = getLocalProductCart()
@@ -180,10 +201,18 @@ const DetailsProductPage: NextPage<TProps> = () => {
     )
   }
 
+  const handleCancelComment = () => {
+  }
+
+  const handleComment = (comment: string) => {
+
+  }
+
   useEffect(() => {
     if (productId) {
       fetchGetDetailsProduct(productId)
       fetchListRelatedProduct(productId)
+      fetchListCommentProduct()
     }
   }, [productId])
 
@@ -538,7 +567,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
               xs={12}
 
             >
-              <Box sx={{width: "100%"}}>
+              <Box sx={{ width: "100%" }}>
                 <Box sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4 }}>
                   <Box
                     sx={{
@@ -593,25 +622,25 @@ const DetailsProductPage: NextPage<TProps> = () => {
                     <CustomCarousel
                       arrows
                       showDots={true}
-                      ssr={true} 
+                      ssr={true}
                       responsive={{
                         superLargeDesktop: {
-                            breakpoint: { max: 4000, min: 3000 },
-                            items: 4
+                          breakpoint: { max: 4000, min: 3000 },
+                          items: 4
                         },
                         desktop: {
-                            breakpoint: { max: 3000, min: 1024 },
-                            items: 3
+                          breakpoint: { max: 3000, min: 1024 },
+                          items: 3
                         },
                         tablet: {
-                            breakpoint: { max: 1024, min: 464 },
-                            items: 2
+                          breakpoint: { max: 1024, min: 464 },
+                          items: 2
                         },
                         mobile: {
-                            breakpoint: { max: 464, min: 0 },
-                            items: 1
+                          breakpoint: { max: 464, min: 0 },
+                          items: 1
                         }
-                    }}
+                      }}
                     >
                       {listReviews.map((review: TReviewItem) => {
                         return (
@@ -621,6 +650,32 @@ const DetailsProductPage: NextPage<TProps> = () => {
                         )
                       })}
                     </CustomCarousel>
+                  </Box>
+                </Box>
+                <Box
+                  sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4, width: "100%" }}
+                  marginTop={{ md: 5, xs: 4 }}
+                >
+                  <Typography
+                    variant='h6'
+                    sx={{
+                      color: `rgba(${theme.palette.customColors.main}, 0.68)`,
+                      fontWeight: 'bold',
+                      fontSize: '18px'
+                    }}
+                  >
+                    {t('Comment_product')} <b style={{ color: theme.palette.primary.main }}>{listReviews?.length}</b> {t("comments")}
+                  </Typography>
+                  <Box sx={{ width: "100%" }}>
+                    <CommentInput onCancel={handleCancelComment} onApply={handleComment} />
+                    <Box sx={{display: "flex", flexDirection: "column", gap: "8px", marginTop: "20px"}}> 
+                      {listComment?.map((comment: TCommentItemProduct) => {
+                      return (
+                        <CommentItem key={comment._id} item={comment} />
+                      )
+                    })}
+                    </Box>
+
                   </Box>
                 </Box>
               </Box>
@@ -693,7 +748,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
             </Grid>
             <Box
               display={{ md: "none", xs: "block" }}
-              sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4 }}
+              sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4, width: "100%" }}
               marginTop={{ md: 5, xs: 4 }}
             >
               <Typography
@@ -706,17 +761,39 @@ const DetailsProductPage: NextPage<TProps> = () => {
               >
                 {t('Review_product')} <b style={{ color: theme.palette.primary.main }}>{listReviews?.length}</b> {t("ratings")}
               </Typography>
-              <Grid container spacing={8} mt={{ md: 0, xs: 1 }}>
-                {listReviews.map((review: TReviewItem) => {
-                  return (
-                    <Grid key={review._id} item md={4} xs={12}>
-
-                      <CardReview item={review} />
-                    </Grid>
-                  )
-                })}
-
-              </Grid>
+              <Box sx={{ width: "100%" }}>
+                <CustomCarousel
+                  arrows
+                  showDots={true}
+                  ssr={true}
+                  responsive={{
+                    superLargeDesktop: {
+                      breakpoint: { max: 4000, min: 3000 },
+                      items: 4
+                    },
+                    desktop: {
+                      breakpoint: { max: 3000, min: 1024 },
+                      items: 3
+                    },
+                    tablet: {
+                      breakpoint: { max: 1024, min: 464 },
+                      items: 2
+                    },
+                    mobile: {
+                      breakpoint: { max: 464, min: 0 },
+                      items: 1
+                    }
+                  }}
+                >
+                  {listReviews.map((review: TReviewItem) => {
+                    return (
+                      <Box key={review._id} sx={{ margin: "0 10px" }}>
+                        <CardReview item={review} />
+                      </Box>
+                    )
+                  })}
+                </CustomCarousel>
+              </Box>
             </Box>
           </Grid>
         </Grid>
