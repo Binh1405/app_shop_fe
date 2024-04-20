@@ -53,8 +53,11 @@ import CardSkeletonRelated from 'src/views/pages/product/components/CardSkeleton
 import CustomCarousel from 'src/components/custom-carousel'
 import CommentInput from 'src/views/pages/product/components/CommentInput'
 import CommentItem from 'src/views/pages/product/components/CommentItem'
+import { getAllCommentsPublic } from 'src/services/commentProduct'
+import { TCommentItemProduct } from 'src/types/comment'
 
 type TProps = {}
+
 
 const DetailsProductPage: NextPage<TProps> = () => {
   // State
@@ -62,6 +65,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
   const [dataProduct, setDataProduct] = useState<TProduct | any>({})
   const [listRelatedProduct, setRelatedProduct] = useState<TProduct[]>([])
   const [listReviews, setListReview] = useState<TReviewItem[]>([])
+  const [listComment, setListComment] = useState<TCommentItemProduct[]>([])
 
   const [amountProduct, setAmountProduct] = useState(1)
 
@@ -138,6 +142,21 @@ const DetailsProductPage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchListCommentProduct = async () => {
+    setLoading(true)
+    await getAllCommentsPublic({ params: { limit: -1, page: -1, order: "createdAt desc" } })
+      .then(async response => {
+        setLoading(false)
+        const data = response?.data
+        if (data) {
+          setListComment(data.comments)
+        }
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }
+
   // ** Handle
   const handleUpdateProductToCart = (item: TProduct) => {
     const productCart = getLocalProductCart()
@@ -183,16 +202,17 @@ const DetailsProductPage: NextPage<TProps> = () => {
   }
 
   const handleCancelComment = () => {
-}
+  }
 
-const handleComment = (comment:string) => {
-     
-}
+  const handleComment = (comment: string) => {
+
+  }
 
   useEffect(() => {
     if (productId) {
       fetchGetDetailsProduct(productId)
       fetchListRelatedProduct(productId)
+      fetchListCommentProduct()
     }
   }, [productId])
 
@@ -633,31 +653,31 @@ const handleComment = (comment:string) => {
                   </Box>
                 </Box>
                 <Box
-              sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4, width: "100%" }}
-              marginTop={{ md: 5, xs: 4 }}
-            >
-              <Typography
-                variant='h6'
-                sx={{
-                  color: `rgba(${theme.palette.customColors.main}, 0.68)`,
-                  fontWeight: 'bold',
-                  fontSize: '18px'
-                }}
-              >
-                {t('Comment_product')} <b style={{ color: theme.palette.primary.main }}>{listReviews?.length}</b> {t("comments")}
-              </Typography>
-              <Box sx={{ width: "100%" }}>
-                <CommentInput onCancel={handleCancelComment} onApply={handleComment} />
-                <CommentItem />
-                {/* {listReviews.map((review: TReviewItem) => {
-                  return (
-                    <Box key={review._id} sx={{ margin: "0 10px" }}>
-                      <CardReview item={review} />
+                  sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4, width: "100%" }}
+                  marginTop={{ md: 5, xs: 4 }}
+                >
+                  <Typography
+                    variant='h6'
+                    sx={{
+                      color: `rgba(${theme.palette.customColors.main}, 0.68)`,
+                      fontWeight: 'bold',
+                      fontSize: '18px'
+                    }}
+                  >
+                    {t('Comment_product')} <b style={{ color: theme.palette.primary.main }}>{listReviews?.length}</b> {t("comments")}
+                  </Typography>
+                  <Box sx={{ width: "100%" }}>
+                    <CommentInput onCancel={handleCancelComment} onApply={handleComment} />
+                    <Box sx={{display: "flex", flexDirection: "column", gap: "8px", marginTop: "20px"}}> 
+                      {listComment?.map((comment: TCommentItemProduct) => {
+                      return (
+                        <CommentItem key={comment._id} item={comment} />
+                      )
+                    })}
                     </Box>
-                  )
-                })} */}
-              </Box>
-            </Box>
+
+                  </Box>
+                </Box>
               </Box>
             </Grid>
             <Grid container item md={3} xs={12} mt={{ md: 0, xs: 5 }}>

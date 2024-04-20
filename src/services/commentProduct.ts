@@ -64,6 +64,16 @@ export const getAllComments = async (data: { params: TParamsGetComments }) => {
   }
 }
 
+export const getAllCommentsPublic = async (data: { params: TParamsGetComments }) => {
+  try {
+    const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}/public`, data)
+
+    return res.data
+  } catch (error) {
+    return error
+  }
+}
+
 export const getDetailsComment = async (id: string) => {
   try {
     const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.COMMENT.INDEX}/${id}`)
