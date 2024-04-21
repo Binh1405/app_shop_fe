@@ -374,8 +374,6 @@ const UserListPage: NextPage<TProps> = () => {
     })
   }
 
-  console.log("checl", { countUserType })
-
   const fetchAllCities = async () => {
     setLoading(true)
     await getAllCities({ params: { limit: -1, page: -1 } })

@@ -11,3 +11,13 @@ export const getCountUserType = async () => {
   }
 }
 
+
+export const getCountProductStatus = async () => {
+  try {
+    const res = await instanceAxios.get(`${API_ENDPOINT.REPORT.INDEX}/product-status/count`)
+
+    return res.data
+  } catch (error) {
+    return error
+  }
+}
