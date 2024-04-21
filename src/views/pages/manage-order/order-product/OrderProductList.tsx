@@ -44,6 +44,8 @@ import { getAllCities } from 'src/services/city'
 
 // ** Types
 import { TItemProductMe } from 'src/types/order-product'
+import { getCountOrderStatus } from 'src/services/report'
+import CardCountStatusOrder from 'src/views/pages/manage-order/order-product/components/CardCountOrderStatus'
 
 type TProps = {}
 
@@ -85,6 +87,10 @@ const OrderProductListPage: NextPage<TProps> = () => {
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
   const [page, setPage] = useState(1)
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
+  const [countOrderStatus, setCountOrderStatus] = useState<{
+    data: Record<number, number>,
+    total: number
+  }>({} as any)
 
   // ** Hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.ORDER', ['CREATE', 'VIEW', 'UPDATE', 'DELETE'])
@@ -309,6 +315,21 @@ const OrderProductListPage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchAllCountStatusOrder = async () => {
+    setLoading(true)
+    await getCountOrderStatus().then((res) => {
+      const data = res?.data
+      setLoading(false)
+      setCountOrderStatus({
+        data: data?.data,
+        total: data?.total
+      })
+    }).catch(e => {
+      setLoading(false)
+    })
+  }
+
+
   useEffect(() => {
     handleGetListOrderProducts()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -320,6 +341,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     fetchAllCities()
+    fetchAllCountStatusOrder()
   }, [])
 
   useEffect(() => {
@@ -361,6 +383,30 @@ const OrderProductListPage: NextPage<TProps> = () => {
     }))
   }, [])
 
+  const dataListOrderStatus = [
+    {
+      "icon": "lets-icons:order-light",
+      status: 4
+    },
+    {
+      "icon": "ic:twotone-payment",
+      status: STATUS_ORDER_PRODUCT[0].value,
+    },
+    {
+      status: STATUS_ORDER_PRODUCT[1].value,
+      "icon": "carbon:delivery",
+    },
+    {
+      "icon": "ic:baseline-done-all",
+      iconSize: "18",
+      status: STATUS_ORDER_PRODUCT[2].value,
+    },
+    {
+      "icon": "line-md:cancel",
+      status: STATUS_ORDER_PRODUCT[3].value,
+    }
+  ]
+
   return (
     <>
       {loading && <Spinner />}
@@ -375,6 +421,17 @@ const OrderProductListPage: NextPage<TProps> = () => {
 
       <EditOrderProduct open={openEdit.open} onClose={handleCloseEdit} idOrder={openEdit.id} />
       {isLoading && <Spinner />}
+      <Box sx={{ backgroundColor: "inherit", width: '100%', mb: 4 }}>
+        <Grid container spacing={6} sx={{ height: '100%' }}>
+          {dataListOrderStatus?.map((item: any, index: number) => {
+            return (
+              <Grid item xs={12} md={3} sm={6} key={index}>
+                <CardCountStatusOrder {...item} countStatusOrder={countOrderStatus} />
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Box>
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
