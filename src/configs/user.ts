@@ -14,3 +14,10 @@ export const OBJECT_STATUS_USER = () => {
         }
     }
 }
+
+
+export const CONFIG_USER_TYPE = {
+    FACEBOOK: 1,
+    GOOGLE: 2,
+    DEFAULT: 3
+  };
