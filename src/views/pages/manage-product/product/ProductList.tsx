@@ -44,8 +44,10 @@ import { OBJECT_STATUS_PRODUCT } from 'src/configs/product'
 import { getAllProductTypes } from 'src/services/product-type'
 
 // ** Utils
-import { formatNumberToLocal,formatFilter } from 'src/utils'
-import {formatDate} from "src/utils/date"
+import { formatNumberToLocal, formatFilter } from 'src/utils'
+import { formatDate } from "src/utils/date"
+import { getCountProductStatus } from 'src/services/report'
+import CardCountProduct from 'src/views/pages/manage-product/product/component/CardCountProduct'
 
 type TProps = {}
 
@@ -91,7 +93,13 @@ const ProductListPage: NextPage<TProps> = () => {
   const [statusSelected, setStatusSelected] = useState<string[]>([])
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
   const [loading, setLoading] = useState(false)
+  const [countProductStatus, setCountProductStatus] = useState<{
+    data: Record<number, number>,
+    total: number
+  }>({} as any)
+
   const CONSTANT_STATUS_PRODUCT = OBJECT_STATUS_PRODUCT()
+
 
   // ** Hooks
   const { VIEW, UPDATE, DELETE, CREATE } = usePermission('MANAGE_PRODUCT.PRODUCT', [
@@ -197,6 +205,20 @@ const ProductListPage: NextPage<TProps> = () => {
       .catch(e => {
         setLoading(false)
       })
+  }
+
+  const fetchAllCountProductStatus = async () => {
+    setLoading(true)
+    await getCountProductStatus().then((res) => {
+      const data = res?.data
+      setLoading(false)
+      setCountProductStatus({
+        data: data?.data,
+        total: data?.total
+      })
+    }).catch(e => {
+      setLoading(false)
+    })
   }
 
   const columns: GridColDef[] = [
@@ -376,7 +398,23 @@ const ProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     fetchAllTypes()
+    fetchAllCountProductStatus()
   }, [])
+
+  const dataListProductStatus = [
+    {
+      "icon": "la:product-hunt",
+      status: "2"
+    },
+    {
+      "icon": "material-symbols-light:public-off",
+      status: "0",
+    },
+    {
+      status: "1",
+      "icon": "material-symbols-light:public",
+    },
+  ]
 
   return (
     <>
@@ -399,6 +437,17 @@ const ProductListPage: NextPage<TProps> = () => {
       />
       <CreateEditProduct open={openCreateEdit.open} onClose={handleCloseCreateEdit} idProduct={openCreateEdit.id} />
       {isLoading && <Spinner />}
+      <Box sx={{ backgroundColor: "inherit", width: '100%', mb: 4 }}>
+        <Grid container spacing={6} sx={{ height: '100%' }}>
+          {dataListProductStatus?.map((item: any, index: number) => {
+            return (
+              <Grid item xs={12} md={4} sm={6} key={index}>
+                <CardCountProduct {...item} countProductStatus={countProductStatus} />
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Box>
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
