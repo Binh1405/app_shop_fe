@@ -46,10 +46,11 @@ const StyleWrapper = styled(Box)(({ theme }) => ({
 }))
 
 interface TCommentInput {
-    onApply: (comment: string,isEdit: boolean, item?: TCommentItemProduct) => void
+    onApply: (comment: string, isEdit: boolean, item?: TCommentItemProduct) => void
     onCancel?: () => void
     item?: TCommentItemProduct
     isEdit?: boolean
+    isReply?: boolean
 }
 
 const CommentInput = (props: TCommentInput) => {
@@ -88,7 +89,7 @@ const CommentInput = (props: TCommentInput) => {
     return (
         <StyleWrapper>
             {!props.isEdit && (
-                <Avatar src={user?.avatar || ""} sx={{ height: '40px !important', width: '40px !important', mt: 4 }} />
+                <Avatar src={user?.avatar || ""} sx={{ height: props?.item ? '34px !important' : '40px !important', width: props?.item ? '34px !important' : '40px !important', marginTop: props?.item ? "16px": "0" }} />
             )}
             <Box sx={{ flex: 1 }}>
                 <CustomTextField
@@ -110,7 +111,7 @@ const CommentInput = (props: TCommentInput) => {
                             boxShadow: "none !important"
                         }
                     }} />
-                {isFocus && (
+                {(isFocus || props.item) && (
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
                         <Box sx={{ position: "relative" }}>
                             <IconButton onClick={() => setIsVisible(!isVisible)}>
@@ -129,7 +130,7 @@ const CommentInput = (props: TCommentInput) => {
                                 {t('Cancel')}
                             </Button>
                             <Button variant='contained' onClick={handleApply}>
-                                {props.isEdit ? t("Edit_comment") : t('Comment')}
+                                {props.isEdit ? t("Edit_comment") : props?.isReply ? t("Reply") : t('Comment')}
                             </Button>
                         </Box>
                     </Box>

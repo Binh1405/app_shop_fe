@@ -192,15 +192,15 @@ const CommentItem = ({ item }: TProps) => {
                 </Box>
                 {!editComment && (
                     <Box sx={{ display: "flex", gap: 1, ml: "80px" }}>
-                        <Button variant="text" sx={{ mt: 1, height: "30px", backgroundColor: "transparent !important" }} onClick={() => setIsReply(true)}>
+                        <Button variant="text" sx={{ height: "30px", backgroundColor: "transparent !important" }} onClick={() => setIsReply(true)}>
                             {t("Reply")}
                         </Button>
                     </Box>
                 )}
 
                 {isReply && (
-                    <Box sx={{ ml: "80px", mt: -2 }}>
-                        <CommentInput onCancel={handleCancelReply} item={item} onApply={handleReply} />
+                    <Box sx={{ ml: "80px",mr: "40px", marginTop: "4px" }}>
+                        <CommentInput onCancel={handleCancelReply} isReply={isReply} item={item} onApply={handleReply} />
                     </Box>
                 )}
             </Box>

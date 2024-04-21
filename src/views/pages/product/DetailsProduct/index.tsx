@@ -283,15 +283,15 @@ const DetailsProductPage: NextPage<TProps> = () => {
   }
 
   const deleteManyCommentRecursive = (comments: TCommentItemProduct[], ids: string[]) => {
-    let deletedCount:number = 0
+    let deletedCount: number = 0
     ids.forEach((id) => {
       const index = comments.findIndex((item) => item._id === id)
       if (index !== -1) {
         comments.splice(index, 1)
-        deletedCount+=1
+        deletedCount += 1
       }
     })
-   
+
     for (const comment of comments) {
       if (comment.replies && comment.replies.length > 0) {
         deleteManyCommentRecursive(comment.replies, ids)
@@ -368,7 +368,6 @@ const DetailsProductPage: NextPage<TProps> = () => {
 
     socket.on(ACTION_SOCKET_COMMENT.DELETE_MULTIPLE_COMMENT, (data) => {
       const deletedCount = deleteManyCommentRecursive(cloneListComment.data, data)
-      console.log("deletedCount", {deletedCount})
       setListComment({
         data: cloneListComment.data,
         total: cloneListComment.total - deletedCount
@@ -475,6 +474,11 @@ const DetailsProductPage: NextPage<TProps> = () => {
     <>
       {loading && <Spinner />}
       <Grid container>
+      <Box
+              marginTop={{ md: 5, xs: 4 }}
+            >
+              <Typography sx={{color: theme.palette.primary.main, fontWeight: "600", marginBottom: "8px"}}>{t("Product_details")}{" / "}{dataProduct.type?.name}{" "}/{" "}{dataProduct?.name}</Typography>
+            </Box>
         <Grid
           container
           item
@@ -482,6 +486,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
           xs={12}
           sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4 }}
         >
+          
           <Box sx={{ height: '100%', width: '100%' }}>
             <Grid container spacing={8}>
               <Grid item md={5} xs={12}>
@@ -878,14 +883,15 @@ const DetailsProductPage: NextPage<TProps> = () => {
                     sx={{
                       color: `rgba(${theme.palette.customColors.main}, 0.68)`,
                       fontWeight: 'bold',
-                      fontSize: '18px'
+                      fontSize: '18px',
+                      mb: "8px"
                     }}
                   >
                     {t('Comment_product')} <b style={{ color: theme.palette.primary.main }}>{listComment?.total}</b> {t("comments")}
                   </Typography>
                   <Box sx={{ width: "100%" }}>
                     <CommentInput onApply={handleComment} />
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "20px" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "30px", maxHeight: "500px", overflow: "auto" }}>
                       {listComment?.data?.map((comment: TCommentItemProduct) => {
                         const level: number = -1
 
@@ -1033,7 +1039,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
               </Typography>
               <Box sx={{ width: "100%" }}>
                 <CommentInput onApply={handleComment} />
-                <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "20px" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "30px", maxHeight: "300px", overflow: "auto" }}>
                   {listComment?.data?.map((comment: TCommentItemProduct) => {
                     const level: number = -1
 
