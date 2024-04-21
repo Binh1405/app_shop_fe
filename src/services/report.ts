@@ -31,3 +31,13 @@ export const getCountAllRecords = async () => {
     return error
   }
 }
+
+export const getCountProductTypes = async () => {
+  try {
+    const res = await instanceAxios.get(`${API_ENDPOINT.REPORT.INDEX}/product-type/count`)
+
+    return res.data
+  } catch (error) {
+    return error
+  }
+}
