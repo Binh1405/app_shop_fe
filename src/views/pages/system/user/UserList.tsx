@@ -41,10 +41,11 @@ import { usePermission } from 'src/hooks/usePermission'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { PERMISSIONS } from 'src/configs/permission'
 import { getAllRoles } from 'src/services/role'
-import { CONFIG_USER_TYPE, OBJECT_STATUS_USER } from 'src/configs/user'
+import { CONFIG_USER_TYPE, OBJECT_STATUS_USER, OBJECT_TYPE_USER } from 'src/configs/user'
 import { getAllCities } from 'src/services/city'
 import CardCountUser from 'src/views/pages/system/user/component/CardCountUser'
 import { getCountUserType } from 'src/services/report'
+import Icon from 'src/components/Icon'
 
 type TProps = {}
 
@@ -70,6 +71,25 @@ const UserListPage: NextPage<TProps> = () => {
   // ** Translate
   const { t } = useTranslation()
 
+
+  const mapUserType = {
+    1: {
+      title: t("Facebook"),
+      icon: "logos:facebook",
+
+    },
+    2: {
+      title: t("Google"),
+      icon: "flat-color-icons:google",
+
+    },
+    3: {
+      title: t("Email"),
+      icon: "logos:google-gmail",
+      iconSize: 18
+    },
+  }
+
   // State
 
   const [openCreateEdit, setOpenCreateEdit] = useState({
@@ -88,6 +108,7 @@ const UserListPage: NextPage<TProps> = () => {
   const [roleSelected, setRoleSelected] = useState<string[]>([])
   const [citySelected, setCitySelected] = useState<string[]>([])
   const [statusSelected, setStatusSelected] = useState<string[]>([])
+  const [typeSelected, setTypeSelected] = useState<string[]>([])
 
   const [loading, setLoading] = useState(false)
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTION[0])
@@ -101,6 +122,7 @@ const UserListPage: NextPage<TProps> = () => {
 
 
   const CONSTANT_STATUS_USER = OBJECT_STATUS_USER()
+  const CONSTANT_USER_TYPE = OBJECT_TYPE_USER()
 
   // ** Hooks
   const { VIEW, UPDATE, DELETE, CREATE } = usePermission('SYSTEM.USER', ['CREATE', 'VIEW', 'UPDATE', 'DELETE'])
@@ -259,6 +281,23 @@ const UserListPage: NextPage<TProps> = () => {
       }
     },
     {
+      field: 'userType',
+      headerName: t('User Type'),
+      minWidth: 120,
+      maxWidth: 120,
+      renderCell: params => {
+        const { row } = params
+
+        return (
+          <>{row.userType && (
+            <Box>
+              <Icon icon={(mapUserType as any)[row.userType]?.icon} fontSize={(mapUserType as any)[row.userType]?.iconSize || 24} />
+            </Box>
+          )}</>
+        )
+      }
+    },
+    {
       field: 'action',
       headerName: t('Actions'),
       minWidth: 150,
@@ -335,7 +374,7 @@ const UserListPage: NextPage<TProps> = () => {
     })
   }
 
-  console.log("checl", {countUserType})
+  console.log("checl", { countUserType })
 
   const fetchAllCities = async () => {
     setLoading(true)
@@ -362,8 +401,8 @@ const UserListPage: NextPage<TProps> = () => {
   }, [sortBy, searchBy, i18n.language, page, pageSize, filterBy])
 
   useEffect(() => {
-    setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected })
-  }, [roleSelected, statusSelected, citySelected])
+    setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected, userType: typeSelected })
+  }, [roleSelected, statusSelected, citySelected, typeSelected])
 
   useEffect(() => {
     fetchAllRoles()
@@ -481,7 +520,8 @@ const UserListPage: NextPage<TProps> = () => {
           alignItems: 'center',
           padding: '20px',
           height: '100%',
-          width: '100%'
+          width: '100%',
+          borderRadius: '15px'
         }}
       >
 
@@ -524,6 +564,18 @@ const UserListPage: NextPage<TProps> = () => {
                   options={Object.values(CONSTANT_STATUS_USER)}
                   value={statusSelected}
                   placeholder={t('Status')}
+                />
+              </Box>
+              <Box sx={{ width: '200px' }}>
+                <CustomSelect
+                  fullWidth
+                  onChange={e => {
+                    setTypeSelected(e.target.value as string[])
+                  }}
+                  multiple
+                  options={Object.values(CONSTANT_USER_TYPE)}
+                  value={typeSelected}
+                  placeholder={t('User type')}
                 />
               </Box>
               <Box sx={{ width: '200px' }}>
