@@ -1,4 +1,4 @@
-export const BASE_URL = process.env.NEXT_PUBLIC_API_HOST
+export const BASE_URL = `${process.env.NEXT_PUBLIC_API_HOST}/api`
 
 export const API_ENDPOINT = {
   AUTH: {
@@ -33,7 +33,7 @@ export const API_ENDPOINT = {
     },
     COMMENT: {
       INDEX: `${BASE_URL}/comments`
-    },
+    }
   },
   MANAGE_ORDER: {
     ORDER: {
@@ -47,5 +47,8 @@ export const API_ENDPOINT = {
     VN_PAY: {
       INDEX: `${BASE_URL}/payment/vnpay`
     }
+  },
+  REPORT: {
+    INDEX: `${BASE_URL}/report`
   }
 }

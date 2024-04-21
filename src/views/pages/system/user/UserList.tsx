@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
-import { Box, Chip, ChipProps, Grid, Typography, styled, useTheme } from '@mui/material'
+import { Box, Card, CardContent, Chip, ChipProps, Grid, Typography, styled, useTheme } from '@mui/material'
 import { GridColDef, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid'
 
 // ** Redux
@@ -41,8 +41,10 @@ import { usePermission } from 'src/hooks/usePermission'
 import { PAGE_SIZE_OPTION } from 'src/configs/gridConfig'
 import { PERMISSIONS } from 'src/configs/permission'
 import { getAllRoles } from 'src/services/role'
-import { OBJECT_STATUS_USER } from 'src/configs/user'
+import { CONFIG_USER_TYPE, OBJECT_STATUS_USER } from 'src/configs/user'
 import { getAllCities } from 'src/services/city'
+import CardCountUser from 'src/views/pages/system/user/component/CardCountUser'
+import { getCountUserType } from 'src/services/report'
 
 type TProps = {}
 
@@ -92,6 +94,12 @@ const UserListPage: NextPage<TProps> = () => {
   const [page, setPage] = useState(1)
   const [selectedRow, setSelectedRow] = useState<TSelectedRow[]>([])
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
+  const [countUserType, setCountUserType] = useState<{
+    data: Record<number, number>,
+    totalUser: number
+  }>({} as any)
+
+
   const CONSTANT_STATUS_USER = OBJECT_STATUS_USER()
 
   // ** Hooks
@@ -313,6 +321,22 @@ const UserListPage: NextPage<TProps> = () => {
       })
   }
 
+  const fetchAllCountUserType = async () => {
+    setLoading(true)
+    await getCountUserType().then((res) => {
+      const data = res?.data
+      setLoading(false)
+      setCountUserType({
+        data: data?.data,
+        totalUser: data?.total
+      })
+    }).catch(e => {
+      setLoading(false)
+    })
+  }
+
+  console.log("checl", {countUserType})
+
   const fetchAllCities = async () => {
     setLoading(true)
     await getAllCities({ params: { limit: -1, page: -1 } })
@@ -344,6 +368,7 @@ const UserListPage: NextPage<TProps> = () => {
   useEffect(() => {
     fetchAllRoles()
     fetchAllCities()
+    fetchAllCountUserType()
   }, [])
 
   useEffect(() => {
@@ -397,6 +422,26 @@ const UserListPage: NextPage<TProps> = () => {
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
+  const dataListUser = [
+    {
+      "icon": "tabler:user",
+      userType: 4
+    },
+    {
+      "icon": "logos:facebook",
+      userType: CONFIG_USER_TYPE.FACEBOOK,
+    },
+    {
+      userType: CONFIG_USER_TYPE.GOOGLE,
+      "icon": "flat-color-icons:google",
+    },
+    {
+      "icon": "logos:google-gmail",
+      iconSize: "18",
+      userType: CONFIG_USER_TYPE.DEFAULT,
+    }
+  ]
+
   return (
     <>
       {loading && <Spinner />}
@@ -418,6 +463,17 @@ const UserListPage: NextPage<TProps> = () => {
       />
       <CreateEditUser open={openCreateEdit.open} onClose={handleCloseCreateEdit} idUser={openCreateEdit.id} />
       {isLoading && <Spinner />}
+      <Box sx={{ backgroundColor: "inherit", width: '100%', mb: 4 }}>
+        <Grid container spacing={6} sx={{ height: '100%' }}>
+          {dataListUser?.map((item: any, index: number) => {
+            return (
+              <Grid item xs={12} md={3} sm={6} key={index}>
+                <CardCountUser {...item} countUserType={countUserType} />
+              </Grid>
+            )
+          })}
+        </Grid>
+      </Box>
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
@@ -428,6 +484,7 @@ const UserListPage: NextPage<TProps> = () => {
           width: '100%'
         }}
       >
+
         <Grid container sx={{ height: '100%', width: '100%' }}>
           {!selectedRow?.length && (
             <Box
