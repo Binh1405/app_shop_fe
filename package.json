@@ -37,6 +37,7 @@
     "emoji-picker-react": "^4.9.2",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "firebase": "^10.11.0",
     "html-to-draftjs": "1.4.0",
     "i18next": "^23.7.8",
     "i18next-browser-languagedetector": "^7.2.0",
