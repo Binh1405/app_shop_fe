@@ -82,7 +82,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
   // ** Hooks
   const { i18n } = useTranslation()
   const router = useRouter()
-  const productId = router.query?.productId as string
+  const slug = router.query?.productId as string
   const { user } = useAuth()
 
   // ** theme
@@ -108,6 +108,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
     messageErrorCreate: messageErrorCreateComment,
     isSuccessReply,
     isErrorReply,
+    isLoading: isLoadingComment,
     messageErrorReply,
     isSuccessDelete: isSuccessDeleteComment,
     isErrorDelete: isErrorDeleteComment,
@@ -169,9 +170,9 @@ const DetailsProductPage: NextPage<TProps> = () => {
       })
   }
 
-  const fetchListCommentProduct = async () => {
+  const fetchListCommentProduct = async (productId:string) => {
     setLoading(true)
-    await getAllCommentsPublic({ params: { limit: -1, page: -1, order: "createdAt desc", isPublic: true, productId: dataProduct?._id } })
+    await getAllCommentsPublic({ params: { limit: -1, page: -1, order: "createdAt desc", isPublic: true, productId: productId} })
       .then(async response => {
         setLoading(false)
         const data = response?.data
@@ -339,7 +340,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
       const parentId = data.parent
       const findParent = cloneListComment?.data?.find((item: TCommentItemProduct) => item?._id === parentId)
       if (findParent) {
-        findParent.replies.push({ ...data })
+        findParent?.replies?.push({ ...data })
         setListComment({
           data: cloneListComment.data,
           total: cloneListComment.total + 1
@@ -379,18 +380,16 @@ const DetailsProductPage: NextPage<TProps> = () => {
     }
   }, [listComment])
 
-  console.log("cloneListComment", { listComment })
-
   useEffect(() => {
-    if (productId) {
-      fetchGetDetailsProduct(productId)
-      fetchListRelatedProduct(productId)
-      fetchListCommentProduct()
+    if (slug) {
+      fetchGetDetailsProduct(slug)
+      fetchListRelatedProduct(slug)
     }
-  }, [productId])
+  }, [slug])
 
   useEffect(() => {
     if (dataProduct._id) {
+      fetchListCommentProduct(dataProduct._id)
       fetchGetAllListReviewByProduct(dataProduct._id)
     }
   }, [dataProduct._id])
@@ -472,13 +471,13 @@ const DetailsProductPage: NextPage<TProps> = () => {
 
   return (
     <>
-      {loading && <Spinner />}
+      {(loading || isLoadingComment) && <Spinner />}
       <Grid container>
-      <Box
-              marginTop={{ md: 5, xs: 4 }}
-            >
-              <Typography sx={{color: theme.palette.primary.main, fontWeight: "600", marginBottom: "8px"}}>{t("Product_details")}{" / "}{dataProduct.type?.name}{" "}/{" "}{dataProduct?.name}</Typography>
-            </Box>
+        <Box
+          marginTop={{ md: 5, xs: 4 }}
+        >
+          <Typography sx={{ color: theme.palette.primary.main, fontWeight: "600", marginBottom: "8px"}}>{t("Product_details")}{" / "}{dataProduct.type?.name}{" "}/{" "}{dataProduct?.name}</Typography>
+        </Box>
         <Grid
           container
           item
@@ -486,7 +485,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
           xs={12}
           sx={{ backgroundColor: theme.palette.background.paper, borderRadius: '15px', py: 5, px: 4 }}
         >
-          
+
           <Box sx={{ height: '100%', width: '100%' }}>
             <Grid container spacing={8}>
               <Grid item md={5} xs={12}>
@@ -891,7 +890,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
                   </Typography>
                   <Box sx={{ width: "100%" }}>
                     <CommentInput onApply={handleComment} />
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "30px", maxHeight: "500px", overflow: "auto" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "30px" }}>
                       {listComment?.data?.map((comment: TCommentItemProduct) => {
                         const level: number = -1
 
