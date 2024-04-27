@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react'
+import { useState, SyntheticEvent, Fragment, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -19,11 +19,19 @@ import NotificationItem from 'src/views/layouts/components/notification-dropdown
 
 // ** Third party
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import { getAllNotificationsAsync } from 'src/stores/notification/actions'
+import toast from 'react-hot-toast'
+import { resetInitialState } from 'src/stores/notification'
 
 export type NotificationsType = {
-    meta: string
+    createdAt: string
+    _id: string
     title: string
-    subtitle: string
+    body: string
+    isRead: boolean
+    referenceId: string
 }
 
 interface Props {
@@ -63,51 +71,18 @@ const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
 
 
 const NotificationDropdown = (props: Props) => {
-    // ** Props
-    const { } = props
 
     // ** Hooks
     const theme = useTheme()
     const { t } = useTranslation()
 
-    const notifications: NotificationsType[] = [
-        {
-            meta: 'Today',
-            title: 'Congratulation Flora! 🎉',
-            subtitle: 'Won the monthly best seller badge'
-        },
-        {
-            meta: 'Yesterday',
-            subtitle: '5 hours ago',
-            title: 'New user registered.'
-        },
-        {
-            meta: '11 Aug',
-            title: 'New message received 👋🏻',
-            subtitle: 'You have 10 unread messages'
-        },
-        {
-            meta: '25 May',
-            title: 'Paypal',
-            subtitle: 'Received Payment',
-        },
-        {
-            meta: '19 Mar',
-            title: 'Received Order 📦',
-            subtitle: 'New order received from John'
-        },
-        {
-            meta: '27 Dec',
-            subtitle: '25 hrs ago',
-            title: 'Finance report has been generated'
-        }
-    ]
+    // ** Redux
+    const dispatch:AppDispatch = useDispatch()
+    const {notifications, isSuccessDelete, isSuccessRead, isErrorDelete, isErrorRead, messageErrorDelete, messageErrorRead} = useSelector((state:RootState) => state.notification)
+
 
     // ** States
     const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
-
-    // ** Hook
-    const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
 
     const handleDropdownOpen = (event: SyntheticEvent) => {
         setAnchorEl(event.currentTarget)
@@ -117,6 +92,35 @@ const NotificationDropdown = (props: Props) => {
         setAnchorEl(null)
     }
 
+    const handleGetListNotification = () => {
+        dispatch(getAllNotificationsAsync({params: {limit: -1, page: -1}}))
+    }
+
+    useEffect(() => {
+        handleGetListNotification()
+    },[])
+
+    useEffect(() => {
+        if(isSuccessRead && !isErrorRead) {
+            toast.success(t("Marked_notification_success"))
+            dispatch(resetInitialState())
+            handleGetListNotification()
+        }else if(isErrorRead && messageErrorRead) {
+            toast.error(t("Marked_notification_failed"))
+            dispatch(resetInitialState())
+        }
+    }, [isSuccessRead, isErrorRead, messageErrorRead])
+
+    useEffect(() => {
+        if(isSuccessDelete && !isErrorDelete) {
+            toast.success(t("Delete_notification_success"))
+            dispatch(resetInitialState())
+            handleGetListNotification()
+        }else if(isErrorDelete && messageErrorDelete) {
+            toast.error(t("Delete_notification_failed"))
+            dispatch(resetInitialState())
+        }
+    }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
     return (
         <Fragment>
@@ -124,7 +128,6 @@ const NotificationDropdown = (props: Props) => {
                 <Badge
                     color='error'
                     badgeContent={4}
-                    invisible={!notifications.length}
                     sx={{
                         '& .MuiBadge-badge': { top: 4, right: 4, boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}` }
                     }}
@@ -152,7 +155,7 @@ const NotificationDropdown = (props: Props) => {
                             <Chip
                                 size='small'
                                 color='primary'
-                                label={`${notifications.length} New`}
+                                label={`${notifications.total} New`}
                             />
                             <Icon icon="line-md:email-opened"></Icon>
                         </Box>
@@ -163,7 +166,7 @@ const NotificationDropdown = (props: Props) => {
                         maxHeight: 349, overflowY: 'auto', overflowX: 'hidden'
                     }}
                 >
-                    {notifications.map((notification: NotificationsType, index: number) => (
+                    {notifications?.data?.map((notification: NotificationsType, index: number) => (
                         <NotificationItem
                             key={index}
                             notification={notification}
