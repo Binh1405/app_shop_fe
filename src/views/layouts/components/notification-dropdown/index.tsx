@@ -7,7 +7,6 @@ import Badge from '@mui/material/Badge'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import { styled, Theme, useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import MuiMenu, { MenuProps } from '@mui/material/Menu'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
@@ -24,6 +23,8 @@ import { AppDispatch, RootState } from 'src/stores'
 import { getAllNotificationsAsync, markReadAllNotificationAsync } from 'src/stores/notification/actions'
 import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/notification'
+import firebaseApp from 'src/configs/firebase'
+import { getMessaging, onMessage } from 'firebase/messaging'
 
 export type NotificationsType = {
     createdAt: string
@@ -107,7 +108,7 @@ const NotificationDropdown = (props: Props) => {
     }
 
     const handleGetListNotification = () => {
-        dispatch(getAllNotificationsAsync({ params: { limit: limit, page: 1 } }))
+        dispatch(getAllNotificationsAsync({ params: { limit: limit, page: 1, order: "createdAt desc" } }))
     }
 
     const handleScrollListNotification = () => {
@@ -125,6 +126,19 @@ const NotificationDropdown = (props: Props) => {
             }
         }
     }
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+          const messaging = getMessaging(firebaseApp);
+          const unsubscribe = onMessage(messaging, (payload) => {
+            handleGetListNotification()
+          });
+    
+          return () => {
+            unsubscribe(); // Unsubscribe from the onMessage event
+          };
+        }
+      }, []);
 
     useEffect(() => {
         handleGetListNotification()

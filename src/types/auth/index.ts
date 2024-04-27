@@ -1,6 +1,7 @@
 export type TLoginAuth = {
   email: string
   password: string
+  deviceToken?:string
 }
 
 export type TRegisterAuth = {

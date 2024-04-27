@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getMessaging, getToken } from 'firebase/messaging';
 import firebaseApp from 'src/configs/firebase';
+import { clearLocalDeviceToken, getLocalDeviceToken, setLocalDeviceToken } from 'src/helpers/storage';
 
 const useFcmToken = () => {
     const [token, setToken] = useState('');
@@ -29,7 +30,11 @@ const useFcmToken = () => {
 
         retrieveToken();
     }, []);
-
+    if(token && token !== getLocalDeviceToken()) {
+        clearLocalDeviceToken()
+        setLocalDeviceToken(token)
+    }
+    
     return { fcmToken: token };
 };
 

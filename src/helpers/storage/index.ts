@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN, PRE_AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_AUTH_TOKEN, TEMPORARY_TOKEN, USER_DATA } from 'src/configs/auth'
+import { ACCESS_TOKEN, DEVICE_TOKEN, PRE_AUTH_TOKEN, REFRESH_TOKEN, REMEMBER_AUTH_TOKEN, TEMPORARY_TOKEN, USER_DATA } from 'src/configs/auth'
 import { LOCAL_PRODUCT_CART } from 'src/configs/product'
 import { TItemOrderProduct } from 'src/types/order-product'
 
@@ -109,6 +109,26 @@ export const clearLocalRememberLoginAuthSocial = () => {
 export const getLocalRememberLoginAuthSocial = () => {
   if (typeof window !== 'undefined') {
     return window.localStorage.getItem(REMEMBER_AUTH_TOKEN)
+  }
+
+  return ""
+}
+
+export const setLocalDeviceToken = (token: string) => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(DEVICE_TOKEN, token)
+  }
+}
+
+export const clearLocalDeviceToken = () => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(DEVICE_TOKEN)
+  }
+}
+
+export const getLocalDeviceToken = () => {
+  if (typeof window !== 'undefined') {
+    return window.localStorage.getItem(DEVICE_TOKEN)
   }
 
   return ""
