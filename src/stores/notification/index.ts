@@ -86,8 +86,8 @@ export const deliveryTypeSlice = createSlice({
     })
     builder.addCase(markReadAllNotificationAsync.fulfilled, (state, action) => {
       state.isLoading = false
-      state.isSuccessReadAll = !!action.payload?.data?._id
-      state.isErrorReadAll = !action.payload?.data?._id
+      state.isSuccessReadAll = !!action.payload?.data?.length
+      state.isErrorReadAll = !action.payload?.data?.length
       state.messageErrorReadAll = action.payload?.message
       state.typeError = action.payload?.typeError
     })

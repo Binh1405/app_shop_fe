@@ -71,7 +71,7 @@ const CardCountRecords = (props: TProps) => {
                 <Typography sx={{ fontSize: "30px", fontWeight: "600", mb: 4 }}>Statistics</Typography>
             </Box>
             <Grid container spacing={6}>
-                {Object.keys(data)?.map((record) => {
+                {data && Object.keys(data)?.map((record) => {
                     return (
                         <Grid key={record} item md={3} sm={6} xs={12} >
                             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
