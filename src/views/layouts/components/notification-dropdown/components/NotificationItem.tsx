@@ -69,7 +69,15 @@ const NotificationItem = (props: TProps) => {
     const dispatch: AppDispatch = useDispatch()
 
     const mapTitle = {
-        Cancel_order: `${t("Hủy đơn hàng")}`
+        Cancel_order: `${t("Cancel_order")}`,
+        Create_order: `${t("Create_order")}`,
+        Wait_payment: `${t("Wait_payment_order")}`,
+        Wait_delivery: `${t("Wait_delivery_order")}`,
+        Done_order: `${t("Done_order")}`,
+        Is_delivered: `${t("Is_delivered")}`,
+        Is_paid: `${t("Is_paid")}`,
+        Payment_vn_pay_success: `${t("Payment_vn_pay_success")}`,
+        Payment_vn_pay_error: `${t("Payment_vn_pay_error")}`,
     }
 
     // ** Handles
