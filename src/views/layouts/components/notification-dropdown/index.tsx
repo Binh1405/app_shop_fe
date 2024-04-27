@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment, useEffect } from 'react'
+import { useState, SyntheticEvent, Fragment, useEffect, useRef } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -77,6 +77,9 @@ const NotificationDropdown = (props: Props) => {
     const theme = useTheme()
     const { t } = useTranslation()
 
+    // ** Ref
+    const wrapperListRef = useRef<HTMLDivElement>(null)
+
     // ** Redux
     const dispatch: AppDispatch = useDispatch()
     const {
@@ -88,7 +91,9 @@ const NotificationDropdown = (props: Props) => {
 
     // ** States
     const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
+    const [limit, setLimit] = useState(10)
 
+    // ** handle
     const handleDropdownOpen = (event: SyntheticEvent) => {
         setAnchorEl(event.currentTarget)
     }
@@ -102,12 +107,28 @@ const NotificationDropdown = (props: Props) => {
     }
 
     const handleGetListNotification = () => {
-        dispatch(getAllNotificationsAsync({ params: { limit: -1, page: -1 } }))
+        dispatch(getAllNotificationsAsync({ params: { limit: limit, page: 1 } }))
+    }
+
+    const handleScrollListNotification = () => {
+        const wrapperContent = wrapperListRef.current
+        if(!wrapperContent) {
+            return 
+        }
+        const heightList = wrapperContent.clientHeight
+        const scrollHeight = wrapperContent.scrollHeight
+        const maxScroll = scrollHeight - heightList
+        const currentScroll = wrapperContent.scrollTop
+        if(currentScroll >= maxScroll) {
+            if(notifications.total > limit) {
+                setLimit((prev) => prev + 10)
+            }
+        }
     }
 
     useEffect(() => {
         handleGetListNotification()
-    }, [])
+    }, [limit])
 
     useEffect(() => {
         if (isSuccessRead && !isErrorRead) {
@@ -147,7 +168,7 @@ const NotificationDropdown = (props: Props) => {
             <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu'>
                 <Badge
                     color='error'
-                    badgeContent={4}
+                    badgeContent={notifications.totalNew}
                     sx={{
                         '& .MuiBadge-badge': { top: 4, right: 4, boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}` }
                     }}
@@ -175,7 +196,7 @@ const NotificationDropdown = (props: Props) => {
                             <Chip
                                 size='small'
                                 color='primary'
-                                label={`${notifications.total} New`}
+                                label={`${notifications.totalNew} New`}
                             />
                             <Icon icon="line-md:email-opened"></Icon>
                         </Box>
@@ -185,6 +206,8 @@ const NotificationDropdown = (props: Props) => {
                     sx={{
                         maxHeight: 349, overflowY: 'auto', overflowX: 'hidden'
                     }}
+                    ref={wrapperListRef}
+                    onScroll={handleScrollListNotification}
                 >
                     {notifications?.data?.map((notification: NotificationsType, index: number) => (
                         <NotificationItem
