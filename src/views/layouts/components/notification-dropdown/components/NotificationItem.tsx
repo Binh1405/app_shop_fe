@@ -3,7 +3,7 @@ import { MouseEvent, useState } from 'react'
 
 // Mui Imports
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
-import { Badge, Box, IconButton, Menu, Typography, TypographyProps, styled } from '@mui/material'
+import { Avatar, Badge, Box, IconButton, Menu, Typography, TypographyProps, styled } from '@mui/material'
 
 // ** Components
 import { NotificationsType } from 'src/views/layouts/components/notification-dropdown'
@@ -11,6 +11,9 @@ import Icon from 'src/components/Icon'
 
 // ** Third party
 import { useTranslation } from 'react-i18next'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from 'src/stores'
+import { deleteNotificationAsync, markReadAllNotificationAsync, markReadNotificationAsync } from 'src/stores/notification/actions'
 
 // ** Styled component for the title in MenuItems
 const MenuItemTitle = styled(Typography)<TypographyProps>({
@@ -55,27 +58,47 @@ const NotificationItem = (props: TProps) => {
     const optionsOpen = Boolean(anchorEl)
 
     // ** Hooks
-    const {t} = useTranslation()
+    const { t } = useTranslation()
+
+    // ** Redux
+    const dispatch:AppDispatch = useDispatch()
+
+    const mapTitle = {
+        Cancel_order: `${t("Hủy đơn hàng")}`
+    }
 
     // ** Handles
     const handleOptionsClose = () => {
         setAnchorEl(null)
     }
 
+    const handleMarkNotification = () => {
+        dispatch(markReadNotificationAsync(notification._id))
+    }
+
+    const handleDeleteNotification = () => {
+        dispatch(deleteNotificationAsync(notification._id))
+    }
 
     return (
         <MenuItem disableRipple disableTouchRipple>
             <Box sx={{ width: '100%', display: 'flex', alignItems: 'flex-start' }}>
                 <Box sx={{ mr: 4, ml: 2.5, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                    <MenuItemTitle onClick={handleDropdownClose}>{notification.title}</MenuItemTitle>
-                    <MenuItemSubtitle variant='body2'>{notification.subtitle}</MenuItemSubtitle>
+                    <MenuItemTitle onClick={handleDropdownClose}>{(mapTitle as any)[notification.title]}</MenuItemTitle>
+                    <MenuItemSubtitle variant='body2'>{notification.body}</MenuItemSubtitle>
                     <Typography variant='body2' sx={{ color: 'text.disabled' }}>
-                        {notification.meta}
+                        {/* {notification.meta} */}
                     </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>
-                    <Badge sx={{}} color="error" overlap="circular" variant="dot" />
-                    <Typography>Unread</Typography>
+                    {notification.isRead ? (
+                        <Badge sx={{}} color="success" overlap="circular" variant="dot" />
+                    ) : (
+                        <>
+                            <Badge sx={{}} color="error" overlap="circular" variant="dot" />
+                            <Typography>Unread</Typography>
+                        </>
+                    )}
                     <>
                         <IconButton onClick={(event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)}>
                             <Icon icon="pepicons-pencil:dots-y"></Icon>
@@ -96,12 +119,14 @@ const NotificationItem = (props: TProps) => {
                         >
                             <MenuItem
                                 sx={{ '& svg': { mr: 2 }, border: "none !important" }}
+                                onClick={handleMarkNotification}
                             >
                                 <Icon icon='gg:read' fontSize={20} />
                                 {t('Mark read')}
                             </MenuItem>
                             <MenuItem
                                 sx={{ '& svg': { mr: 2 } }}
+                                onClick={handleDeleteNotification}
                             >
                                 <Icon icon='mdi:delete-outline' fontSize={20} />
                                 {t('Delete')}
