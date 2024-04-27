@@ -13,14 +13,14 @@ export const loginAuth = async (data: TLoginAuth) => {
   return res.data
 }
 
-export const loginAuthGoogle = async (idToken: string) => {
-  const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/login-google`, { idToken })
+export const loginAuthGoogle = async (data: {idToken: string, deviceToken?:string}) => {
+  const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/login-google`, data)
 
   return res.data
 }
 
-export const loginAuthFacebook = async (idToken: string) => {
-  const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/login-facebook`, { idToken })
+export const loginAuthFacebook = async (data: {idToken: string, deviceToken?:string}) => {
+  const res = await axios.post(`${API_ENDPOINT.AUTH.INDEX}/login-facebook`, data)
 
   return res.data
 }
