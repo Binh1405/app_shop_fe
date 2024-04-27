@@ -14,6 +14,10 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { deleteNotificationAsync, markReadAllNotificationAsync, markReadNotificationAsync } from 'src/stores/notification/actions'
+import { formatDate } from 'src/utils/date'
+import { CONTEXT_NOTIFICATION } from 'src/configs/notification'
+import { useRouter } from 'next/router'
+import { ROUTE_CONFIG } from 'src/configs/route'
 
 // ** Styled component for the title in MenuItems
 const MenuItemTitle = styled(Typography)<TypographyProps>({
@@ -59,9 +63,10 @@ const NotificationItem = (props: TProps) => {
 
     // ** Hooks
     const { t } = useTranslation()
+    const router = useRouter()
 
     // ** Redux
-    const dispatch:AppDispatch = useDispatch()
+    const dispatch: AppDispatch = useDispatch()
 
     const mapTitle = {
         Cancel_order: `${t("Hủy đơn hàng")}`
@@ -74,25 +79,40 @@ const NotificationItem = (props: TProps) => {
 
     const handleMarkNotification = () => {
         dispatch(markReadNotificationAsync(notification._id))
+        handleOptionsClose()
     }
 
     const handleDeleteNotification = () => {
         dispatch(deleteNotificationAsync(notification._id))
+        handleOptionsClose()
+    }
+
+    const handleNavigateDetail = (type: string) => {
+        switch (type) {
+            case CONTEXT_NOTIFICATION.ORDER: {
+                handleDropdownClose()
+                router.push(`${ROUTE_CONFIG.MY_ORDER}/${notification.referenceId}`)
+                break
+            }
+        }
     }
 
     return (
         <MenuItem disableRipple disableTouchRipple>
             <Box sx={{ width: '100%', display: 'flex', alignItems: 'flex-start' }}>
                 <Box sx={{ mr: 4, ml: 2.5, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                    <MenuItemTitle onClick={handleDropdownClose}>{(mapTitle as any)[notification.title]}</MenuItemTitle>
+                    <MenuItemTitle onClick={() => handleNavigateDetail(notification.context)}>{(mapTitle as any)[notification.title]}</MenuItemTitle>
                     <MenuItemSubtitle variant='body2'>{notification.body}</MenuItemSubtitle>
                     <Typography variant='body2' sx={{ color: 'text.disabled' }}>
-                        {/* {notification.meta} */}
+                        {formatDate(notification.createdAt, { dateStyle: 'short' })}
                     </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>
                     {notification.isRead ? (
-                        <Badge sx={{}} color="success" overlap="circular" variant="dot" />
+                        <>
+                            <Badge sx={{}} color="success" overlap="circular" variant="dot" />
+                            <Typography>Read</Typography>
+                        </>
                     ) : (
                         <>
                             <Badge sx={{}} color="error" overlap="circular" variant="dot" />

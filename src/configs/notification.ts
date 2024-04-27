@@ -1,0 +1,5 @@
+
+export const CONTEXT_NOTIFICATION = {
+    ORDER: "ORDER",
+    PAYMENT_VN_PAY: "PAYMENT_VN_PAY"
+  }

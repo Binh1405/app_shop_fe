@@ -21,7 +21,7 @@ import NotificationItem from 'src/views/layouts/components/notification-dropdown
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { getAllNotificationsAsync } from 'src/stores/notification/actions'
+import { getAllNotificationsAsync, markReadAllNotificationAsync } from 'src/stores/notification/actions'
 import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/notification'
 
@@ -32,6 +32,7 @@ export type NotificationsType = {
     body: string
     isRead: boolean
     referenceId: string
+    context: string
 }
 
 interface Props {
@@ -77,8 +78,12 @@ const NotificationDropdown = (props: Props) => {
     const { t } = useTranslation()
 
     // ** Redux
-    const dispatch:AppDispatch = useDispatch()
-    const {notifications, isSuccessDelete, isSuccessRead, isErrorDelete, isErrorRead, messageErrorDelete, messageErrorRead} = useSelector((state:RootState) => state.notification)
+    const dispatch: AppDispatch = useDispatch()
+    const {
+        notifications, isSuccessDelete, isSuccessRead, 
+        isErrorDelete, isErrorRead, messageErrorDelete, messageErrorRead
+        ,isSuccessReadAll, isErrorReadAll, messageErrorReadAll
+    } = useSelector((state: RootState) => state.notification)
 
 
     // ** States
@@ -88,39 +93,54 @@ const NotificationDropdown = (props: Props) => {
         setAnchorEl(event.currentTarget)
     }
 
+    const handleMarkReadAllNotification = () => {
+        dispatch(markReadAllNotificationAsync())
+    }
+
     const handleDropdownClose = () => {
         setAnchorEl(null)
     }
 
     const handleGetListNotification = () => {
-        dispatch(getAllNotificationsAsync({params: {limit: -1, page: -1}}))
+        dispatch(getAllNotificationsAsync({ params: { limit: -1, page: -1 } }))
     }
 
     useEffect(() => {
         handleGetListNotification()
-    },[])
+    }, [])
 
     useEffect(() => {
-        if(isSuccessRead && !isErrorRead) {
+        if (isSuccessRead && !isErrorRead) {
             toast.success(t("Marked_notification_success"))
             dispatch(resetInitialState())
             handleGetListNotification()
-        }else if(isErrorRead && messageErrorRead) {
+        } else if (isErrorRead && messageErrorRead) {
             toast.error(t("Marked_notification_failed"))
             dispatch(resetInitialState())
         }
     }, [isSuccessRead, isErrorRead, messageErrorRead])
 
     useEffect(() => {
-        if(isSuccessDelete && !isErrorDelete) {
+        if (isSuccessDelete && !isErrorDelete) {
             toast.success(t("Delete_notification_success"))
             dispatch(resetInitialState())
             handleGetListNotification()
-        }else if(isErrorDelete && messageErrorDelete) {
+        } else if (isErrorDelete && messageErrorDelete) {
             toast.error(t("Delete_notification_failed"))
             dispatch(resetInitialState())
         }
     }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
+
+    useEffect(() => {
+        if (isSuccessReadAll && !isErrorReadAll) {
+            toast.success(t("Marked_all_notification_success"))
+            dispatch(resetInitialState())
+            handleGetListNotification()
+        } else if (isErrorReadAll && messageErrorReadAll) {
+            toast.error(t("Marked_all_notification_failed"))
+            dispatch(resetInitialState())
+        }
+    }, [isSuccessReadAll, isSuccessReadAll, messageErrorReadAll])
 
     return (
         <Fragment>
@@ -185,7 +205,7 @@ const NotificationDropdown = (props: Props) => {
                         borderTop: theme => `1px solid ${theme.palette.divider}`
                     }}
                 >
-                    <Button fullWidth variant='contained' onClick={handleDropdownClose}>
+                    <Button fullWidth variant='contained' onClick={handleMarkReadAllNotification}>
                         {t("Mark read all notifications")}
                     </Button>
                 </MenuItem>
