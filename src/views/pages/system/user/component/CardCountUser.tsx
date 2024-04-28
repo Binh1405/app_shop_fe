@@ -72,7 +72,7 @@ const CardCountUser = (props: any) => {
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography sx={{ mb: 1, color: theme.palette.customColors.lightPaperBg }}>{(mapUserType as any)[userType]?.title}</Typography>
                     <Box sx={{ mb: 1, columnGap: 1.5, display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
-                        <Typography variant='h4' sx={{ color: theme.palette.customColors.lightPaperBg, fontWeight: "bold" }}>{(mapUserType as any)[userType]?.count}</Typography>
+                        <Typography variant='h4' sx={{ color: theme.palette.customColors.lightPaperBg, fontWeight: "bold" }}>{(mapUserType as any)[userType]?.count || 0}</Typography>
                     </Box>
                 </Box>
                 <Avatar variant='rounded' sx={{ width: avatarSize, height: avatarSize }}>

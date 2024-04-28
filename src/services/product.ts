@@ -85,9 +85,9 @@ export const getDetailsProductPublic = async (id: string) => {
   }
 }
 
-export const getDetailsProductPublicBySlug = async (slug: string) => {
+export const getDetailsProductPublicBySlug = async (slug: string, isViewed?:boolean) => {
   try {
-    const data = { params: { isPublic: true } }
+    const data = { params: { isPublic: true, isViewed } }
 
     const res = await instanceAxios.get(`${API_ENDPOINT.MANAGE_PRODUCT.PRODUCT.INDEX}/public/slug/${slug}`, data)
 
