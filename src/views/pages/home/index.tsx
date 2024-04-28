@@ -37,6 +37,7 @@ import { resetInitialState } from 'src/stores/product'
 import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 import CustomSelect from 'src/components/custom-select'
 import CardSkeleton from 'src/views/pages/product/components/CardSkeleton'
+import ChatBotAI from 'src/components/chat-bot-ai'
 
 type TProps = {}
 
@@ -219,6 +220,7 @@ const HomePage: NextPage<TProps> = () => {
   return (
     <>
       {loading && <Spinner />}
+      <ChatBotAI />
       <Box
         sx={{
           height: '100%',

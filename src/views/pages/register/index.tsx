@@ -78,7 +78,6 @@ const RegisterPage: NextPage<TProps> = () => {
 
   // ** Hooks
   const { data: session, ...restsss } = useSession()
-  console.log("restsss", { restsss, session })
   const schema = yup.object().shape({
     email: yup.string().required(t('Required_field')).matches(EMAIL_REG, t("Rules_email")),
     password: yup

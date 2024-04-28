@@ -144,7 +144,6 @@ const CardOrder: NextPage<TProps> = props => {
         window.open(res?.data, '_blank')
       }
       setLoading(false)
-      console.log("resss", { res })
     })
 
   }

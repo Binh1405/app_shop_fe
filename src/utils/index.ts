@@ -135,7 +135,6 @@ export const cloneDeep = (data: any) => {
 
 export const convertUpdateProductToCart = (orderItems: TItemOrderProduct[], addItem: TItemOrderProduct) => {
   try {
-    console.log('input', { orderItems, addItem })
     let result = []
     const cloneOrderItems = cloneDeep(orderItems)
     const findItems = cloneOrderItems.find((item: TItemOrderProduct) => item.product === addItem.product)

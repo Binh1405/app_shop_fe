@@ -241,7 +241,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
     await getDetailsProduct(id)
       .then(res => {
         const data = res.data
-        console.log('data', { data })
         if (data) {
           reset({
             name: data.name,

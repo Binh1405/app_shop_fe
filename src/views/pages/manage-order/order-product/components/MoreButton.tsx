@@ -23,10 +23,7 @@ const MoreButton = ({ memoOptionStatus, data }: TProps) => {
 
     const handleUpdateStatusOrder = (data: TParamsStatusOrderUpdate) => {
         dispatch(updateStatusOrderProductAsync(data))
-        console.log("data", { data })
     }
-
-    console.log("data", { data })
 
     return (
         <>

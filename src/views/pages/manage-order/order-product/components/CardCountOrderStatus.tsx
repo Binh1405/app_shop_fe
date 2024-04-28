@@ -40,8 +40,6 @@ const CardCountStatusOrder = (props: any) => {
         status
     } = props
 
-    console.log("countStatusOrder", {countStatusOrder})
-
     const mapOrderStatus = {
         0: {
             title: t("Wait_payment"),
