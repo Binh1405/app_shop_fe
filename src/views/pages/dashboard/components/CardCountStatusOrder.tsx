@@ -52,12 +52,12 @@ const CardCountOrderStatus = (props: TProps) => {
                 label: `${t('# of Orders')}`,
                 data: valueMemo,
                 backgroundColor: [
-                    hexToRGBA(theme.palette.error.main, 0.4),
-                    hexToRGBA(theme.palette.primary.main, 0.4),
-                    hexToRGBA(theme.palette.secondary.main, 0.4),
-                    hexToRGBA(theme.palette.info.main, 0.4),
-                    hexToRGBA(theme.palette.success.main, 0.4),
-                    hexToRGBA(theme.palette.warning.main, 0.4),
+                    hexToRGBA(theme.palette.error.main, 0.8),
+                    hexToRGBA(theme.palette.primary.main, 0.8),
+                    hexToRGBA(theme.palette.secondary.main, 0.8),
+                    hexToRGBA(theme.palette.info.main, 0.8),
+                    hexToRGBA(theme.palette.success.main, 0.8),
+                    hexToRGBA(theme.palette.warning.main, 0.8),
                 ],
                 borderColor: [
                     theme.palette.error.main,

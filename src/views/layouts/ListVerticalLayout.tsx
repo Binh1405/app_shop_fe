@@ -277,7 +277,7 @@ const ListVerticalLayout: NextPage<TProps> = ({ open }) => {
     return formatMenuByPermission(listVerticalItems, permissionUser)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listVerticalItems, permissionUser])
-
+  console.log("memoFormatMenu", {memoFormatMenu})
   useEffect(() => {
     if (router.asPath) {
       const parentTitle = findParentActivePath(memoFormatMenu, router.asPath)

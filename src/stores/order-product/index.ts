@@ -10,7 +10,8 @@ import {
   getAllOrderProductsAsync,
   getAllOrderProductsByMeAsync,
   serviceName,
-  updateOrderProductAsync
+  updateOrderProductAsync,
+  updateStatusOrderProductAsync
 } from 'src/stores/order-product/actions'
 
 const initialState = {
@@ -123,6 +124,18 @@ export const orderProductSlice = createSlice({
       state.isLoading = true
     })
     builder.addCase(updateOrderProductAsync.fulfilled, (state, action) => {
+      state.isLoading = false
+      state.isSuccessEdit = !!action.payload?.data?._id
+      state.isErrorEdit = !action.payload?.data?._id
+      state.messageErrorEdit = action.payload?.message
+      state.typeError = action.payload?.typeError
+    })
+
+     // ** update status order product
+     builder.addCase(updateStatusOrderProductAsync.pending, (state, action) => {
+      state.isLoading = true
+    })
+    builder.addCase(updateStatusOrderProductAsync.fulfilled, (state, action) => {
       state.isLoading = false
       state.isSuccessEdit = !!action.payload?.data?._id
       state.isErrorEdit = !action.payload?.data?._id

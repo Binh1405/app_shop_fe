@@ -35,6 +35,13 @@ export type TParamsCreateOrderProduct = {
   deliveryMethod: string
 }
 
+export type TParamsStatusOrderUpdate = {
+  id: string
+  isDelivered?: number
+  isPaid?: number
+  status?: number
+}
+
 export type TParamsEditOrderProduct = {
   shippingAddress: {
     address: string
@@ -43,8 +50,6 @@ export type TParamsEditOrderProduct = {
     city: string
   }
   id: string
-  isPaid: boolean
-  isDelivery: boolean
 }
 
 export type TParamsGetOrderProducts = {
@@ -93,4 +98,3 @@ export type TItemOrderProductMe = {
 }
 
 export interface TItemOrderProducts extends TItemOrderProductMe {}
-
