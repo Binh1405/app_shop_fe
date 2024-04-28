@@ -204,7 +204,7 @@ const NotificationDropdown = (props: Props) => {
                 >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                         <Typography variant='h5' sx={{ cursor: 'text' }}>
-                            Notifications
+                            {t("Notifications")}
                         </Typography>
                         <Box sx={{ display: "flex", alignItems: "center", gap: "15px" }}>
                             <Chip
