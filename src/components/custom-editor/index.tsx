@@ -23,7 +23,12 @@ const StyleWrapperEditor = styled(Box)<TStyleWrapperEditor>(({ theme, error }) =
   '.rdw-editor-toolbar': {
     border: 'none',
     borderTopLeftRadius: 8,
-    borderTopRightRadius: 8
+    borderTopRightRadius: 8,
+    backgroundColor: theme.palette.background.paper,
+    ".rdw-option-wrapper": {
+    // backgroundColor: theme.palette.background.default,
+    border: `1px solid rgba(${theme.palette.customColors.main}, 0.2)`
+    }
   },
   '.rdw-editor-main': {
     borderTop: `1px solid rgba(${theme.palette.customColors.main}, 0.2)`,

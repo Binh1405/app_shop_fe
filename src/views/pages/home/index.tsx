@@ -233,34 +233,34 @@ const HomePage: NextPage<TProps> = () => {
           })}
         </StyledTabs>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-          <Box sx={{display: "flex", gap: "20px"}}>
-          <Box sx={{ width: '300px' }}>
-            <CustomSelect
-              fullWidth
-              onChange={(e) => {
-                setSortBy(e.target.value as string)
-              }}
-              value={sortBy}
-              options={[
-                {
-                  label: t("Sort_best_sold"),
-                  value: "sold desc"
-                },
-                {
-                  label: t("Sort_new_create"),
-                  value: "createdAt desc"
-                }
-              ]}
-              placeholder={t('Sort_by')}
-            />
-          </Box>
-          <Box sx={{ width: '300px' }}>
-            <InputSearch
-              placeholder={t('Search_name_product')}
-              value={searchBy}
-              onChange={(value: string) => setSearchBy(value)}
-            />
-          </Box>
+          <Box sx={{ display: "flex", gap: "20px" }}>
+            <Box sx={{ width: '300px' }}>
+              <CustomSelect
+                fullWidth
+                onChange={(e) => {
+                  setSortBy(e.target.value as string)
+                }}
+                value={sortBy}
+                options={[
+                  {
+                    label: t("Sort_best_sold"),
+                    value: "sold desc"
+                  },
+                  {
+                    label: t("Sort_new_create"),
+                    value: "createdAt desc"
+                  }
+                ]}
+                placeholder={t('Sort_by')}
+              />
+            </Box>
+            <Box sx={{ width: '300px' }}>
+              <InputSearch
+                placeholder={t('Search_name_product')}
+                value={searchBy}
+                onChange={(value: string) => setSearchBy(value)}
+              />
+            </Box>
           </Box>
         </Box>
 
@@ -293,60 +293,61 @@ const HomePage: NextPage<TProps> = () => {
             <Grid item md={9} xs={12}>
               {loading ? (
                 <Grid
-                container
-                spacing={{
-                  md: 6,
-                  xs: 4
-                }}
-              >
-                {Array.from({length: 6}).map((_, index) => {
-                  return (
-                    <Grid item key={index} md={4} sm={6} xs={12}>
+                  container
+                  spacing={{
+                    md: 6,
+                    xs: 4
+                  }}
+                >
+                  {Array.from({ length: 6 }).map((_, index) => {
+                    return (
+                      <Grid item key={index} md={4} sm={6} xs={12}>
 
-                    <CardSkeleton />
-                    </Grid>
-                  )
-                })}
-              </Grid>
+                        <CardSkeleton />
+                      </Grid>
+                    )
+                  })}
+                </Grid>
               ) : (
                 <Grid
-                container
-                spacing={{
-                  md: 6,
-                  xs: 4
-                }}
-              >
-                {productsPublic?.data?.length > 0 ? (
-                  <>
-                    {productsPublic?.data?.map((item: TProduct) => {
-                      return (
-                        <Grid item key={item._id} md={4} sm={6} xs={12}>
-                          <CardProduct item={item} />
-                        </Grid>
-                      )
-                    })}
-                  </>
-                ) : (
-                  <Box sx={{ width: '100%', mt: 10 }}>
-                    <NoData widthImage='60px' heightImage='60px' textNodata={t('No_product')} />
-                  </Box>
-                )}
-              </Grid>
+                  container
+                  spacing={{
+                    md: 6,
+                    xs: 4
+                  }}
+                >
+                  {productsPublic?.data?.length > 0 ? (
+                    <>
+                      {productsPublic?.data?.map((item: TProduct) => {
+                        return (
+                          <Grid item key={item._id} md={4} sm={6} xs={12}>
+                            <CardProduct item={item} />
+                          </Grid>
+                        )
+                      })}
+                    </>
+                  ) : (
+                    <Box sx={{ width: '100%', mt: 10 }}>
+                      <NoData widthImage='60px' heightImage='60px' textNodata={t('No_product')} />
+                    </Box>
+                  )}
+                </Grid>
               )}
+              <Box mt={6}>
+                <CustomPagination
+                  onChangePagination={handleOnchangePagination}
+                  pageSizeOptions={PAGE_SIZE_OPTION}
+                  pageSize={pageSize}
+                  page={page}
+                  rowLength={productsPublic.total}
+                  isHideShowed
+                />
+              </Box>
             </Grid>
           </Grid>
         </Box>
-        <Box>
-        <CustomPagination
-          onChangePagination={handleOnchangePagination}
-          pageSizeOptions={PAGE_SIZE_OPTION}
-          pageSize={pageSize}
-          page={page}
-          rowLength={productsPublic.total}
-          isHideShowed
-        />
-        </Box>
-       
+
+
       </Box>
     </>
   )
