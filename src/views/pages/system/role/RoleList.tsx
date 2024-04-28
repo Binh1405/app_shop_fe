@@ -308,7 +308,6 @@ const RoleListPage: NextPage<TProps> = () => {
                   })
                 }}
                 disableColumnFilter
-                disableColumnMenu
               />
             </Box>
           </Grid>

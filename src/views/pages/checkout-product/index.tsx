@@ -201,7 +201,7 @@ const CheckoutProductPage: NextPage<TProps> = () => {
     ).then((res) => {
       const idPaymentMethod = res?.payload?.data?.paymentMethod
       const orderId = res?.payload?.data?._id
-      const totalPrice = res?.payload?.data?._totalPrice
+      const totalPrice = res?.payload?.data?.totalPrice
       const findPayment = optionPayments.find((item) => item.value === idPaymentMethod)
       if (findPayment) {
         handlePaymentTypeOrder(findPayment.type, { totalPrice, orderId, })
@@ -362,7 +362,6 @@ const CheckoutProductPage: NextPage<TProps> = () => {
               {t('Address_shipping')}
             </Typography>
           </Box>
-          {user?.address}
           <Box>
             {user && user?.addresses?.length > 0 ? (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

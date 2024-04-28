@@ -381,7 +381,6 @@ const DeliveryTypeListPage: NextPage<TProps> = () => {
               setSelectedRow(row as string[])
             }}
             disableColumnFilter
-            disableColumnMenu
           />
         </Grid>
       </Box>
