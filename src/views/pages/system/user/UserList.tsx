@@ -628,7 +628,6 @@ const UserListPage: NextPage<TProps> = () => {
               setSelectedRow(formatData)
             }}
             disableColumnFilter
-            disableColumnMenu
           />
         </Grid>
       </Box>
