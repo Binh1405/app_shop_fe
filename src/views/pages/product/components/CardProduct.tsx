@@ -123,8 +123,6 @@ const CardProduct = (props: TCardProduct) => {
     return isExpiry(item.discountStartDate, item.discountEndDate)
   }, [item])
 
-  console.log("itemitem", { item })
-
   return (
     <StyleCard sx={{ width: '100%' }}>
       <CardMedia component='img' height='194' image={item.image} alt='image' />

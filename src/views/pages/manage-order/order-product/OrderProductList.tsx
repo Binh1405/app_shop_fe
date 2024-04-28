@@ -111,7 +111,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
     messageErrorDelete,
     typeError,
   } = useSelector((state: RootState) => state.orderProduct)
-  console.log("orderProducts", { orderProducts })
+
   // ** theme
   const theme = useTheme()
 

@@ -18,8 +18,6 @@ const CardCountUserType = (props: TProps) => {
 
     const {t} = useTranslation()
 
-    console.log("data", { data })
-
     const theme = useTheme()
 
     const labelMemo = useMemo(() => {

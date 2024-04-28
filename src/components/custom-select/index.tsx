@@ -37,7 +37,6 @@ const StyledMenuItem = styled(MenuItem)<MenuItemProps>(({ theme }) => ({}))
 const CustomSelect = (props: TCustomSelect) => {
   const { value, label, onChange, fullWidth, placeholder, options, ...rest } = props
   const { t } = useTranslation()
-  console.log("value", {value})
 
   return (
     <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>

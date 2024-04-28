@@ -122,7 +122,6 @@ const CreateEditUser = (props: TCreateEditUser) => {
 
       if (idUser) {
         // update
-        console.log("data", {data})
         dispatch(
           updateUserAsync({
             firstName,

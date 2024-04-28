@@ -100,7 +100,6 @@ const CartProduct = (props: TProps) => {
 
     return total
   }, [orderItems])
-  console.log('orderItems', { orderItems })
 
   return (
     <React.Fragment>
