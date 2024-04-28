@@ -249,6 +249,14 @@ const HomePage: NextPage<TProps> = () => {
                   {
                     label: t("Sort_new_create"),
                     value: "createdAt desc"
+                  },
+                  {
+                    label: t("Sort_high_view"),
+                    value: "views desc"
+                  },
+                  {
+                    label: t("Sort_high_like"),
+                    value: "totalLikes desc"
                   }
                 ]}
                 placeholder={t('Sort_by')}
@@ -302,7 +310,6 @@ const HomePage: NextPage<TProps> = () => {
                   {Array.from({ length: 6 }).map((_, index) => {
                     return (
                       <Grid item key={index} md={4} sm={6} xs={12}>
-
                         <CardSkeleton />
                       </Grid>
                     )

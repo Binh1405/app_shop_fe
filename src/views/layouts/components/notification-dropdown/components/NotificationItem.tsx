@@ -122,12 +122,12 @@ const NotificationItem = (props: TProps) => {
                     {notification.isRead ? (
                         <>
                             <Badge sx={{}} color="success" overlap="circular" variant="dot" />
-                            <Typography>Read</Typography>
+                            <Typography>{t("Read")}</Typography>
                         </>
                     ) : (
                         <>
                             <Badge sx={{}} color="error" overlap="circular" variant="dot" />
-                            <Typography>Unread</Typography>
+                            <Typography>{t("Unread")}</Typography>
                         </>
                     )}
                     <>
