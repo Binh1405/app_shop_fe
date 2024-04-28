@@ -32,7 +32,6 @@ const CardProductPopular = (props: TProps) => {
                 height: '400px',
                 width: '100%',
                 borderRadius: '15px',
-                mt: 4,
                 "canvas": {
                     width: '100% !important',
                 }

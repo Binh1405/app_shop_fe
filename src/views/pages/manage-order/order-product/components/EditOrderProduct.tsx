@@ -51,8 +51,6 @@ type TDefaultValue = {
   fullName: string,
   address: string,
   city: string,
-  isPaid: number,
-  isDelivery: number,
   phone: ""
 }
 
@@ -76,16 +74,12 @@ const EditOrderProduct = (props: TCreateEditProduct) => {
     phone: yup.string().required(t('Required_field')),
     address: yup.string().required(t('Required_field')),
     city: yup.string().required(t('Required_field')),
-    isPaid: yup.number().required(t('Required_field')),
-    isDelivery: yup.number().required(t('Required_field')),
   })
 
   const defaultValues: TDefaultValue = {
     fullName: '',
     address: '',
     city: '',
-    isPaid: 0,
-    isDelivery: 0,
     phone: ""
   }
 
@@ -117,8 +111,6 @@ const EditOrderProduct = (props: TCreateEditProduct) => {
               address: data.address,
               city: data.city,
             },
-            isDelivery: data.isDelivery ? true: false,
-            isPaid: data.isPaid ? true: false
           })
         )
       }
@@ -137,8 +129,6 @@ const EditOrderProduct = (props: TCreateEditProduct) => {
             phone: data?.shippingAddress?.phone,
             city: data?.shippingAddress?.city,
             address: data?.shippingAddress?.address,
-            isPaid: data?.isPaid ? 1 : 0,
-            isDelivery: data?.isDelivery ? 1 : 0,
           })
         }
         setLoading(false)
@@ -316,74 +306,6 @@ const EditOrderProduct = (props: TCreateEditProduct) => {
                               )}
                             </Box>
                           )}
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <Controller
-                          control={control}
-                          render={({ field: { onChange, onBlur, value } }) => {
-                            return (
-                              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <InputLabel
-                                  sx={{
-                                    fontSize: '13px',
-                                    marginBottom: '4px',
-                                    display: 'block',
-                                    color: `rgba(${theme.palette.customColors.main}, 0.68)`
-                                  }}
-                                >
-                                  {t('Status_delivery')}
-                                </InputLabel>
-                                <FormControlLabel
-                                  control={
-                                    <Switch
-                                      value={value}
-                                      checked={Boolean(value)}
-                                      onChange={e => {
-                                        onChange(e.target.checked ? 1 : 0)
-                                      }}
-                                    />
-                                  }
-                                  label={Boolean(value) ? t('Delivery') : t('Not_delivery')}
-                                />
-                              </Box>
-                            )
-                          }}
-                          name='isDelivery'
-                        />
-                      </Grid>
-                      <Grid item md={6} xs={12}>
-                        <Controller
-                          control={control}
-                          render={({ field: { onChange, onBlur, value } }) => {
-                            return (
-                              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                <InputLabel
-                                  sx={{
-                                    fontSize: '13px',
-                                    marginBottom: '4px',
-                                    display: 'block',
-                                    color: `rgba(${theme.palette.customColors.main}, 0.68)`
-                                  }}
-                                >
-                                  {t('Status_payment')}
-                                </InputLabel>
-                                <FormControlLabel
-                                  control={
-                                    <Switch
-                                      value={value}
-                                      checked={Boolean(value)}
-                                      onChange={e => {
-                                        onChange(e.target.checked ? 1 : 0)
-                                      }}
-                                    />
-                                  }
-                                  label={Boolean(value) ? t('Paid') : t('Not_pay')}
-                                />
-                              </Box>
-                            )
-                          }}
-                          name='isPaid'
                         />
                       </Grid>
                     </Grid>

@@ -2,18 +2,18 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useMemo, useState } from 'react'
+import { MouseEvent, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
-import { Avatar, AvatarGroup, Box, Chip, ChipProps, Grid, Typography, styled, useTheme } from '@mui/material'
+import { Avatar, AvatarGroup, Box, Chip, ChipProps, FormControlLabel, Grid, IconButton, Menu, MenuItem, Switch, Typography, styled, useTheme } from '@mui/material'
 import { GridColDef, GridSortModel } from '@mui/x-data-grid'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
-import { resetInitialState } from 'src/stores/user'
-import { deleteOrderProductAsync, getAllOrderProductsAsync } from 'src/stores/order-product/actions'
+import { resetInitialState } from 'src/stores/order-product'
+import { deleteOrderProductAsync, getAllOrderProductsAsync, updateStatusOrderProductAsync } from 'src/stores/order-product/actions'
 
 // ** Components
 import GridDelete from 'src/components/grid-delete'
@@ -25,11 +25,12 @@ import ConfirmationDialog from 'src/components/confirmation-dialog'
 import CustomPagination from 'src/components/custom-pagination'
 import CustomSelect from 'src/components/custom-select'
 import EditOrderProduct from 'src/views/pages/manage-order/order-product/components/EditOrderProduct'
-
+import CardCountStatusOrder from 'src/views/pages/manage-order/order-product/components/CardCountOrderStatus'
+import MoreButton from 'src/views/pages/manage-order/order-product/components/MoreButton'
 // ** Others
 import toast from 'react-hot-toast'
 import { OBJECT_TYPE_ERROR_ROLE } from 'src/configs/error'
-import {formatFilter } from 'src/utils'
+import { formatFilter } from 'src/utils'
 import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Hooks
@@ -43,9 +44,9 @@ import { STATUS_ORDER_PRODUCT } from 'src/configs/orderProduct'
 import { getAllCities } from 'src/services/city'
 
 // ** Types
-import { TItemProductMe } from 'src/types/order-product'
+import { TItemProductMe, TParamsStatusOrderUpdate } from 'src/types/order-product'
 import { getCountOrderStatus } from 'src/services/report'
-import CardCountStatusOrder from 'src/views/pages/manage-order/order-product/components/CardCountOrderStatus'
+
 
 type TProps = {}
 
@@ -91,6 +92,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
     data: Record<number, number>,
     total: number
   }>({} as any)
+
 
   // ** Hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.ORDER', ['CREATE', 'VIEW', 'UPDATE', 'DELETE'])
@@ -162,6 +164,10 @@ const OrderProductListPage: NextPage<TProps> = () => {
       open: false,
       id: ''
     })
+  }
+
+  const handleUpdateStatusOrder = (data:TParamsStatusOrderUpdate) => {
+    dispatch(updateStatusOrderProductAsync(data))
   }
 
   const handleDeleteOrderProduct = () => {
@@ -240,6 +246,48 @@ const OrderProductListPage: NextPage<TProps> = () => {
       }
     },
     {
+      field: 'isPaid',
+      headerName: t('Paid_status'),
+      minWidth: 140,
+      maxWidth: 140,
+      renderCell: params => {
+        const { row } = params
+
+        return (
+          <Switch
+            checked={!!row.isPaid}
+            onChange={e => {
+              handleUpdateStatusOrder({
+                id: row._id,
+                isPaid: e.target.checked ? 1 : 0
+              })
+            }}
+          />
+        )
+      }
+    },
+    {
+      field: 'isDelivered',
+      headerName: t('Delivery_status'),
+      minWidth: 140,
+      maxWidth: 140,
+      renderCell: params => {
+        const { row } = params
+
+        return (
+          <Switch
+            checked={!!row.isDelivered}
+            onChange={e => {
+              handleUpdateStatusOrder({
+                id: row._id,
+                isDelivered: e.target.checked ? 1 : 0
+              })
+            }}
+          />
+        )
+      }
+    },
+    {
       field: 'status',
       headerName: t('Status'),
       minWidth: 180,
@@ -248,19 +296,20 @@ const OrderProductListPage: NextPage<TProps> = () => {
         const { row } = params
 
         return (
-          <>{<OrderStatusStyled background={(STATUS_ORDER_PRODUCT_STYLE as any)[row.status]?.background} label={t((STATUS_ORDER_PRODUCT_STYLE as any)[row.status]?.label)} />}</>
+          <>
+            {<OrderStatusStyled background={(STATUS_ORDER_PRODUCT_STYLE as any)[row.status]?.background} label={t((STATUS_ORDER_PRODUCT_STYLE as any)[row.status]?.label)} />}
+          </>
         )
       }
     },
     {
       field: 'action',
       headerName: t('Actions'),
-      minWidth: 150,
+      minWidth: 180,
       sortable: false,
       align: 'left',
       renderCell: params => {
         const { row } = params
-        console.log("params", { params })
 
         return (
           <>
@@ -282,6 +331,7 @@ const OrderProductListPage: NextPage<TProps> = () => {
                 })
               }
             />
+           <MoreButton data={row} memoOptionStatus={memoOptionStatus} />
           </>
         )
       }
@@ -346,7 +396,6 @@ const OrderProductListPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     if (isSuccessEdit) {
-
       toast.success(t('Update_order_product_success'))
       handleGetListOrderProducts()
       handleCloseEdit()
@@ -494,7 +543,6 @@ const OrderProductListPage: NextPage<TProps> = () => {
               pagination: PaginationComponent
             }}
             disableColumnFilter
-            disableColumnMenu
           />
         </Grid>
       </Box>

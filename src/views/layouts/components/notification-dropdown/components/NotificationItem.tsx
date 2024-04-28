@@ -109,7 +109,10 @@ const NotificationItem = (props: TProps) => {
         <MenuItem disableRipple disableTouchRipple>
             <Box sx={{ width: '100%', display: 'flex', alignItems: 'flex-start' }}>
                 <Box sx={{ mr: 4, ml: 2.5, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                    <MenuItemTitle onClick={() => handleNavigateDetail(notification.context)}>{(mapTitle as any)[notification.title]}</MenuItemTitle>
+                    <MenuItemTitle
+                        onClick={() => handleNavigateDetail(notification.context)}>
+                        {(mapTitle as any)[notification.title]}
+                    </MenuItemTitle>
                     <MenuItemSubtitle variant='body2'>{notification.body}</MenuItemSubtitle>
                     <Typography variant='body2' sx={{ color: 'text.disabled' }}>
                         {formatDate(notification.createdAt, { dateStyle: 'short' })}
