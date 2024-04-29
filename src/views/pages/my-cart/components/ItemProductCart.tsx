@@ -28,7 +28,7 @@ import { TItemOrderProduct } from 'src/types/order-product'
 
 // ** Redux
 import { useDispatch, useSelector } from 'react-redux'
-import { getDetailsProduct } from 'src/services/product'
+import { getDetailsProductPublic } from 'src/services/product'
 
 type TProps = {
   item: TItemOrderProduct
@@ -55,7 +55,7 @@ const ItemProductCart = ({ item, index, selectedRows, handleChangeCheckbox }: TP
 
   // ** fetch
   const fetchDetailsProduct = async (id: string) => {
-    const res = await getDetailsProduct(id)
+    const res = await getDetailsProductPublic(id)
     const data = res.data
     if (data) {
       const discountItem = isExpiry(data.discountStartDate, data.discountEndDate) ? data.discount : 0
@@ -144,10 +144,10 @@ const ItemProductCart = ({ item, index, selectedRows, handleChangeCheckbox }: TP
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             display: 'block',
-            mt: 2
+            mt: 2,
           }}
         >
-          <Link href={`/product/${itemState.slug}`}>{itemState.name}</Link>
+          <Link style={{color: "inherit"}} href={`/product/${itemState.slug}`}>{itemState.name}</Link>
         </Typography>
         <Box sx={{ flexBasis: '20%' }}>
           <Typography

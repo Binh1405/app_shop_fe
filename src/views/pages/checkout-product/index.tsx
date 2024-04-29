@@ -176,6 +176,11 @@ const CheckoutProductPage: NextPage<TProps> = () => {
 
   const handleOrderProduct = () => {
     const totalPrice = memoPriceShipping + Number(memoQueryProduct.totalPrice)
+    if(!memoAddressDefault) {
+      setOpenAddress(true)
+      
+      return
+    }
     dispatch(
       createOrderProductAsync({
         orderItems: memoQueryProduct.productsSelected as TItemOrderProduct[],
