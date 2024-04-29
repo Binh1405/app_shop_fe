@@ -340,6 +340,7 @@ const DetailsProductPage: NextPage<TProps> = () => {
       const parentId = data.parent
       const findParent = cloneListComment?.data?.find((item: TCommentItemProduct) => item?._id === parentId)
       if (findParent) {
+        console.log("findParent", {findParent, data})
         findParent?.replies?.push({ ...data })
         setListComment({
           data: cloneListComment.data,
