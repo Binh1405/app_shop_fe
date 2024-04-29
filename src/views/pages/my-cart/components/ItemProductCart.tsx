@@ -144,10 +144,10 @@ const ItemProductCart = ({ item, index, selectedRows, handleChangeCheckbox }: TP
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             display: 'block',
-            mt: 2
+            mt: 2,
           }}
         >
-          <Link href={`/product/${itemState.slug}`}>{itemState.name}</Link>
+          <Link style={{color: "inherit"}} href={`/product/${itemState.slug}`}>{itemState.name}</Link>
         </Typography>
         <Box sx={{ flexBasis: '20%' }}>
           <Typography
