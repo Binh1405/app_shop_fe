@@ -38,8 +38,12 @@ import { OBJECT_TYPE_ERROR_PRODUCT } from 'src/configs/error'
 import CustomSelect from 'src/components/custom-select'
 import CardSkeleton from 'src/views/pages/product/components/CardSkeleton'
 import ChatBotAI from 'src/components/chat-bot-ai'
+import { useRouter } from 'next/router'
 
-type TProps = {}
+type TProps = {
+  products: TProduct[],
+  totalCount: number
+}
 
 const StyledTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
   '&.MuiTabs-root': {
@@ -47,9 +51,12 @@ const StyledTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
   }
 }))
 
-const HomePage: NextPage<TProps> = () => {
+const HomePage: NextPage<TProps> = (props) => {
   // ** Translate
   const { t } = useTranslation()
+
+  // ** Props
+  const {products, totalCount} = props
 
   // State
   const [sortBy, setSortBy] = useState('createdAt desc')
@@ -91,6 +98,7 @@ const HomePage: NextPage<TProps> = () => {
 
   // ** theme
   const theme = useTheme()
+  const router = useRouter()
 
   // fetch api
   const handleGetListProducts = async () => {
@@ -110,8 +118,10 @@ const HomePage: NextPage<TProps> = () => {
   }
 
   const handleOnchangePagination = (page: number, pageSize: number) => {
-    setPage(page)
-    setPageSize(pageSize)
+    // setPage(page)
+    // setPageSize(pageSize)
+    console.log("pageSize", {pageSize, page})
+    router.push(`/home?page=${page}&limit=${pageSize}`)
   }
 
   const handleFilterProduct = (value: string, type: string) => {
@@ -172,7 +182,7 @@ const HomePage: NextPage<TProps> = () => {
 
   useEffect(() => {
     if (firstRender.current) {
-      handleGetListProducts()
+      // handleGetListProducts()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortBy, searchBy, page, pageSize, filterBy])
@@ -323,9 +333,9 @@ const HomePage: NextPage<TProps> = () => {
                     xs: 4
                   }}
                 >
-                  {productsPublic?.data?.length > 0 ? (
+                  {products?.length > 0 ? (
                     <>
-                      {productsPublic?.data?.map((item: TProduct) => {
+                      {products?.map((item: TProduct) => {
                         return (
                           <Grid item key={item._id} md={4} sm={6} xs={12}>
                             <CardProduct item={item} />
@@ -344,9 +354,9 @@ const HomePage: NextPage<TProps> = () => {
                 <CustomPagination
                   onChangePagination={handleOnchangePagination}
                   pageSizeOptions={PAGE_SIZE_OPTION}
-                  pageSize={pageSize}
-                  page={page}
-                  rowLength={productsPublic.total}
+                  pageSize={router?.query?.limit ? +router?.query?.limit : 2}
+                  page={router?.query?.page ? +router?.query?.page : 1}
+                  rowLength={totalCount}
                   isHideShowed
                 />
               </Box>

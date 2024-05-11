@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  experimental: {
+    largePageDataBytes: 128 * 100000
+  },
   images: {
     remotePatterns: [
       {
