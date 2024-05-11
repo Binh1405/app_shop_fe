@@ -18,13 +18,26 @@ import NotificationItem from 'src/views/layouts/components/notification-dropdown
 
 // ** Third party
 import { useTranslation } from 'react-i18next'
+import { getMessaging, onMessage } from 'firebase/messaging'
+
+// ** Store
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from 'src/stores'
 import { getAllNotificationsAsync, markReadAllNotificationAsync } from 'src/stores/notification/actions'
 import toast from 'react-hot-toast'
 import { resetInitialState } from 'src/stores/notification'
+
+// ** Configs
 import firebaseApp from 'src/configs/firebase'
-import { getMessaging, onMessage } from 'firebase/messaging'
+
+// ** Hooks
+import useFcmToken from 'src/hooks/useFcmToken'
+
+// ** Services
+import { updateDeviceToken } from 'src/services/auth'
+
+// ** Helpers
+import { clearLocalDeviceToken, getLocalDeviceToken, setLocalDeviceToken } from 'src/helpers/storage'
 
 export type NotificationsType = {
     createdAt: string
@@ -77,6 +90,8 @@ const NotificationDropdown = (props: Props) => {
     // ** Hooks
     const theme = useTheme()
     const { t } = useTranslation()
+    const { fcmToken } = useFcmToken();
+    console.log("fcmToken", { fcmToken })
 
     // ** Ref
     const wrapperListRef = useRef<HTMLDivElement>(null)
@@ -84,15 +99,16 @@ const NotificationDropdown = (props: Props) => {
     // ** Redux
     const dispatch: AppDispatch = useDispatch()
     const {
-        notifications, isSuccessDelete, isSuccessRead, 
+        notifications, isSuccessDelete, isSuccessRead,
         isErrorDelete, isErrorRead, messageErrorDelete, messageErrorRead
-        ,isSuccessReadAll, isErrorReadAll, messageErrorReadAll
+        , isSuccessReadAll, isErrorReadAll, messageErrorReadAll
     } = useSelector((state: RootState) => state.notification)
 
 
     // ** States
     const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
     const [limit, setLimit] = useState(10)
+    const localDeviceToken = getLocalDeviceToken()
 
     // ** handle
     const handleDropdownOpen = (event: SyntheticEvent) => {
@@ -111,17 +127,23 @@ const NotificationDropdown = (props: Props) => {
         dispatch(getAllNotificationsAsync({ params: { limit: limit, page: 1, order: "createdAt desc" } }))
     }
 
+    const handleUpdateDeviceToken = async (token:string) => {
+        clearLocalDeviceToken()
+        setLocalDeviceToken(token)
+        await updateDeviceToken({deviceToken: token})
+    }
+
     const handleScrollListNotification = () => {
         const wrapperContent = wrapperListRef.current
-        if(!wrapperContent) {
-            return 
+        if (!wrapperContent) {
+            return
         }
         const heightList = wrapperContent.clientHeight
         const scrollHeight = wrapperContent.scrollHeight
         const maxScroll = scrollHeight - heightList
         const currentScroll = wrapperContent.scrollTop
-        if(currentScroll >= maxScroll) {
-            if(notifications.total > limit) {
+        if (currentScroll >= maxScroll) {
+            if (notifications.total > limit) {
                 setLimit((prev) => prev + 10)
             }
         }
@@ -129,16 +151,22 @@ const NotificationDropdown = (props: Props) => {
 
     useEffect(() => {
         if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-          const messaging = getMessaging(firebaseApp);
-          const unsubscribe = onMessage(messaging, (payload) => {
-            handleGetListNotification()
-          });
-    
-          return () => {
-            unsubscribe(); // Unsubscribe from the onMessage event
-          };
+            const messaging = getMessaging(firebaseApp);
+            const unsubscribe = onMessage(messaging, (payload) => {
+                handleGetListNotification()
+            });
+
+            return () => {
+                unsubscribe(); // Unsubscribe from the onMessage event
+            };
         }
-      }, []);
+    }, []);
+
+    useEffect(() => {
+        if(fcmToken !== localDeviceToken) {
+            handleUpdateDeviceToken(fcmToken)
+        }
+    }, [fcmToken])
 
     useEffect(() => {
         handleGetListNotification()
