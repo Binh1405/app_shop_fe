@@ -40,9 +40,28 @@ import CardSkeleton from 'src/views/pages/product/components/CardSkeleton'
 import ChatBotAI from 'src/components/chat-bot-ai'
 import { useRouter } from 'next/router'
 
+
+interface TOptions {
+  label: string
+  value: string
+}
+
+
 type TProps = {
   products: TProduct[],
   totalCount: number
+  productTypesServer: TOptions[]
+  paramsServer: {
+    limit: number
+    page: number
+    order: string
+    productType: string
+  }
+}
+
+interface TProductPublicState {
+  data: TProduct[],
+  total: number
 }
 
 const StyledTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
@@ -56,7 +75,7 @@ const HomePage: NextPage<TProps> = (props) => {
   const { t } = useTranslation()
 
   // ** Props
-  const {products, totalCount} = props
+  const { products, totalCount, paramsServer, productTypesServer } = props
 
   // State
   const [sortBy, setSortBy] = useState('createdAt desc')
@@ -68,6 +87,9 @@ const HomePage: NextPage<TProps> = (props) => {
   const [optionCities, setOptionCities] = useState<{ label: string; value: string }[]>([])
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    if(!firstRender.current) {
+      firstRender.current = true
+    }
     setProductTypeSelected(newValue)
   }
 
@@ -76,12 +98,14 @@ const HomePage: NextPage<TProps> = (props) => {
   const [optionTypes, setOptionTypes] = useState<{ label: string; value: string }[]>([])
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
   const [loading, setLoading] = useState(false)
-  const [productsPublic, setProductsPublic] = useState({
+  const [productsPublic, setProductsPublic] = useState<TProductPublicState>({
     data: [],
     total: 0
   })
 
+  // ** Ref
   const firstRender = useRef<boolean>(false)
+  const isServerRendered = useRef<boolean>(false)
 
   // ** Redux
   const {
@@ -118,20 +142,27 @@ const HomePage: NextPage<TProps> = (props) => {
   }
 
   const handleOnchangePagination = (page: number, pageSize: number) => {
-    // setPage(page)
-    // setPageSize(pageSize)
-    console.log("pageSize", {pageSize, page})
-    router.push(`/home?page=${page}&limit=${pageSize}`)
+    setPage(page)
+    setPageSize(pageSize)
+    if(!firstRender.current) {
+      firstRender.current = true
+    }
   }
 
   const handleFilterProduct = (value: string, type: string) => {
     switch (type) {
       case 'review': {
         setReviewSelected(value)
+        if(!firstRender.current) {
+          firstRender.current = true
+        }
         break
       }
       case 'location': {
         setLocationSelected(value)
+        if(!firstRender.current) {
+          firstRender.current = true
+        }
         break
       }
     }
@@ -143,22 +174,6 @@ const HomePage: NextPage<TProps> = (props) => {
   }
 
   // ** fetch api
-  const fetchAllTypes = async () => {
-    setLoading(true)
-    await getAllProductTypes({ params: { limit: -1, page: -1 } })
-      .then(res => {
-        const data = res?.data.productTypes
-        if (data) {
-          setOptionTypes(data?.map((item: { name: string; _id: string }) => ({ label: item.name, value: item._id })))
-          setProductTypeSelected(data?.[0]?._id)
-          firstRender.current = true
-        }
-        setLoading(false)
-      })
-      .catch(e => {
-        setLoading(false)
-      })
-  }
 
   const fetchAllCities = async () => {
     setLoading(true)
@@ -176,20 +191,36 @@ const HomePage: NextPage<TProps> = (props) => {
   }
 
   useEffect(() => {
-    fetchAllTypes()
     fetchAllCities()
   }, [])
 
   useEffect(() => {
-    if (firstRender.current) {
-      // handleGetListProducts()
+    if (!isServerRendered.current && paramsServer && totalCount && !!products.length && !!productTypesServer.length) {
+      setPage(paramsServer.page)
+      setPageSize(paramsServer.limit)
+      setSortBy(paramsServer.order)
+      if(paramsServer.productType) {
+        setProductTypeSelected(paramsServer.productType)
+      }
+      setProductsPublic({
+        data: products,
+        total: totalCount
+      })
+      setOptionTypes(productTypesServer)
+      isServerRendered.current = true
+    }
+  }, [paramsServer, products, totalCount, productTypesServer])
+
+  useEffect(() => {
+    if (isServerRendered.current && firstRender.current) {
+      handleGetListProducts()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortBy, searchBy, page, pageSize, filterBy])
 
   useEffect(() => {
-    if (firstRender.current) {
-      setFilterBy({ productType: productTypeSelected, minStar: reviewSelected, productLocation: locationSelected })
+    if (isServerRendered.current && firstRender.current) {
+        setFilterBy({ productType: productTypeSelected, minStar: reviewSelected, productLocation: locationSelected })
     }
   }, [productTypeSelected, reviewSelected, locationSelected])
 
@@ -248,6 +279,9 @@ const HomePage: NextPage<TProps> = (props) => {
               <CustomSelect
                 fullWidth
                 onChange={(e) => {
+                  if(!firstRender.current) {
+                    firstRender.current = true
+                  }
                   setSortBy(e.target.value as string)
                 }}
                 value={sortBy}
@@ -276,7 +310,12 @@ const HomePage: NextPage<TProps> = (props) => {
               <InputSearch
                 placeholder={t('Search_name_product')}
                 value={searchBy}
-                onChange={(value: string) => setSearchBy(value)}
+                onChange={(value: string) => {
+                  if(!firstRender.current) {
+                    firstRender.current = true
+                  }
+                  setSearchBy(value)
+                }}
               />
             </Box>
           </Box>
@@ -333,9 +372,9 @@ const HomePage: NextPage<TProps> = (props) => {
                     xs: 4
                   }}
                 >
-                  {products?.length > 0 ? (
+                  {productsPublic?.data?.length > 0 ? (
                     <>
-                      {products?.map((item: TProduct) => {
+                      {productsPublic?.data?.map((item: TProduct) => {
                         return (
                           <Grid item key={item._id} md={4} sm={6} xs={12}>
                             <CardProduct item={item} />
@@ -354,9 +393,9 @@ const HomePage: NextPage<TProps> = (props) => {
                 <CustomPagination
                   onChangePagination={handleOnchangePagination}
                   pageSizeOptions={PAGE_SIZE_OPTION}
-                  pageSize={router?.query?.limit ? +router?.query?.limit : 2}
-                  page={router?.query?.page ? +router?.query?.page : 1}
-                  rowLength={totalCount}
+                  pageSize={pageSize}
+                  page={page}
+                  rowLength={productsPublic.total}
                   isHideShowed
                 />
               </Box>

@@ -642,7 +642,7 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
                                     : `rgba(${theme.palette.customColors.main}, 0.68)`
                                 }}
                               >
-                                {t('Location')}
+                                {t('Location')} *
                               </InputLabel>
                               <CustomSelect
                                 fullWidth
