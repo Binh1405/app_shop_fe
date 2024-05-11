@@ -60,6 +60,7 @@ export type TProduct = {
   totalReviews: number
   discount: number
   sold: number
+  description:string
   location: {
     name: string
     _id: string
