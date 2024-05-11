@@ -1,6 +1,8 @@
 
 import Head from 'next/head'
 import { ReactNode } from 'react'
+import { getAllProductsPublic } from 'src/services/product'
+import { TProduct } from 'src/types/product'
 
 // layouts
 import LayoutNotApp from 'src/views/layouts/LayoutNotApp'
@@ -8,8 +10,14 @@ import LayoutNotApp from 'src/views/layouts/LayoutNotApp'
 // ** Pages
 import HomePage from 'src/views/pages/home'
 
-export default function Home() {
-
+interface TProps {
+  products: TProduct[],
+  totalCount: number
+}
+export default function Home(props:TProps) {
+  const {products, totalCount} = props
+  console.log("products", {products})
+  
   return (
     <>
       <Head>
@@ -18,7 +26,7 @@ export default function Home() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <HomePage />
+      <HomePage products={products} totalCount={totalCount} />
     </>
   )
 }
@@ -26,3 +34,26 @@ export default function Home() {
 Home.getLayout = (page: ReactNode) => <LayoutNotApp>{page}</LayoutNotApp>
 Home.guestGuard = false
 Home.authGuard = false
+
+export async function getServerSideProps(context:any) {
+  try {
+    const {limit = 2, page = 1} = context.query
+    const res = await getAllProductsPublic({params: {limit: +limit, page: +page}})
+
+    const data = res?.data
+
+    return {
+      props: {
+        products: data?.products,
+        totalCount: data?.totalCount
+      }
+    }
+  } catch (error) {
+     return {
+      props: {
+        products: [],
+        totalCount: 0
+      }
+    }
+  }
+}
