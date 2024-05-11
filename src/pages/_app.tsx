@@ -107,6 +107,11 @@ export default function App(props: ExtendedAppProps) {
   const aclAbilities = Component.acl ?? defaultACLObj
   const permission = Component.permission ?? []
 
+  const title = Component.title ?? `${themeConfig.templateName} - Khóa học Nextjs 14 PRO thực chiến`
+  const keywords = Component.keywords ?? 'Material Design, MUI, ReactJS, Yup, NextJS 14, Typescript, lập trình thật dễ'
+  const description = Component.description ?? `${themeConfig.templateName} – Khóa học Nextjs 14 PRO thực chiến với dự án website bán hàng`
+  const urlImage = Component.urlImage ?? "/logo.png"
+
   const toastOptions = {
     success: {
       className: 'react-hot-toast',
@@ -127,13 +132,27 @@ export default function App(props: ExtendedAppProps) {
   return (
     <Provider store={store}>
       <Head>
-        <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
+        <title>{title}</title>
         <meta
           name='description'
-          content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
+          content={description}
         />
-        <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
+        <meta name='keywords' content={keywords} />
         <meta name='viewport' content='initial-scale=1, width=device-width' />
+        <meta name="author" content="Lập trình thật dễ" />
+        <meta name="name" content="Khóa học NextJS 14 typescript PRO 2024" />
+        <meta name="image" content={urlImage} />
+        {/* facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={urlImage} />
+        {/* twitter */}
+        <meta property="twitter:card" content="website" />
+        <meta property="twitter:title" content={title} />
+        <meta property="twitter:description" content={description} />
+        <meta property="twitter:image" content={urlImage} />
+        <link rel='icon' href='/vercel.svg' />
       </Head>
 
       <AuthProvider>
