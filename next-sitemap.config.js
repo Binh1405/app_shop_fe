@@ -1,4 +1,4 @@
 module.exports = {
-    siteUrl: process.env.SITE_URL || 'https://app-shop-fe.vercel.app',
-    generateRobotsTxt: true, 
+    siteUrl: process.env.SITE_URL || 'https://example.com',
+    generateRobotsTxt: true,
   }
