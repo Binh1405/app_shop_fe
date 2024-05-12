@@ -35,7 +35,7 @@ export default function Home(props: TProps) {
     <>
       <Head>
         <title>Lập trình thật dễ - Danh sách sản phẩm</title>
-        <meta name='description' content='Bán hàng điện tử, điện thoại, máy tính bảng' />
+        <meta name='description' content='Bán hàng điện tử, điện thoại, máy tính bảng, khóa học nextjs 14 reactjs typescript pro 2024 by Lập trình thật dễ - Xây dựng website bán hàng' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <meta name='keywords' content='ReactJS, NextJS 14, Typescript, Lập trình thật dễ' />
       </Head>
