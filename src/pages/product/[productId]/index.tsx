@@ -16,7 +16,6 @@ type TProps = {
 }
 
 const Index: NextPage<TProps> = ({ productData, listRelatedProduct }) => {
-
   const description = getTextFromHTML(productData.description)
   
   return (
@@ -39,7 +38,7 @@ const Index: NextPage<TProps> = ({ productData, listRelatedProduct }) => {
         {/* twitter */}
         <meta property="twitter:card" content="website" />
         <meta property="twitter:title" content={`Lập trình thật dễ - ${productData?.name}`} />
-        <meta property="twitter:description" content={description} />
+        <meta property="twitter:description" content={productData.description} />
         <meta property="twitter:image" content={`Lập trình thật dễ - ${productData?.name}`} />
       </Head>
       <DetailsProductPage productData={productData} productsRelated={listRelatedProduct} />
@@ -74,7 +73,7 @@ export async function getServerSideProps(context: any) {
     return {
       props: {
         productData: productData,
-        listRelatedProduct
+        listRelatedProduct,
       }
     }
   } catch (error) {
