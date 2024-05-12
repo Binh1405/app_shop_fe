@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 
 // ** Next Imports
 import Head from 'next/head'
-import { Router } from 'next/router'
+import { Router, useRouter } from 'next/router'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { SessionProvider } from "next-auth/react"
@@ -94,6 +94,8 @@ export default function App(props: ExtendedAppProps) {
 
   const { settings } = useSettings()
   const theme = useTheme()
+  const router = useRouter()
+  const slugProduct = (router?.query?.productId as string)?.replaceAll("-", " ")
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
@@ -107,7 +109,8 @@ export default function App(props: ExtendedAppProps) {
   const aclAbilities = Component.acl ?? defaultACLObj
   const permission = Component.permission ?? []
 
-  const title = Component.title ?? `${themeConfig.templateName} - Khóa học Nextjs 14 PRO thực chiến`
+  const title = slugProduct ? `${themeConfig.templateName} - ${slugProduct}` 
+  : Component.title ?? `${themeConfig.templateName} - Khóa học Nextjs 14 PRO thực chiến`
 
   const keywords = Component.keywords ?? 'Material Design, MUI, ReactJS, Yup, NextJS 14, Typescript, lập trình thật dễ'
 
