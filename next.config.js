@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrite() {
+    return [
+      {
+        source: "/robots.txt",
+        destination: "/api/robots.ts"
+      }
+    ]
+  },
   reactStrictMode: false,
   experimental: {
     largePageDataBytes: 128 * 100000

@@ -14,13 +14,13 @@ export const getServerSideProps = async (context) => {
     })
 
     const productUrls = allProducts.map((slug) => ({
-        loc: `https://app-shop-fe.vercel.app/product/${slug}`,
+        loc: `${process.env.SITE_URL}/product/${slug}`,
         lastMod: new Date().toISOString(),
         priority: 0.9,
     }))
 
     const homeUrl = {
-        loc: "https://app-shop-fe.vercel.app/home",
+        loc: "${process.env.SITE_URL}/home",
         lastMod: new Date().toISOString(),
         priority: 0.9,
     }
