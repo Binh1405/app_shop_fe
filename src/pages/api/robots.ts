@@ -6,9 +6,5 @@ export default function handler() {
         Sitemap: ${process.env.SITE_URL}/sitemap.xml
     `
 
-    return new Response(robots, {
-        headers: {
-            "Content-type": "text/plain"
-        }
-    })
+    return new Response(robots)
 }
