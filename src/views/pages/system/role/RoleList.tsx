@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -28,7 +28,7 @@ import ConfirmationDialog from 'src/components/confirmation-dialog'
 import Icon from 'src/components/Icon'
 
 // ** Services
-import { getDetailsRole } from 'src/services/role'
+import { getAllRoles, getDetailsRole } from 'src/services/role'
 
 // ** Others
 import toast from 'react-hot-toast'
@@ -39,10 +39,13 @@ import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Hooks
 import { usePermission } from 'src/hooks/usePermission'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from 'src/configs/queryKey'
 
 type TProps = {}
 
 const RoleListPage: NextPage<TProps> = () => {
+
   // State
 
   const [openCreateEdit, setOpenCreateEdit] = useState({
@@ -63,19 +66,23 @@ const RoleListPage: NextPage<TProps> = () => {
   const [loading, setLoading] = useState(false)
   const [isDisablePermission, setIsDisabledPermission] = useState(false)
 
+  // ** Query
+  const queryClient = useQueryClient()
+
   // ** Permission
   const { VIEW, UPDATE, DELETE, CREATE } = usePermission('SYSTEM.ROLE', ['CREATE', 'VIEW', 'UPDATE', 'DELETE'])
 
   // ** Translate
   const { t } = useTranslation()
 
+  // ** Ref
+  const refActionGrid = useRef<boolean>(false)
+
   /// ** redux
   const dispatch: AppDispatch = useDispatch()
   const {
-    roles,
     isSuccessCreateEdit,
     isErrorCreateEdit,
-    isLoading,
     messageErrorCreateEdit,
     isErrorDelete,
     isSuccessDelete,
@@ -87,13 +94,30 @@ const RoleListPage: NextPage<TProps> = () => {
   const theme = useTheme()
 
   // fetch api
-  const handleGetListRoles = () => {
-    dispatch(getAllRolesAsync({ params: { limit: -1, page: -1, search: searchBy, order: sortBy } }))
-  }
 
   const handleUpdateRole = () => {
     dispatch(updateRoleAsync({ name: selectedRow.name, id: selectedRow.id, permissions: permissionSelected }))
   }
+
+  const fetchRoles = async (sortBy: string, searchBy: string) => {
+    const res = await getAllRoles({ params: { limit: -1, page: -1, search: searchBy, order: sortBy } })
+
+    return res?.data
+  }
+
+  const {
+    data: rolesList,
+    isPending
+  } = useQuery(
+    {
+      queryKey: [queryKeys.role_list, sortBy, searchBy],
+      queryFn: () => fetchRoles(sortBy, searchBy),
+      select: (data) => data?.roles,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: 10000
+    },
+  )
 
   // handle
   const handleCloseConfirmDeleteRole = () => {
@@ -101,6 +125,7 @@ const RoleListPage: NextPage<TProps> = () => {
       open: false,
       id: ''
     })
+    refActionGrid.current = false
   }
 
   const handleSort = (sort: GridSortModel) => {
@@ -113,6 +138,7 @@ const RoleListPage: NextPage<TProps> = () => {
       open: false,
       id: ''
     })
+    refActionGrid.current = false
   }
 
   const handleDeleteRole = () => {
@@ -140,20 +166,25 @@ const RoleListPage: NextPage<TProps> = () => {
               <>
                 <GridEdit
                   disabled={!UPDATE}
-                  onClick={() =>
+                  onClick={() => {
+                    refActionGrid.current = true
                     setOpenCreateEdit({
                       open: true,
                       id: String(params.id)
                     })
                   }
+                  }
                 />
                 <GridDelete
                   disabled={!DELETE}
-                  onClick={() =>
+                  onClick={() => {
+                    refActionGrid.current = true
                     setOpenDeleteRole({
                       open: true,
                       id: String(params.id)
                     })
+                  }
+
                   }
                 />
               </>
@@ -191,7 +222,7 @@ const RoleListPage: NextPage<TProps> = () => {
   }
 
   useEffect(() => {
-    handleGetListRoles()
+    // handleGetListRoles()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortBy, searchBy])
 
@@ -208,7 +239,7 @@ const RoleListPage: NextPage<TProps> = () => {
       } else {
         toast.success(t('Update_role_success'))
       }
-      handleGetListRoles()
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
       handleCloseCreateEdit()
       dispatch(resetInitialState())
     } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
@@ -230,7 +261,7 @@ const RoleListPage: NextPage<TProps> = () => {
   useEffect(() => {
     if (isSuccessDelete) {
       toast.success(t('Delete_role_success'))
-      handleGetListRoles()
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
       dispatch(resetInitialState())
       handleCloseConfirmDeleteRole()
     } else if (isErrorDelete && messageErrorDelete) {
@@ -239,9 +270,10 @@ const RoleListPage: NextPage<TProps> = () => {
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
+
   return (
     <>
-      {loading && <Spinner />}
+      {(loading || isPending) && <Spinner />}
       <ConfirmationDialog
         open={openDeleteRole.open}
         handleClose={handleCloseConfirmDeleteRole}
@@ -251,7 +283,6 @@ const RoleListPage: NextPage<TProps> = () => {
         description={t('Confirm_delete_role')}
       />
       <CreateEditRole open={openCreateEdit.open} onClose={handleCloseCreateEdit} idRole={openCreateEdit.id} />
-      {isLoading && <Spinner />}
       <Box
         sx={{
           backgroundColor: theme.palette.background.paper,
@@ -281,7 +312,7 @@ const RoleListPage: NextPage<TProps> = () => {
             </Box>
             <Box sx={{ maxHeight: '100%' }}>
               <CustomDataGrid
-                rows={roles.data}
+                rows={rolesList || []}
                 columns={columns}
                 pageSizeOptions={[5]}
                 autoHeight
@@ -301,11 +332,10 @@ const RoleListPage: NextPage<TProps> = () => {
                   return row.id === selectedRow.id ? 'row-selected' : ''
                 }}
                 onRowClick={row => {
-                  setSelectedRow({ id: String(row.id), name: row?.row?.name })
-                  setOpenCreateEdit({
-                    open: false,
-                    id: String(row.id)
-                  })
+                  console.log("chek",refActionGrid)
+                  if (!refActionGrid.current) {
+                    setSelectedRow({ id: String(row.id), name: row?.row?.name })
+                  }
                 }}
                 disableColumnFilter
               />

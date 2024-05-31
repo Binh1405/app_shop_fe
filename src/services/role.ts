@@ -3,13 +3,13 @@ import instanceAxios from 'src/helpers/axios'
 import { TParamsCreateRole, TParamsDeleteRole, TParamsEditRole, TParamsGetRoles } from 'src/types/role'
 
 export const getAllRoles = async (data: { params: TParamsGetRoles }) => {
-  try {
+  // try {
     const res = await instanceAxios.get(`${API_ENDPOINT.SYSTEM.ROLE.INDEX}`, data)
     
     return res.data
-  } catch (error) {
-    return error
-  }
+  // } catch (error) {
+  //   return error
+  // }
 }
 
 export const createRole = async (data: TParamsCreateRole) => {

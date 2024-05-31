@@ -1,5 +1,5 @@
 // ** React
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Form
@@ -24,6 +24,8 @@ import { AppDispatch } from 'src/stores'
 import { createRoleAsync, updateRoleAsync } from 'src/stores/role/actions'
 import { useDispatch } from 'react-redux'
 import { PERMISSIONS } from 'src/configs/permission'
+import { queryKeys } from 'src/configs/queryKey'
+import { useQuery } from '@tanstack/react-query'
 
 interface TCreateEditRole {
   open: boolean
@@ -78,32 +80,42 @@ const CreateEditRole = (props: TCreateEditRole) => {
 
   // fetch
   const fetchDetailsRole = async (id: string) => {
-    setLoading(true)
-    await getDetailsRole(id)
-      .then(res => {
-        const data = res.data
-        if (data) {
-          reset({
-            name: data?.name
-          })
-        }
-        setLoading(false)
-      })
-      .catch(e => {
-        setLoading(false)
-      })
+   const res =  await getDetailsRole(id)
+
+    return res.data
   }
+
+  const {
+    data: rolesDetails,
+    isPending
+  } = useQuery(
+    {
+      queryKey: [queryKeys.role_detail, idRole],
+      queryFn: () => fetchDetailsRole(idRole || ''),
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: 5000,
+      gcTime: 10000,
+      enabled: !!idRole
+    },
+  )
 
   useEffect(() => {
     if (!open) {
       reset({
         name: ''
       })
-    } else if (idRole) {
-      fetchDetailsRole(idRole)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, idRole])
+
+  useEffect(() => {
+    if(rolesDetails) {
+      reset({
+        name: rolesDetails?.name
+      })
+    }
+  }, [rolesDetails])
 
   return (
     <>
