@@ -1,13 +1,6 @@
 // ** React Imports
 import { ReactNode, useState } from 'react'
 
-// ** React Query
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-
 // ** Next Imports
 import Head from 'next/head'
 import { Router, useRouter } from 'next/router'
@@ -45,9 +38,10 @@ import AuthGuard from 'src/components/auth/AuthGuard'
 import FallbackSpinner from 'src/components/fall-back'
 import AclGuard from 'src/components/auth/AclGuard'
 import ReactHotToast from 'src/components/react-hot-toast'
-
+import NoGuard from 'src/components/auth/NoGuard'
 // ** hooks
 import { useSettings } from 'src/hooks/useSettings'
+import { useTheme } from '@mui/material'
 
 // ** theme
 import ThemeComponent from 'src/theme/ThemeComponent'
@@ -60,8 +54,13 @@ import { SettingsConsumer, SettingsProvider } from 'src/contexts/SettingsContext
 
 // axios instance
 import { AxiosInterceptor } from 'src/helpers/axios'
-import NoGuard from 'src/components/auth/NoGuard'
-import { useTheme } from '@mui/material'
+
+// ** React Query
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -110,7 +109,8 @@ export default function App(props: ExtendedAppProps) {
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
   const setConfig = Component.setConfig ?? undefined
-  //
+  // Query
+
   const authGuard = Component.authGuard ?? true
 
   const guestGuard = Component.guestGuard ?? false
@@ -171,7 +171,6 @@ export default function App(props: ExtendedAppProps) {
       </Head>
 
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-left' />
         <AuthProvider>
           <AxiosInterceptor>
             <SessionProvider session={session}>
@@ -196,6 +195,7 @@ export default function App(props: ExtendedAppProps) {
             </SessionProvider>
           </AxiosInterceptor>
         </AuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </Provider>
   )
