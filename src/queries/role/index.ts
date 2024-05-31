@@ -1,7 +1,8 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { UseMutationOptions } from './../../../node_modules/@tanstack/react-query/src/types'
+import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { queryKeys } from 'src/configs/queryKey'
-import { getAllRoles } from 'src/services/role'
-import { TParamsGetRoles } from 'src/types/role'
+import { getAllRoles, updateRole } from 'src/services/role'
+import { TParamsEditRole, TParamsGetRoles } from 'src/types/role'
 
 export const useGetListRoles = (
   params: TParamsGetRoles,
@@ -12,8 +13,22 @@ export const useGetListRoles = (
     queryFn: async () => {
       const res = await getAllRoles({ params: { ...params } })
 
-      return res
+      return res.data
     },
+    ...options
+  })
+}
+
+export const useMutationEditRole = (
+  options?: Omit<UseMutationOptions<any, unknown, TParamsEditRole>, 'mutationKey' | 'mutationFn'>
+) => {
+  return useMutation({
+    mutationFn: async data => {
+      const res = await updateRole(data)
+
+      return res.data
+    },
+    mutationKey: [queryKeys.update_role],
     ...options
   })
 }
