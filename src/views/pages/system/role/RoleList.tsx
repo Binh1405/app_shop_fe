@@ -28,7 +28,7 @@ import ConfirmationDialog from 'src/components/confirmation-dialog'
 import Icon from 'src/components/Icon'
 
 // ** Services
-import { getAllRoles, getDetailsRole } from 'src/services/role'
+import { deleteRole, getAllRoles, getDetailsRole } from 'src/services/role'
 
 // ** Others
 import toast from 'react-hot-toast'
@@ -39,7 +39,7 @@ import { hexToRGBA } from 'src/utils/hex-to-rgba'
 
 // ** Hooks
 import { usePermission } from 'src/hooks/usePermission'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from 'src/configs/queryKey'
 
 type TProps = {}
@@ -105,6 +105,12 @@ const RoleListPage: NextPage<TProps> = () => {
     return res?.data
   }
 
+  const fetchDeleteRole = async (id:string) => {
+    const res = await deleteRole(id)
+
+    return res?.data
+  }
+
   const {
     data: rolesList,
     isPending
@@ -118,6 +124,22 @@ const RoleListPage: NextPage<TProps> = () => {
       staleTime: 10000
     },
   )
+
+  const {
+    isPending: isLoadingDelete,
+    mutate: mutateDeleteRole,
+  } = useMutation({
+    mutationFn: fetchDeleteRole,
+    mutationKey: [queryKeys.delete_role],
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, sortBy, searchBy] })
+      handleCloseConfirmDeleteRole()
+      toast.success(t('Delete_role_success'))
+    },
+    onError: () => {
+      toast.success(t('Delete_role_error'))
+    },
+  })
 
   // handle
   const handleCloseConfirmDeleteRole = () => {
@@ -142,7 +164,7 @@ const RoleListPage: NextPage<TProps> = () => {
   }
 
   const handleDeleteRole = () => {
-    dispatch(deleteRoleAsync(openDeleteRole.id))
+    mutateDeleteRole(openDeleteRole.id)
   }
 
   const columns: GridColDef[] = [
@@ -239,7 +261,7 @@ const RoleListPage: NextPage<TProps> = () => {
       } else {
         toast.success(t('Update_role_success'))
       }
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list,sortBy, searchBy] })
       handleCloseCreateEdit()
       dispatch(resetInitialState())
     } else if (isErrorCreateEdit && messageErrorCreateEdit && typeError) {
@@ -261,7 +283,7 @@ const RoleListPage: NextPage<TProps> = () => {
   useEffect(() => {
     if (isSuccessDelete) {
       toast.success(t('Delete_role_success'))
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list,sortBy, searchBy] })
       dispatch(resetInitialState())
       handleCloseConfirmDeleteRole()
     } else if (isErrorDelete && messageErrorDelete) {
@@ -270,10 +292,9 @@ const RoleListPage: NextPage<TProps> = () => {
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
-
   return (
     <>
-      {(loading || isPending) && <Spinner />}
+      {(loading || isPending || isLoadingDelete) && <Spinner />}
       <ConfirmationDialog
         open={openDeleteRole.open}
         handleClose={handleCloseConfirmDeleteRole}

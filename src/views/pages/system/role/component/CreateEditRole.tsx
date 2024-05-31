@@ -17,15 +17,16 @@ import Spinner from 'src/components/spinner'
 import CustomTextField from 'src/components/text-field'
 
 // ** Services
-import { getDetailsRole } from 'src/services/role'
+import { createRole, getDetailsRole, updateRole } from 'src/services/role'
 
 // ** Redux
 import { AppDispatch } from 'src/stores'
-import { createRoleAsync, updateRoleAsync } from 'src/stores/role/actions'
 import { useDispatch } from 'react-redux'
 import { PERMISSIONS } from 'src/configs/permission'
 import { queryKeys } from 'src/configs/queryKey'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { TParamsCreateRole, TParamsEditRole } from 'src/types/role'
+import toast from 'react-hot-toast'
 
 interface TCreateEditRole {
   open: boolean
@@ -36,16 +37,57 @@ interface TCreateEditRole {
 const CreateEditRole = (props: TCreateEditRole) => {
   const { t } = useTranslation()
 
-  // State
-  const [loading, setLoading] = useState(false)
-
   // ** Props
   const { open, onClose, idRole } = props
 
   const theme = useTheme()
 
-  // ** Redux
-  const dispatch: AppDispatch = useDispatch()
+  // ** React Query
+  const queryClient = useQueryClient()
+
+  const fetchCreateRole = async (data: TParamsCreateRole) => {
+    const res = await createRole(data)
+
+    return res.data
+  }
+
+  const fetchEditRoleRole = async (data: TParamsEditRole) => {
+    const res = await updateRole(data)
+
+    return res.data
+  }
+
+  const {
+    isPending: isLoadingCreate,
+    mutate: mutateCreateRole,
+  } = useMutation({
+    mutationFn: fetchCreateRole,
+    mutationKey: [queryKeys.create_role],
+    onSuccess: (newRole) => {
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
+      onClose()
+      toast.success(t('Create_role_success'))
+    },
+    onError: () => {
+      toast.success(t('Create_role_error'))
+    },
+  })
+
+  const {
+    isPending: isLoadingEdit,
+    mutate: mutateEditRole,
+  } = useMutation({
+    mutationFn: fetchEditRoleRole,
+    mutationKey: [queryKeys.update_role],
+    onSuccess: (newRole) => {
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
+      onClose()
+      toast.success(t('Update_role_success'))
+    },
+    onError: () => {
+      toast.success(t('Update_role_error'))
+    },
+  })
 
   const schema = yup.object().shape({
     name: yup.string().required(t('Required_field'))
@@ -53,7 +95,6 @@ const CreateEditRole = (props: TCreateEditRole) => {
 
   const defaultValues = {
     name: '',
-    confirmNewPassword: ''
   }
 
   const {
@@ -70,24 +111,24 @@ const CreateEditRole = (props: TCreateEditRole) => {
   const onSubmit = (data: { name: string }) => {
     if (!Object.keys(errors).length) {
       if (idRole) {
-        dispatch(updateRoleAsync({ name: data?.name, id: idRole }))
-        // update
+        mutateEditRole({name: data?.name, id: idRole})
       } else {
-        dispatch(createRoleAsync({ name: data?.name, permissions: [PERMISSIONS.DASHBOARD] }))
+        mutateCreateRole({ name: data?.name, permissions: [PERMISSIONS.DASHBOARD] })
+
       }
     }
   }
 
   // fetch
   const fetchDetailsRole = async (id: string) => {
-   const res =  await getDetailsRole(id)
+    const res = await getDetailsRole(id)
 
     return res.data
   }
 
   const {
     data: rolesDetails,
-    isPending
+    isFetching: isLoadingDetails,
   } = useQuery(
     {
       queryKey: [queryKeys.role_detail, idRole],
@@ -110,7 +151,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
   }, [open, idRole])
 
   useEffect(() => {
-    if(rolesDetails) {
+    if (rolesDetails) {
       reset({
         name: rolesDetails?.name
       })
@@ -119,7 +160,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
 
   return (
     <>
-      {loading && <Spinner />}
+      {(isLoadingCreate || isLoadingDetails || isLoadingEdit) && <Spinner />}
       <CustomModal open={open} onClose={onClose}>
         <Box
           sx={{
@@ -156,7 +197,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
                   <CustomTextField
                     required
                     fullWidth
-                    
+
                     label={t('Name_role')}
                     onChange={onChange}
                     onBlur={onBlur}
