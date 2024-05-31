@@ -27,6 +27,7 @@ import { queryKeys } from 'src/configs/queryKey'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { TParamsCreateRole, TParamsEditRole } from 'src/types/role'
 import toast from 'react-hot-toast'
+import { useMutationEditRole } from 'src/queries/role'
 
 interface TCreateEditRole {
   open: boolean
@@ -47,15 +48,9 @@ const CreateEditRole = (props: TCreateEditRole) => {
   // ** React Query
   const queryClient = useQueryClient()
   const data = queryClient.getQueryData([queryKeys.role_list, sortBy, searchBy])
- 
+
   const fetchCreateRole = async (data: TParamsCreateRole) => {
     const res = await createRole(data)
-
-    return res.data
-  }
-
-  const fetchEditRoleRole = async (data: TParamsEditRole) => {
-    const res = await updateRole(data)
 
     return res.data
   }
@@ -67,9 +62,9 @@ const CreateEditRole = (props: TCreateEditRole) => {
     mutationFn: fetchCreateRole,
     mutationKey: [queryKeys.create_role],
     onSuccess: (newRole) => {
-      queryClient.setQueryData([queryKeys.role_list, sortBy, searchBy], (oldData:any) => {
+      queryClient.setQueryData([queryKeys.role_list, sortBy, searchBy, -1, -1], (oldData: any) => {
 
-        return {...oldData, roles: [...oldData.roles, newRole]}
+        return { ...oldData, roles: [...oldData.roles, newRole] }
       })
       onClose()
       toast.success(t('Create_role_success'))
@@ -82,22 +77,20 @@ const CreateEditRole = (props: TCreateEditRole) => {
   const {
     isPending: isLoadingEdit,
     mutate: mutateEditRole,
-  } = useMutation({
-    mutationFn: fetchEditRoleRole,
-    mutationKey: [queryKeys.update_role],
+  } = useMutationEditRole({
     onSuccess: (newRole) => {
-      const roles = (queryClient.getQueryData([queryKeys.role_list, sortBy, searchBy]) as any)
-      queryClient.setQueryData([queryKeys.role_list, sortBy, searchBy], (oldData:any) => {
-        const editedRole = oldData?.roles?.find((item:any) => item._id == newRole._id)
-        editedRole.name = newRole.name
+      queryClient.setQueryData([queryKeys.role_list, sortBy, searchBy, -1, -1], (oldData: any) => {
+        const editedRole = oldData?.roles?.find((item: any) => item._id == newRole._id)
+        if (editedRole) {
+          editedRole.name = newRole?.name
+        }
 
         return oldData
       })
-      // queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
       onClose()
       toast.success(t('Update_role_success'))
     },
-    onError: () => {
+    onError: (errr) => {
       toast.error(t('Update_role_error'))
     },
   })
@@ -154,7 +147,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
       placeholderData: () => {
         const roles = (queryClient.getQueryData([queryKeys.role_list, sortBy, searchBy]) as any)?.roles
 
-        return roles?.find((item:{_id: string}) => item._id === idRole)
+        return roles?.find((item: { _id: string }) => item._id === idRole)
       },
     },
   )

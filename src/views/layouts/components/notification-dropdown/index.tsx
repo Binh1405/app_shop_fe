@@ -91,7 +91,6 @@ const NotificationDropdown = (props: Props) => {
     const theme = useTheme()
     const { t } = useTranslation()
     const { fcmToken } = useFcmToken();
-    console.log("fcmToken", { fcmToken })
 
     // ** Ref
     const wrapperListRef = useRef<HTMLDivElement>(null)

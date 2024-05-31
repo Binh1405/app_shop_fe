@@ -35,7 +35,7 @@ import { usePermission } from 'src/hooks/usePermission'
 import { useMutation, useMutationState, useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from 'src/configs/queryKey'
 import { TParamsEditRole } from 'src/types/role'
-import { useGetListRoles } from 'src/queries/role'
+import { useGetListRoles, useMutationEditRole } from 'src/queries/role'
 
 type TProps = {}
 
@@ -78,14 +78,6 @@ const RoleListPage: NextPage<TProps> = () => {
 
   // fetch api
 
-  const fetchEditRoleRole = async (data: TParamsEditRole) => {
-    const res = await updateRole(data)
-
-    return res.data
-  }
-
-
-
   const fetchDeleteRole = async (id: string) => {
     const res = await deleteRole(id)
 
@@ -95,10 +87,8 @@ const RoleListPage: NextPage<TProps> = () => {
   const {
     isPending: isLoadingEdit,
     mutate: mutateEditRole,
-  } = useMutation({
-    mutationFn: fetchEditRoleRole,
-    mutationKey: [queryKeys.update_role],
-    onSuccess: (newRole) => {
+  } = useMutationEditRole({
+    onSuccess: () => {
       queryClient.refetchQueries({ queryKey: [queryKeys.role_list, sortBy, searchBy, -1, -1] })
       toast.success(t('Update_role_success'))
     },
@@ -117,14 +107,12 @@ const RoleListPage: NextPage<TProps> = () => {
   } = useGetListRoles(
     { limit: -1, page: -1, search: searchBy, order: sortBy },
     {
-      select: (data) => data?.data?.roles,
+      select: (data) => data?.roles,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       staleTime: 10000
     }
   )
-
-  console.log("rolesList", { rolesList })
 
   const {
     isPending: isLoadingDelete,
@@ -317,7 +305,6 @@ const RoleListPage: NextPage<TProps> = () => {
                   return row.id === selectedRow.id ? 'row-selected' : ''
                 }}
                 onRowClick={row => {
-                  console.log("chek", refActionGrid)
                   if (!refActionGrid.current) {
                     setSelectedRow({ id: String(row.id), name: row?.row?.name })
                   }
