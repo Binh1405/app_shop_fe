@@ -35,6 +35,7 @@ import { usePermission } from 'src/hooks/usePermission'
 import { useMutation, useMutationState, useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from 'src/configs/queryKey'
 import { TParamsEditRole } from 'src/types/role'
+import { useGetListRoles } from 'src/queries/role'
 
 type TProps = {}
 
@@ -83,13 +84,9 @@ const RoleListPage: NextPage<TProps> = () => {
     return res.data
   }
 
-  const fetchRoles = async (sortBy: string, searchBy: string) => {
-    const res = await getAllRoles({ params: { limit: -1, page: -1, search: searchBy, order: sortBy } })
 
-    return res?.data
-  }
 
-  const fetchDeleteRole = async (id:string) => {
+  const fetchDeleteRole = async (id: string) => {
     const res = await deleteRole(id)
 
     return res?.data
@@ -102,7 +99,7 @@ const RoleListPage: NextPage<TProps> = () => {
     mutationFn: fetchEditRoleRole,
     mutationKey: [queryKeys.update_role],
     onSuccess: (newRole) => {
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, sortBy, searchBy] })
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, sortBy, searchBy, -1, -1] })
       toast.success(t('Update_role_success'))
     },
     onError: () => {
@@ -111,22 +108,23 @@ const RoleListPage: NextPage<TProps> = () => {
   })
 
   const handleUpdateRole = () => {
-    mutateEditRole({name: selectedRow.name, id: selectedRow.id, permissions: permissionSelected})
+    mutateEditRole({ name: selectedRow.name, id: selectedRow.id, permissions: permissionSelected })
   }
 
   const {
     data: rolesList,
     isPending
-  } = useQuery(
+  } = useGetListRoles(
+    { limit: -1, page: -1, search: searchBy, order: sortBy },
     {
-      queryKey: [queryKeys.role_list, sortBy, searchBy],
-      queryFn: () => fetchRoles(sortBy, searchBy),
-      select: (data) => data?.roles,
+      select: (data) => data?.data?.roles,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       staleTime: 10000
-    },
+    }
   )
+
+  console.log("rolesList", { rolesList })
 
   const {
     isPending: isLoadingDelete,
@@ -135,7 +133,7 @@ const RoleListPage: NextPage<TProps> = () => {
     mutationFn: fetchDeleteRole,
     mutationKey: [queryKeys.delete_role],
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, sortBy, searchBy] })
+      queryClient.refetchQueries({ queryKey: [queryKeys.role_list, sortBy, searchBy, -1, -1] })
       handleCloseConfirmDeleteRole()
       toast.success(t('Delete_role_success'))
     },
@@ -263,12 +261,12 @@ const RoleListPage: NextPage<TProps> = () => {
         title={t('Title_delete_role')}
         description={t('Confirm_delete_role')}
       />
-      <CreateEditRole 
-      open={openCreateEdit.open} 
-      searchBy={searchBy}
-      sortBy={sortBy}
-      onClose={handleCloseCreateEdit} 
-      idRole={openCreateEdit.id} 
+      <CreateEditRole
+        open={openCreateEdit.open}
+        searchBy={searchBy}
+        sortBy={sortBy}
+        onClose={handleCloseCreateEdit}
+        idRole={openCreateEdit.id}
       />
       <Box
         sx={{
@@ -319,7 +317,7 @@ const RoleListPage: NextPage<TProps> = () => {
                   return row.id === selectedRow.id ? 'row-selected' : ''
                 }}
                 onRowClick={row => {
-                  console.log("chek",refActionGrid)
+                  console.log("chek", refActionGrid)
                   if (!refActionGrid.current) {
                     setSelectedRow({ id: String(row.id), name: row?.row?.name })
                   }
