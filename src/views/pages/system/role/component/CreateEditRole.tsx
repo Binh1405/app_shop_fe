@@ -32,19 +32,22 @@ interface TCreateEditRole {
   open: boolean
   onClose: () => void
   idRole?: string
+  sortBy: string
+  searchBy: string
 }
 
 const CreateEditRole = (props: TCreateEditRole) => {
   const { t } = useTranslation()
 
   // ** Props
-  const { open, onClose, idRole } = props
+  const { open, onClose, idRole, sortBy, searchBy } = props
 
   const theme = useTheme()
 
   // ** React Query
   const queryClient = useQueryClient()
-
+  const data = queryClient.getQueryData([queryKeys.role_list, sortBy, searchBy])
+ 
   const fetchCreateRole = async (data: TParamsCreateRole) => {
     const res = await createRole(data)
 
@@ -64,7 +67,10 @@ const CreateEditRole = (props: TCreateEditRole) => {
     mutationFn: fetchCreateRole,
     mutationKey: [queryKeys.create_role],
     onSuccess: (newRole) => {
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
+      queryClient.setQueryData([queryKeys.role_list, sortBy, searchBy], (oldData:any) => {
+
+        return {...oldData, roles: [...oldData.roles, newRole]}
+      })
       onClose()
       toast.success(t('Create_role_success'))
     },
@@ -80,12 +86,19 @@ const CreateEditRole = (props: TCreateEditRole) => {
     mutationFn: fetchEditRoleRole,
     mutationKey: [queryKeys.update_role],
     onSuccess: (newRole) => {
-      queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
+      const roles = (queryClient.getQueryData([queryKeys.role_list, sortBy, searchBy]) as any)
+      queryClient.setQueryData([queryKeys.role_list, sortBy, searchBy], (oldData:any) => {
+        const editedRole = oldData?.roles?.find((item:any) => item._id == newRole._id)
+        editedRole.name = newRole.name
+
+        return oldData
+      })
+      // queryClient.refetchQueries({ queryKey: [queryKeys.role_list] })
       onClose()
       toast.success(t('Update_role_success'))
     },
     onError: () => {
-      toast.success(t('Update_role_error'))
+      toast.error(t('Update_role_error'))
     },
   })
 
@@ -111,7 +124,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
   const onSubmit = (data: { name: string }) => {
     if (!Object.keys(errors).length) {
       if (idRole) {
-        mutateEditRole({name: data?.name, id: idRole})
+        mutateEditRole({ name: data?.name, id: idRole })
       } else {
         mutateCreateRole({ name: data?.name, permissions: [PERMISSIONS.DASHBOARD] })
 
@@ -134,10 +147,15 @@ const CreateEditRole = (props: TCreateEditRole) => {
       queryKey: [queryKeys.role_detail, idRole],
       queryFn: () => fetchDetailsRole(idRole || ''),
       refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
+      // refetchOnReconnect: false,
       staleTime: 5000,
       gcTime: 10000,
-      enabled: !!idRole
+      enabled: !!idRole,
+      placeholderData: () => {
+        const roles = (queryClient.getQueryData([queryKeys.role_list, sortBy, searchBy]) as any)?.roles
+
+        return roles?.find((item:{_id: string}) => item._id === idRole)
+      },
     },
   )
 
