@@ -110,7 +110,6 @@ export default function App(props: ExtendedAppProps) {
 
   const setConfig = Component.setConfig ?? undefined
   // Query
-  const [queryClient] = useState(() => new QueryClient())
 
   const authGuard = Component.authGuard ?? true
 
