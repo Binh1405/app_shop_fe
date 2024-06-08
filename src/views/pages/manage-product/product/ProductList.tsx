@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -100,6 +100,7 @@ const ProductListPage: NextPage<TProps> = () => {
 
   const CONSTANT_STATUS_PRODUCT = OBJECT_STATUS_PRODUCT()
 
+  const isRendered = useRef<boolean>(false)
 
   // ** Hooks
   const { VIEW, UPDATE, DELETE, CREATE } = usePermission('MANAGE_PRODUCT.PRODUCT', [
@@ -230,7 +231,7 @@ const ProductListPage: NextPage<TProps> = () => {
       renderCell: params => {
         const { row } = params
 
-        return <Typography sx={{whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%"}}>{row?.name}</Typography>
+        return <Typography sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>{row?.name}</Typography>
       }
     },
     {
@@ -337,7 +338,21 @@ const ProductListPage: NextPage<TProps> = () => {
   }
 
   useEffect(() => {
-    handleGetListProducts()
+    if (isRendered.current) {
+      setFilterBy({ productType: typeSelected, status: statusSelected })
+    }
+  }, [typeSelected, statusSelected])
+
+  useEffect(() => {
+    fetchAllTypes()
+    fetchAllCountProductStatus()
+    isRendered.current = true
+  }, [])
+
+  useEffect(() => {
+    if (isRendered.current) {
+      handleGetListProducts()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortBy, searchBy, page, pageSize, filterBy])
 
@@ -392,15 +407,6 @@ const ProductListPage: NextPage<TProps> = () => {
     }
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
-  useEffect(() => {
-    setFilterBy({ productType: typeSelected, status: statusSelected })
-  }, [typeSelected, statusSelected])
-
-  useEffect(() => {
-    fetchAllTypes()
-    fetchAllCountProductStatus()
-  }, [])
-
   const dataListProductStatus = [
     {
       "icon": "la:product-hunt",
@@ -435,7 +441,12 @@ const ProductListPage: NextPage<TProps> = () => {
         title={t('Title_delete_multiple_product')}
         description={t('Confirm_delete_multiple_product')}
       />
-      <CreateEditProduct open={openCreateEdit.open} onClose={handleCloseCreateEdit} idProduct={openCreateEdit.id} />
+      <CreateEditProduct
+        open={openCreateEdit.open}
+        onClose={handleCloseCreateEdit}
+        idProduct={openCreateEdit.id}
+        optionTypes={optionTypes}
+      />
       {isLoading && <Spinner />}
       <Box sx={{ backgroundColor: "inherit", width: '100%', mb: 4 }}>
         <Grid container spacing={6} sx={{ height: '100%' }}>

@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -67,6 +67,9 @@ const ReviewListPage: NextPage<TProps> = () => {
   const [filterBy, setFilterBy] = useState<Record<string, string | string[]>>({})
   const [openDeleteMultipleMultiple, setOpenDeleteMultipleMultiple] = useState(false)
   const [selectedRow, setSelectedRow] = useState<string[]>([])
+
+  // ** Ref
+  const isRendered = useRef<boolean>(false)
 
   // ** Hooks
   const { VIEW, UPDATE, DELETE } = usePermission('SYSTEM.MANAGE_ORDER.REVIEW', ['CREATE', 'VIEW', 'UPDATE', 'DELETE'])
@@ -262,14 +265,18 @@ const ReviewListPage: NextPage<TProps> = () => {
   }
 
   useEffect(() => {
-    handleGetListReviews()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, searchBy, page, pageSize, filterBy])
-
-  useEffect(() => {
-    setFilterBy({ minStar: starSelected })
+    if (isRendered.current) {
+      setFilterBy({ minStar: starSelected })
+    }
+    isRendered.current = true
   }, [starSelected])
 
+  useEffect(() => {
+    if (isRendered.current) {
+      handleGetListReviews()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, searchBy, page, pageSize, filterBy])
 
   useEffect(() => {
     if (isSuccessEdit) {
