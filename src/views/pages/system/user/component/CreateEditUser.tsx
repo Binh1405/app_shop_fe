@@ -80,8 +80,6 @@ const CreateEditUser = (props: TCreateEditUser) => {
   // ** Redux
   const dispatch: AppDispatch = useDispatch()
 
-  console.log("re-render")
-
   const schema = yup.object().shape({
     email: yup.string().required(t('Required_field')).matches(EMAIL_REG, t('Rules_email')),
     password: idUser
@@ -233,9 +231,11 @@ const CreateEditUser = (props: TCreateEditUser) => {
   }, [open, idUser])
 
   useEffect(() => {
-    fetchAllRoles()
-    fetchAllCities()
-  }, [])
+    if(open) {
+      fetchAllRoles()
+      fetchAllCities()
+    }
+  }, [open])
 
   return (
     <>
