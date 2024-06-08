@@ -1,5 +1,5 @@
 // ** libraries
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
 // ** config
@@ -48,6 +48,34 @@ const handleRedirectLogin = (router: NextRouter, setUser: (data: UserDataType | 
 }
 
 let isRefreshing = false
+let failedQueue:any[] = []
+
+const processQueue = (error:any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if(token) {
+      prom.resolve(token)
+    }else {
+      prom.reject(error)
+    }
+  })
+  failedQueue = []
+}
+
+const addRequestQueue = (config:AxiosRequestConfig):Promise<any> => {
+  return new Promise((resolve, reject) => {
+    failedQueue.push({
+      resolve: (token:string) => {
+        if(config.headers) {
+          config.headers['Authorization'] = `Bearer ${token}`
+        }
+        resolve(config)
+      },
+      reject: (err:any) => {
+        reject(err)
+      }
+    })
+  })
+}
 
 const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
   const router = useRouter()
@@ -65,41 +93,48 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
         } else if (temporaryToken) {
           decodedAccessToken = jwtDecode(temporaryToken)
         }
-  
+
         if (decodedAccessToken?.exp > Date.now() / 1000) {
           config.headers['Authorization'] = `Bearer ${accessToken ? accessToken : temporaryToken}`
         } else {
           if (refreshToken) {
             const decodedRefreshToken: any = jwtDecode(refreshToken)
-  
-            if (decodedRefreshToken?.exp > Date.now() / 1000 && !isRefreshing) {
-              isRefreshing = true
-              await axios
-                .post(
-                  `${API_ENDPOINT.AUTH.INDEX}/refresh-token`,
-                  {},
-                  {
-                    headers: {
-                      Authorization: `Bearer ${refreshToken}`
+
+            if (decodedRefreshToken?.exp > Date.now() / 1000) {
+              if (!isRefreshing) {
+                isRefreshing = true
+                await axios
+                  .post(
+                    `${API_ENDPOINT.AUTH.INDEX}/refresh-token`,
+                    {},
+                    {
+                      headers: {
+                        Authorization: `Bearer ${refreshToken}`
+                      }
                     }
-                  }
-                )
-                .then(res => {
-                  const newAccessToken = res?.data?.data?.access_token
-                  if (newAccessToken) {
-                    config.headers['Authorization'] = `Bearer ${newAccessToken}`
-                    if(accessToken) {
-                      setLocalUserData(JSON.stringify(user), newAccessToken, refreshToken)
+                  )
+                  .then(res => {
+                    const newAccessToken = res?.data?.data?.access_token
+                    if (newAccessToken) {
+                      config.headers['Authorization'] = `Bearer ${newAccessToken}`
+                      processQueue(null ,newAccessToken)
+                      if (accessToken) {
+                        setLocalUserData(JSON.stringify(user), newAccessToken, refreshToken)
+                      }
+                    } else {
+                      handleRedirectLogin(router, setUser)
                     }
-                  } else {
+                  })
+                  .catch(e => {
+                    processQueue(e ,null)
                     handleRedirectLogin(router, setUser)
-                  }
-                })
-                .catch(e => {
-                  handleRedirectLogin(router, setUser)
-                }).finally(() => {
-                  isRefreshing = false
-                })
+                  }).finally(() => {
+                    isRefreshing = false
+                  })
+              }else {
+                return await addRequestQueue(config)
+              }
+
             } else {
               handleRedirectLogin(router, setUser)
             }
@@ -107,17 +142,17 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
             handleRedirectLogin(router, setUser)
           }
         }
-      } else if(!isPublicApi) {
+      } else if (!isPublicApi) {
         handleRedirectLogin(router, setUser)
       }
 
-      if(config?.params?.isPublic) {
+      if (config?.params?.isPublic) {
         delete config.params.isPublic
       }
-  
+
       return config
     })
-  
+
     const resInterceptor = instanceAxios.interceptors.response.use(response => {
       return response
     })
@@ -127,7 +162,7 @@ const AxiosInterceptor: FC<TAxiosInterceptor> = ({ children }) => {
       instanceAxios.interceptors.response.eject(resInterceptor)
     }
   }, [])
-  
+
 
   return <>{children}</>
 }
