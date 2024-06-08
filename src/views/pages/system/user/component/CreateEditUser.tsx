@@ -1,5 +1,5 @@
 // ** React
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Form
@@ -79,6 +79,8 @@ const CreateEditUser = (props: TCreateEditUser) => {
 
   // ** Redux
   const dispatch: AppDispatch = useDispatch()
+
+  console.log("re-render")
 
   const schema = yup.object().shape({
     email: yup.string().required(t('Required_field')).matches(EMAIL_REG, t('Rules_email')),
@@ -584,4 +586,4 @@ const CreateEditUser = (props: TCreateEditUser) => {
   )
 }
 
-export default CreateEditUser
+export default memo(CreateEditUser)

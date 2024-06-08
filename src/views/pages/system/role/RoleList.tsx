@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -131,30 +131,30 @@ const RoleListPage: NextPage<TProps> = () => {
   })
 
   // handle
-  const handleCloseConfirmDeleteRole = () => {
+  const handleCloseConfirmDeleteRole = useCallback(() => {
     setOpenDeleteRole({
       open: false,
       id: ''
     })
     refActionGrid.current = false
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
     setSortBy(`${sortOption.field} ${sortOption.sort}`)
   }
 
-  const handleCloseCreateEdit = () => {
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
     refActionGrid.current = false
-  }
+  }, [])
 
-  const handleDeleteRole = () => {
+  const handleDeleteRole = useCallback(() => {
     mutateDeleteRole(openDeleteRole.id)
-  }
+  }, [openDeleteRole.id])
 
   const columns: GridColDef[] = [
     {
