@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -120,6 +120,8 @@ const UserListPage: NextPage<TProps> = () => {
     totalUser: number
   }>({} as any)
 
+  // ** Ref
+  const isFirstRender = useRef<boolean>(false)
 
   const CONSTANT_STATUS_USER = OBJECT_STATUS_USER()
   const CONSTANT_USER_TYPE = OBJECT_TYPE_USER()
@@ -395,19 +397,24 @@ const UserListPage: NextPage<TProps> = () => {
   }, [selectedRow])
 
   useEffect(() => {
-    handleGetListUsers()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, searchBy, i18n.language, page, pageSize, filterBy])
-
-  useEffect(() => {
-    setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected, userType: typeSelected })
+    if (isFirstRender.current) {
+      setFilterBy({ roleId: roleSelected, status: statusSelected, cityId: citySelected, userType: typeSelected })
+    }
   }, [roleSelected, statusSelected, citySelected, typeSelected])
 
   useEffect(() => {
     fetchAllRoles()
     fetchAllCities()
     fetchAllCountUserType()
+    isFirstRender.current = true
   }, [])
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      handleGetListUsers()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, searchBy, i18n.language, page, pageSize, filterBy])
 
   useEffect(() => {
     if (isSuccessCreateEdit) {
@@ -499,7 +506,11 @@ const UserListPage: NextPage<TProps> = () => {
         title={t('Title_delete_multiple_user')}
         description={t('Confirm_delete_multiple_user')}
       />
-      <CreateEditUser open={openCreateEdit.open} onClose={handleCloseCreateEdit} idUser={openCreateEdit.id} />
+      <CreateEditUser
+        open={openCreateEdit.open}
+        onClose={handleCloseCreateEdit}
+        idUser={openCreateEdit.id}
+      />
       {isLoading && <Spinner />}
       <Box sx={{ backgroundColor: "inherit", width: '100%', mb: 4 }}>
         <Grid container spacing={6} sx={{ height: '100%' }}>
