@@ -52,6 +52,7 @@ interface TCreateEditProduct {
   open: boolean
   onClose: () => void
   idProduct?: string
+  optionTypes: {label:string, value: string}[]
 }
 
 type TDefaultValue = {
@@ -72,11 +73,10 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   // State
   const [loading, setLoading] = useState(false)
   const [imageProduct, setImageProduct] = useState('')
-  const [optionTypes, setOptionTypes] = useState<{ label: string; value: string }[]>([])
   const [optionCities, setOptionCities] = useState<{ label: string; value: string }[]>([])
 
   // ** Props
-  const { open, onClose, idProduct } = props
+  const { open, onClose, idProduct,optionTypes } = props
 
   // Hooks
   const theme = useTheme()
@@ -264,21 +264,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
       })
   }
 
-  const fetchAllProductTypes = async () => {
-    setLoading(true)
-    await getAllProductTypes({ params: { limit: -1, page: -1 } })
-      .then(res => {
-        const data = res?.data.productTypes
-        if (data) {
-          setOptionTypes(data?.map((item: { name: string; _id: string }) => ({ label: item.name, value: item._id })))
-        }
-        setLoading(false)
-      })
-      .catch(e => {
-        setLoading(false)
-      })
-  }
-
   const fetchAllCities = async () => {
     setLoading(true)
     await getAllCities({ params: { limit: -1, page: -1 } })
@@ -307,7 +292,6 @@ const CreateEditProduct = (props: TCreateEditProduct) => {
   }, [open, idProduct])
 
   useEffect(() => {
-    fetchAllProductTypes()
     fetchAllCities()
   }, [])
 
