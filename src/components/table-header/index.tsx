@@ -1,6 +1,7 @@
 // ** MUI Imports
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { styled, useTheme } from '@mui/material/styles'
+import { memo } from 'react'
 
 // ** React 
 import { useTranslation } from 'react-i18next'
@@ -70,4 +71,4 @@ const TableHeader = (props: TProps) => {
     </StyledTableHeader>
   )
 }
-export default TableHeader
+export default memo(TableHeader)

@@ -2,7 +2,7 @@
 import { NextPage } from 'next'
 
 // ** React
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // ** Mui
@@ -164,9 +164,9 @@ const UserListPage: NextPage<TProps> = () => {
     })
   }
 
-  const handleCloseConfirmDeleteMultipleUser = () => {
+  const handleCloseConfirmDeleteMultipleUser = useCallback(() => {
     setOpenDeleteMultipleUser(false)
-  }
+  }, [])
 
   const handleSort = (sort: GridSortModel) => {
     const sortOption = sort[0]
@@ -177,33 +177,34 @@ const UserListPage: NextPage<TProps> = () => {
     }
   }
 
-  const handleCloseCreateEdit = () => {
+
+  const handleCloseCreateEdit = useCallback(() => {
     setOpenCreateEdit({
       open: false,
       id: ''
     })
-  }
+  }, [])
 
   const handleDeleteUser = () => {
     dispatch(deleteUserAsync(openDeleteUser.id))
   }
 
-  const handleDeleteMultipleUser = () => {
+  const handleDeleteMultipleUser = useCallback(() => {
     dispatch(
       deleteMultipleUserAsync({
         userIds: selectedRow?.map((item: TSelectedRow) => item.id)
       })
     )
-  }
+  }, [selectedRow])
 
-  const handleAction = (action: string) => {
+  const handleAction = useCallback((action: string) => {
     switch (action) {
       case 'delete': {
         setOpenDeleteMultipleUser(true)
         break
       }
     }
-  }
+  }, [])
 
   const handleOnchangePagination = (page: number, pageSize: number) => {
     setPage(page)
