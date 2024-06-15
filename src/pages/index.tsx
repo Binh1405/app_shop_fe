@@ -1,4 +1,5 @@
 'use client'
+import axios from 'axios'
 import Head from 'next/head'
 import { ReactNode } from 'react'
 
@@ -6,6 +7,9 @@ import { ReactNode } from 'react'
 import LayoutNotApp from 'src/views/layouts/LayoutNotApp'
 
 export default function Home() {
+  const fetchApiUser = async () => {
+    await axios("")
+  }
   return (
     <>
       <Head>
