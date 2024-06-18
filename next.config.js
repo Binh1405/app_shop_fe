@@ -4,6 +4,7 @@ const nextConfig = {
   experimental: {
     largePageDataBytes: 128 * 100000
   },
+  
   images: {
     remotePatterns: [
       {
