@@ -156,6 +156,7 @@ const MyProductPage: NextPage<TProps> = () => {
 
   useEffect(() => {
     handleGetListData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchBy, tabActive])
 
   return (

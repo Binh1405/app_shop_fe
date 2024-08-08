@@ -260,6 +260,7 @@ const CityListPage: NextPage<TProps> = () => {
       toast.error(t('Delete_multiple_city_error'))
       dispatch(resetInitialState())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
 
   useEffect(() => {
@@ -272,6 +273,7 @@ const CityListPage: NextPage<TProps> = () => {
       toast.error(t('Delete_city_error'))
       dispatch(resetInitialState())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
   return (

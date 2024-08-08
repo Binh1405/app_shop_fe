@@ -39,6 +39,7 @@ const PaymentVNPay = () => {
         if (vnp_SecureHash && vnp_ResponseCode && vnp_TxnRef) {
             fetchGetIpnVNPay({ vnp_ResponseCode, vnp_SecureHash, orderId: vnp_TxnRef, vnp_TxnRef, ...rests })
         }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [vnp_SecureHash, vnp_ResponseCode, vnp_TxnRef])
 
     return (

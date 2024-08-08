@@ -197,6 +197,7 @@ const UserListPage: NextPage<TProps> = () => {
         userIds: selectedRow?.map((item: TSelectedRow) => item.id)
       })
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRow])
 
   const handleAction = useCallback((action: string) => {
@@ -453,6 +454,7 @@ const UserListPage: NextPage<TProps> = () => {
       toast.error(t('Delete_multiple_user_error'))
       dispatch(resetInitialState())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
 
   useEffect(() => {
@@ -465,6 +467,7 @@ const UserListPage: NextPage<TProps> = () => {
       toast.error(t('Delete_user_error'))
       dispatch(resetInitialState())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
   const dataListUser = [

@@ -351,6 +351,7 @@ const DetailsProductPage: NextPage<TProps> = ({productData, productsRelated}) =>
     return () => {
       socket.disconnect()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listComment])
 
   useEffect(() => {
@@ -403,6 +404,7 @@ const DetailsProductPage: NextPage<TProps> = ({productData, productsRelated}) =>
       toast.error(t('Delete_review_error'))
       dispatch(resetInitialState())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
   useEffect(() => {
@@ -413,6 +415,7 @@ const DetailsProductPage: NextPage<TProps> = ({productData, productsRelated}) =>
       toast.error(t('Delete_comment_error'))
       dispatch(resetInitialStateComment())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessDeleteComment, isErrorDeleteComment, messageErrorDeleteComment])
 
   useEffect(() => {
@@ -424,6 +427,7 @@ const DetailsProductPage: NextPage<TProps> = ({productData, productsRelated}) =>
       toast.error(t('Create_comment_error'))
       dispatch(resetInitialStateComment())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessCreateComment, isErrorCreateComment, messageErrorCreateComment])
 
   useEffect(() => {
@@ -445,6 +449,7 @@ const DetailsProductPage: NextPage<TProps> = ({productData, productsRelated}) =>
       toast.error(t('Create_reply_error'))
       dispatch(resetInitialStateComment())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessReply, isErrorReply, messageErrorReply])
 
   return (

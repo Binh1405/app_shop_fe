@@ -84,6 +84,7 @@ const CommentInput = (props: TCommentInput) => {
         if (props.isEdit && props.item) {
             setInputComment(props?.item?.content)
         }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.isEdit])
 
     return (

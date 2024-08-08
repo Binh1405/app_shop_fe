@@ -154,6 +154,7 @@ const RoleListPage: NextPage<TProps> = () => {
 
   const handleDeleteRole = useCallback(() => {
     mutateDeleteRole(openDeleteRole.id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openDeleteRole.id])
 
   const columns: GridColDef[] = [

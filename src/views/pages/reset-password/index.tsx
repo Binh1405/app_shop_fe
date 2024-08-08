@@ -121,6 +121,7 @@ const ResetPasswordPage: NextPage<TProps> = () => {
         dispatch(resetInitialState())
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessResetPassword, isErrorResetPassword, messageResetPassword])
 
   return (

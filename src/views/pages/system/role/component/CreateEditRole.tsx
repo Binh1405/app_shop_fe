@@ -165,6 +165,7 @@ const CreateEditRole = (props: TCreateEditRole) => {
         name: rolesDetails?.name
       })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rolesDetails])
 
   return (

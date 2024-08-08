@@ -280,6 +280,7 @@ const DeliveryTypeListPage: NextPage<TProps> = () => {
       toast.error(t('Delete_multiple_delivery_type_error'))
       dispatch(resetInitialState())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessMultipleDelete, isErrorMultipleDelete, messageErrorMultipleDelete])
 
   useEffect(() => {
@@ -292,6 +293,7 @@ const DeliveryTypeListPage: NextPage<TProps> = () => {
       toast.error(t('Delete_delivery_type_error'))
       dispatch(resetInitialState())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccessDelete, isErrorDelete, messageErrorDelete])
 
   return (

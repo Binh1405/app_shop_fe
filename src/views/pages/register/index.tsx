@@ -132,6 +132,7 @@ const RegisterPage: NextPage<TProps> = () => {
       }
       setLocalPreTokenAuthSocial((session as any)?.accessToken)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [(session as any)?.accessToken])
 
   useEffect(() => {
@@ -145,6 +146,7 @@ const RegisterPage: NextPage<TProps> = () => {
         dispatch(resetInitialState())
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError, isSuccess, message])
 
   return (

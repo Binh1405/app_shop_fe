@@ -165,6 +165,7 @@ const MyProfilePage: NextPage<TProps> = () => {
 
   useEffect(() => {
     fetchGetAuthMe()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18n.language])
 
   useEffect(() => {
@@ -177,6 +178,7 @@ const MyProfilePage: NextPage<TProps> = () => {
       }
       dispatch(resetInitialState())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isErrorUpdateMe, isSuccessUpdateMe, messageUpdateMe])
 
   useEffect(() => {
