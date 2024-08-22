@@ -49,10 +49,11 @@ Home.guestGuard = false
 Home.authGuard = false
 Home.title = "Danh sách sản phẩm của cửa hàng Lập trình thật dễ"
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const limit = 10
   const page = 1
   const order = "createdAt desc"
+  
   try {
     const productTypes: TOptions[] = []
     await getAllProductTypes({ params: { limit: -1, page: -1 } })
@@ -81,7 +82,8 @@ export async function getServerSideProps() {
           order,
           productType: productTypes?.[0]?.value
         }
-      }
+      },
+      revalidate: 10 // Revalidate every 10 seconds
     }
   } catch (error) {
     return {
@@ -93,7 +95,8 @@ export async function getServerSideProps() {
           page,
           order
         }
-      }
+      },
+      revalidate: 10 
     }
   }
 }
